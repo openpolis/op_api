@@ -1,11 +1,15 @@
 from django.conf.urls.defaults import patterns, url
 from piston.resource import Resource
+from piston.authentication import HttpBasicAuthentication
 from op_api.op.handlers import LocationHandler, EducationLevelHandler, ProfessionHandler, StatisticsHandler
 
-location_resource = Resource(handler=LocationHandler)
-education_level_resource = Resource(handler=EducationLevelHandler)
-profession_resource = Resource(handler=ProfessionHandler)
-statistics_resource = Resource(handler=StatisticsHandler)
+auth = HttpBasicAuthentication(realm="Openpolis API")
+ad = { 'authentication': auth }
+
+location_resource = Resource(handler=LocationHandler, **ad)
+education_level_resource = Resource(handler=EducationLevelHandler, **ad)
+profession_resource = Resource(handler=ProfessionHandler, **ad)
+statistics_resource = Resource(handler=StatisticsHandler, **ad)
 
 urlpatterns = patterns('',
     url(r'^locations/$', location_resource),
