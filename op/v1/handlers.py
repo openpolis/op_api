@@ -1,9 +1,8 @@
 from piston.handler import AnonymousBaseHandler
 from op_api.op.models import OpLocation, OpProfession, OpInstitutionCharge, OpEducationLevel
 from piston.emitters import Emitter
-from op.emitters import OpXMLEmitter, OpLocationXMLEmitter, OpProfessionXMLEmitter, OpEducationLevelXMLEmitter
+from op_api.emitters import OpXMLEmitter, OpLocationXMLEmitter, OpProfessionXMLEmitter, OpEducationLevelXMLEmitter
 from django.core.cache import cache
-import pickle
 
 class LocationHandler(AnonymousBaseHandler):
   model = OpLocation

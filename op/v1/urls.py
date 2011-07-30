@@ -1,7 +1,7 @@
 from django.conf.urls.defaults import patterns, url
 from piston.resource import Resource
 from piston.authentication import HttpBasicAuthentication
-from op.handlers import LocationHandler, EducationLevelHandler, ProfessionHandler, StatisticsHandler
+from op_api.op.v1.handlers import LocationHandler, EducationLevelHandler, ProfessionHandler, StatisticsHandler
 
 location_resource = Resource(handler=LocationHandler)
 education_level_resource = Resource(handler=EducationLevelHandler)
