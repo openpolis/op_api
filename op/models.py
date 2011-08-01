@@ -449,7 +449,7 @@ class OpInstitutionChargeManager(models.Manager):
           sex_numbers = {}
           for row in cursor.fetchall():
               sex = row[0]
-              sex_numbers[sex] = row[1]
+              sex_numbers[sex] = int(row[1])
 
           if 'M' in sex_numbers.keys():
             sex_numbers_m = sex_numbers['M']
@@ -477,7 +477,7 @@ class OpInstitutionChargeManager(models.Manager):
           cursor.execute(institution_sql, clauses_params)          
           for row in cursor.fetchall():
               i_id = row[0]
-              i_count = row[1]
+              i_count = int(row[1])
               institution_numbers[i_id]['count'] += i_count
 
           results['institutions'] = institution_numbers
@@ -498,7 +498,7 @@ class OpInstitutionChargeManager(models.Manager):
                 p_id = row[1]
               else:
                 p_id = row[0]
-              p_count = row[2]
+              p_count = int(row[2])
               profession_numbers[p_id]['count'] += p_count
 
           results['professions'] = profession_numbers
@@ -519,7 +519,7 @@ class OpInstitutionChargeManager(models.Manager):
                 e_id = row[1]
               else:
                 e_id = row[0]
-              e_count = row[2]
+              e_count = int(row[2])
               education_numbers[e_id]['count'] += e_count
 
           results['educations'] = education_numbers
