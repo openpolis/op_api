@@ -539,7 +539,7 @@ class OpInstitutionChargeManager(models.Manager):
 
               if e_id in education_numbers:
                 education_numbers[e_id]['count'] += e_count
-              else
+              else:
                 if settings.DEBUG:
                   print "Impossibile trovare education_id (oid: %s, id: %s)" % (row[0], row[1])
                 
