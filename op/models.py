@@ -1,5 +1,6 @@
 from django.db import models
 from django.db import connections
+from django.conf import settings
 
 class OpLocationType(models.Model):
     id = models.IntegerField(primary_key=True)
@@ -484,7 +485,12 @@ class OpInstitutionChargeManager(models.Manager):
           for row in cursor.fetchall():
               i_id = row[0]
               i_count = int(row[1])
-              institution_numbers[i_id]['count'] += i_count
+              
+              if i_id in institution_numbers:
+                institution_numbers[i_id]['count'] += i_count
+              else:
+                if settings.DEBUG:
+                  print "Impossibile trovare institution_id: %s" % (i_id,)
 
           results['institutions'] = institution_numbers
 
@@ -508,7 +514,8 @@ class OpInstitutionChargeManager(models.Manager):
               if p_id in profession_numbers:
                 profession_numbers[p_id]['count'] += p_count
               else:
-                print "Impossibile trovare p_id (oid: %s, id: %s)" % (row[1], row[0])
+                if settings.DEBUG:
+                  print "Impossibile trovare profession_id (oid: %s, id: %s)" % (row[1], row[0])
 
           results['professions'] = profession_numbers
 
@@ -529,8 +536,13 @@ class OpInstitutionChargeManager(models.Manager):
               else:
                 e_id = row[0]
               e_count = int(row[2])
-              education_numbers[e_id]['count'] += e_count
 
+              if e_id in education_numbers:
+                education_numbers[e_id]['count'] += e_count
+              else
+                if settings.DEBUG:
+                  print "Impossibile trovare education_id (oid: %s, id: %s)" % (row[0], row[1])
+                
           results['educations'] = education_numbers
         
 
