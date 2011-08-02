@@ -68,7 +68,7 @@ class ProfessionHandler(BaseHandler):
     Emitter.register('xml', OpProfessionXMLEmitter, 'text/xml; charset=utf-8')
     
     if 'type' in request.GET and request.GET['type'] == 'basic':
-      return OpProfession.objects.db_manager('op').getBasic().values('id', 'odescription')
+      return OpProfession.objects.db_manager('op').getBasic().values('id', 'description', 'odescription')
     else:
       return OpProfession.objects.using('op').all()
   

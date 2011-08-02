@@ -114,7 +114,7 @@ class OpOpenContent(models.Model):
 
 class OpProfessionManager(models.Manager):
   def getBasic(self):
-    return self.filter(oid__isnull=True, odescription__isnull=False)
+    return self.filter(oid__isnull=True)
 
 class OpProfession(models.Model):
     id = models.IntegerField(primary_key=True)
@@ -295,7 +295,7 @@ class OpInstitutionChargeManager(models.Manager):
         # building filters
         #
         
-        location_types = ('regional', 'provincial', 'city')
+        location_types = ('all', 'regional', 'provincial', 'city')
         location_id = 0
         if 'location_id' in request.GET:
           location_id = request.GET['location_id']
@@ -310,6 +310,9 @@ class OpInstitutionChargeManager(models.Manager):
             filters['location_context'] = { 'type': location_type, 'id': location_id, 'name': location.name, 'op_location_id': location.id }
           else:
             raise Exception('wrong location type parameter: %s not in (regional, provincial, city)' % location_type)
+        elif location_type == 'all':
+          clauses_sql += " and l.location_type_id in (4, 5, 6) "
+          filters['location_context'] = { 'type': 'all' }
         
         ages = {
           'twenties': 20, 
@@ -345,7 +348,7 @@ class OpInstitutionChargeManager(models.Manager):
           else:
             raise Exception('wrong sex parameter: %s not in (M, F)' % sex)
             
-        institutions = ('giunta_regionale', 'consiglio_regionale', 'giunta_provinciale', 'consiglio_provinciale', 'giunta_comunale', 'consiglio_comunale')
+        institutions = ('giunta_regionale', 'consiglio_regionale', 'giunta_provinciale', 'consiglio_provinciale', 'giunta_comunale', 'consiglio_comunale', 'commissariamento')
         institution = 0
         if 'institution' in request.GET:
           institution = request.GET['institution']
@@ -358,8 +361,11 @@ class OpInstitutionChargeManager(models.Manager):
             raise Exception('wrong institution parameter: %s not in (giunta_regionale, consiglio_regionale, ...)' % institution)
          
         professions = {}
-        for profession in OpProfession.objects.db_manager('op').getBasic().values('id', 'odescription'):
-          professions[profession['id']] = profession['odescription']
+        for profession in OpProfession.objects.db_manager('op').getBasic().values('id', 'description', 'odescription'):
+          if profession['odescription']:
+            professions[profession['id']] = profession['odescription']
+          else:
+            professions[profession['id']] = profession['description']
         profession_id = 0
         if 'profession_id' in request.GET:
           profession_id = int(request.GET['profession_id'])
@@ -466,7 +472,7 @@ class OpInstitutionChargeManager(models.Manager):
           
         institution_numbers = {}
         for inst in OpInstitution.objects.using('op').all().values('id', 'name'):
-          if 'giunta' in inst['name'].lower() or 'consiglio' in inst['name'].lower():
+          if 'giunta' in inst['name'].lower() or 'consiglio' in inst['name'].lower() or 'commissariamento' in inst['name'].lower():
             institution_numbers[inst['id']] = { 'name': inst['name'], 'count': 0 }
         if institution == 0:
           institution_sql = """
@@ -499,7 +505,10 @@ class OpInstitutionChargeManager(models.Manager):
               else:
                 p_id = row[0]
               p_count = int(row[2])
-              profession_numbers[p_id]['count'] += p_count
+              if p_id in profession_numbers:
+                profession_numbers[p_id]['count'] += p_count
+              else:
+                print "Impossibile trovare p_id (oid: %s, id: %s)" % (row[1], row[0])
 
           results['professions'] = profession_numbers
 
