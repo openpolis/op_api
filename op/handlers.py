@@ -1,5 +1,6 @@
 from piston.handler import BaseHandler
 from op_api.op.models import OpLocation, OpProfession, OpInstitutionCharge, OpEducationLevel
+from django.db.models import Q
 from piston.emitters import Emitter
 from op_api.emitters import OpXMLEmitter, OpLocationXMLEmitter, OpProfessionXMLEmitter, OpEducationLevelXMLEmitter
 from django.core.cache import cache
@@ -13,36 +14,51 @@ class LocationHandler(BaseHandler):
     Emitter.register('xml', OpLocationXMLEmitter, 'text/xml; charset=utf-8')
 
     base = OpLocation.objects.using('op')
-    if id:
-      return base.get(pk=id)
-    else:
-      if 'region_cities' in request.path:
-        return base.filter(location_type__name__iexact='comune', regional_id=regional_id)
-      if 'province_cities' in request.path:
-        return base.filter(location_type__name__iexact='comune', provincial_id=provincial_id)
-        
-      if '/cities' in request.path:
-        if city_id:
-          return base.filter(location_type__name__iexact='comune', city_id=city_id)
-        else:
-          return base.filter(location_type__name__iexact='comune')
-
-      if 'region_provinces' in request.path:
-        return base.filter(location_type__name__iexact='provincia', regional_id=regional_id)
-        
-      if '/provinces' in request.path:
-        if provincial_id:
-          return base.filter(location_type__name__iexact='provincia', provincial_id=provincial_id)
-        else:
-          return base.filter(location_type__name__iexact='provincia')
-          
-      if '/regions' in request.path:
-        if  regional_id:
-          return base.filter(location_type__name__iexact='regione', regional_id=regional_id)
-        else:
-          return base.filter(location_type__name__iexact='regione')
+    
+    try:    
+      if id:
+        return base.get(pk=id)
       else:
+        if 'region_cities' in request.path:
+          return base.filter(location_type__name__iexact='comune', regional_id=regional_id)
+        if 'province_cities' in request.path:
+          return base.filter(location_type__name__iexact='comune', provincial_id=provincial_id)
+        
+        if '/cities' in request.path:
+          if city_id:
+            return base.filter(location_type__name__iexact='comune', city_id=city_id)
+          else:
+            return base.filter(location_type__name__iexact='comune')
+
+        if 'region_provinces' in request.path:
+          return base.filter(location_type__name__iexact='provincia', regional_id=regional_id)
+        
+        if '/provinces' in request.path:
+          if provincial_id:
+            return base.filter(location_type__name__iexact='provincia', provincial_id=provincial_id)
+          else:
+            return base.filter(location_type__name__iexact='provincia')
+          
+        if '/regions' in request.path:
+          if  regional_id:
+            return base.filter(location_type__name__iexact='regione', regional_id=regional_id)
+          else:
+            return base.filter(location_type__name__iexact='regione')
+
+        if 'namestartswith' in request.GET:
+          return base.filter((Q(name__istartswith=request.GET['namestartswith']) |
+                              Q(alternative_name__istartswith=request.GET['namestartswith'])) &
+                             Q(location_type__name='comune')).order_by('-inhabitants')
+                          
+        if 'name' in request.GET:
+          return base.get((Q(name=request.GET['name']) | 
+                           Q(alternative_name=request.GET['name'])) &
+                          Q(location_type__name='comune'))
+
+          
         return base.all()
+    except self.model.DoesNotExist:
+      return None
 
 
 
@@ -52,6 +68,9 @@ class EducationLevelHandler(BaseHandler):
   allowed_methods = ('GET')
 
   def read(self, request):
+    '''
+    documentazione per la api education_levels
+    '''
     Emitter.register('xml', OpEducationLevelXMLEmitter, 'text/xml; charset=utf-8')
 
     if 'type' in request.GET and request.GET['type'] == 'basic':
