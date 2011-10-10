@@ -98,8 +98,75 @@ class StatisticsHandler(BaseHandler):
         Emitter.register('xml', OpXMLEmitter, 'text/xml; charset=utf-8')
         request_s = request.GET.urlencode().replace('&', '+')
         statistics = cache.get('op_api_' + request_s)
-        if  statistics==None:
+        if  statistics is None:
           statistics = OpInstitutionCharge.objects.db_manager('op').get_statistics(request)
           cache.set('op_api_'+request_s, statistics, 3600)
 
         return { 'statistics': statistics }
+
+class CityrepsHandler(BaseHandler):
+    """docstring for CityrepsHandler"""
+    methods_allowed = ('GET',)
+    def read(self, request):
+        Emitter.register('xml', OpXMLEmitter, 'text/xml; charset=utf-8')
+        mutable_qs = request.GET.copy()
+        if 'format' in mutable_qs:
+            del mutable_qs['format']
+        request_s = mutable_qs.urlencode().replace('&', '+')
+        reps = cache.get('op_api_' + request_s)
+        # if reps is None:
+        if True:
+            reps = self.get_cityreps(mutable_qs)
+            cache.set('op_api_'+request_s, reps, 3600)
+        return reps
+    
+    def get_cityreps(self, qs):
+        """docstring for get_cityreps"""
+        reps = {}
+        try:
+            location = OpLocation.objects.db_manager('op').retrieveFromId(qs)
+            location_prov = location.getProvince()
+            location_reg = location.getRegion()
+            reps['location'] = "%s (%s)" % (location.name, location.prov)
+        except Exception as detail:
+            return { 'exception': 'location could not be found. %s' % detail }
+        try:
+            reps['europarl'] = location.getNationalReps('eu', location_prov.id)
+        except Exception as detail:
+            return { 'exception': 'could not extract euro parliament reps. %s' % detail }
+        try:
+            reps['camera'] = location.getNationalReps('camera', location_prov.id)
+        except Exception as detail:
+            return { 'exception': 'could not extract camera reps. %s' % detail }
+
+        try:
+            reps['senato'] = location.getNationalReps('senato', location_prov.id)
+        except Exception as detail:
+            return { 'exception': 'could not extract senato reps. %s' % detail }
+
+        reps['regione'] = {}
+        try:
+            reps['regione']['giunta'] = location_reg.getLocalReps('Giunta Regionale')
+            reps['regione']['consiglio'] = location_reg.getLocalReps('Consiglio Regionale')
+        except Exception as detail:
+            return { 'exception': 'could not extract regional reps. %s' % detail }
+
+        reps['provincia'] = {}
+        try:
+            reps['provincia']['giunta'] = location_prov.getLocalReps('Giunta Provinciale')
+            reps['provincia']['consiglio'] = location_prov.getLocalReps('Consiglio Provinciale')
+        except Exception as detail:
+            return { 'exception': 'could not extract provincial reps. %s' % detail }
+
+        reps['comune'] = {}
+        try:
+            reps['comune']['giunta'] = location.getLocalReps('Giunta Comunale')
+            reps['comune']['consiglio'] = location.getLocalReps('Consiglio Comunale')
+        except Exception as detail:
+            return { 'exception': 'could not extract giunta municipal reps. %s' % detail }
+
+
+        return { 'city_representatives': reps }
+    
+
+   

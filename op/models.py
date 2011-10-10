@@ -1,3 +1,5 @@
+import sys
+
 from django.db import models
 from django.db import connections
 from django.conf import settings
@@ -7,24 +9,64 @@ class OpLocationType(models.Model):
     name = models.CharField(max_length=96)
     class Meta:
         db_table = u'op_location_type'
-        managed = False
-        
+        managed = False        
     def __unicode__(self):
       return self.name
 
 
 class OpLocationManager(models.Manager):
+  def retrieveFromId(self, args):
+      """return OpLocation object from an ID (op, istat or minint)"""
+      
+      if args is not None and len(args.keys()) == 1:
+          id_type = args.keys()[0]
+          id_val = args[id_type]
+          if id_type == 'op_id':
+              return self.retrieveFromOpId(id_val)
+          elif id_type == 'istat_id':
+              return self.retrieveFromIstatId(id_val)
+          elif id_type == 'minint_id':
+              return self.retrieveFromMinintId(id_val)
+          else:
+              raise Exception('wrong id type: %s use op_id, istat_id or minint_id' % (id_type,))
+  
+  def retrieveFromOpId(self, op_id):
+      """return an OpLocation object from the openpolis id"""
+      return self.get(pk=op_id, location_type__id=6)
+  
+  def retrieveFromIstatId(self, city_id):
+      """return an OpLocation object, from the istat city_id"""
+      return self.get(city_id=city_id)
+  
+  def retrieveFromMinintId(self, minint_id):
+      """
+      return an OpLocation object, from the minint codes
+      minint codes is packed: 2A3A4A
+      the argument length is validated
+      codes are unpacked from the argument
+      """
+      if len(minint_id) != 9:
+          raise Exception('minint_id code must be exactly 9 characters long')
+      regional_code = int(minint_id[:2])
+      provincial_code = int(minint_id[2:5])
+      city_code = int(minint_id[5:])
+      return self.get(minint_regional_code=regional_code,
+                      minint_provincial_code=provincial_code,
+                      minint_city_code=city_code)  
+  
   def getFromTypeId(self, location_type, location_id):
-    if (location_type == 'regional'):
-      locations = self.filter(location_type__name__iexact='regione', regional_id=location_id)
-    elif (location_type == 'provincial'):
-      locations = self.filter(location_type__name__iexact='provincia', provincial_id=location_id)
-    elif (location_type == 'city'):
-      locations = self.filter(location_type__name__iexact='comune', city_id=location_id)
-    else:
-      raise Exception('wrong location_type parameters %s not in (regional, provincial, city)' % location_type)
+      if (location_type == 'regional'):
+          locations = self.filter(location_type__name__iexact='regione', regional_id=location_id)
+      elif (location_type == 'provincial'):
+          locations = self.filter(location_type__name__iexact='provincia', provincial_id=location_id)
+      elif (location_type == 'city'):
+          locations = self.filter(location_type__name__iexact='comune', city_id=location_id)
+      else:
+          raise Exception('wrong location_type parameters %s not in (regional, provincial, city)' % location_type)
+      
+      return locations[0]
+  
 
-    return locations[0]
 
 class OpLocation(models.Model):
     id = models.IntegerField(primary_key=True)
@@ -44,17 +86,76 @@ class OpLocation(models.Model):
     date_start = models.DateField(null=True, blank=True)
     date_end = models.DateField(null=True, blank=True)
     new_location_id = models.IntegerField(null=True, blank=True)
-
     objects = OpLocationManager()
-
     class Meta:
         db_table = u'op_location'
         managed = False
-
     def __unicode__(self):
       return self.name
-      
+    
+    def getProvince(self):
+        if self.location_type.name != 'Comune':
+            raise Exception("This method can be called only for cities")
+        return OpLocation.objects.db_manager('op').get(
+            location_type__name='Provincia', 
+            provincial_id=self.provincial_id)
 
+    def getRegion(self):
+        if self.location_type.name != 'Comune':
+            raise Exception("This method can be called only for cities")
+        return OpLocation.objects.db_manager('op').get(
+            location_type__name='Regione', 
+            regional_id=self.regional_id)
+        
+    def getConstituency(self, election_type, prov_id=None):
+        """docstring for getConstituency"""
+        if prov_id is None:
+            prov_id = self.getProvince().id      
+        return OpConstituency.objects.db_manager('op').get(
+            election_type__name=election_type,
+            opconstituencylocation__location__id=prov_id)
+
+
+    def getNationalReps(self, election_type, prov_id=None):
+        """docstring for getNationalReps"""
+        constituency = self.getConstituency(election_type, prov_id)
+        charges = OpInstitutionCharge.objects.db_manager('op').filter(
+            date_end=None, 
+            constituency__id=constituency.id,
+            content__deleted_at=None
+            )
+        reps = []
+        for charge in charges:
+            reps.append({
+                'first_name': charge.politician.first_name,
+                'last_name': charge.politician.last_name,
+                'charge': charge.charge_type.name,
+                'charge_id': charge.content_id,
+                'politician_id': charge.politician.content_id,
+                })
+        return { 'constituency': constituency.name,
+                 'representatives': reps }
+    
+
+    def getLocalReps(self, institution_name):
+        """docstring for getLocalReps"""
+        charges = OpInstitutionCharge.objects.db_manager('op').filter(
+            institution__name=institution_name,
+            location__id=self.id,
+            date_end=None,
+            content__deleted_at=None,
+        ).order_by('charge_type__priority','politician__last_name')
+        reps  = []
+        
+        for charge in charges:
+            reps.append({
+                'first_name': charge.politician.first_name,
+                'last_name': charge.politician.last_name,
+                'charge': charge.charge_type.name,
+                'charge_id': charge.content_id,
+                'politician_id': charge.politician.content_id,
+                })
+        return reps
         
 class OpUser(models.Model):
     id = models.IntegerField(primary_key=True)
@@ -91,6 +192,7 @@ class OpUser(models.Model):
         db_table = u'op_user'
         managed = False
 
+
 class OpContent(models.Model):
     id = models.IntegerField(primary_key=True)
     reports = models.IntegerField()
@@ -103,8 +205,9 @@ class OpContent(models.Model):
         db_table = u'op_content'
         managed = False
 
+
 class OpOpenContent(models.Model):
-    content = models.ForeignKey(OpContent)
+    content = models.OneToOneField(OpContent, primary_key=True, db_column='content_id')
     user = models.ForeignKey(OpUser)
     deleted_at = models.DateTimeField(null=True, blank=True)
     verified_at = models.DateTimeField(null=True, blank=True)
@@ -117,6 +220,7 @@ class OpProfessionManager(models.Manager):
   def getBasic(self):
     return self.filter(oid__isnull=True)
 
+
 class OpProfession(models.Model):
     id = models.IntegerField(primary_key=True)
     description = models.CharField(max_length=255)
@@ -127,12 +231,14 @@ class OpProfession(models.Model):
         db_table = u'op_profession'
         managed = False
 
+
 class OpElectionType(models.Model):
     id = models.IntegerField(primary_key=True)
     name = models.CharField(max_length=32)
     class Meta:
         db_table = u'op_election_type'
         managed = False
+
 
 class OpElection(models.Model):
     id = models.IntegerField(primary_key=True)
@@ -143,8 +249,9 @@ class OpElection(models.Model):
         db_table = u'op_election'
         managed = False
 
+
 class OpPolitician(models.Model):
-    content = models.ForeignKey(OpContent)
+    content = models.OneToOneField(OpContent, primary_key=True, db_column='content_id')
     profession = models.ForeignKey(OpProfession, null=True, blank=True)
     user = models.ForeignKey(OpUser, null=True, blank=True, related_name='oppolitician_user_set')
     first_name = models.CharField(max_length=64, blank=True)
@@ -158,8 +265,6 @@ class OpPolitician(models.Model):
     is_indexed = models.IntegerField()
     minint_aka = models.CharField(unique=True, max_length=255, blank=True)
     creator = models.ForeignKey(OpUser, null=True, blank=True, related_name='oppolitician_creator_set')
-    created_at = models.DateTimeField(null=True, blank=True)
-    updated_at = models.DateTimeField(null=True, blank=True)
     class Meta:
         db_table = u'op_politician'
         managed = False
@@ -168,6 +273,7 @@ class OpPolitician(models.Model):
 class OpEducationLevelManager(models.Manager):
   def getBasic(self):
     return self.filter(oid__isnull=True)
+
 
 class OpEducationLevel(models.Model):
     id = models.IntegerField(primary_key=True)
@@ -179,6 +285,7 @@ class OpEducationLevel(models.Model):
         db_table = u'op_education_level'
         managed = False
 
+
 class OpPoliticianHasOpEducationLevel(models.Model):
     politician = models.ForeignKey(OpPolitician)
     education_level = models.ForeignKey(OpEducationLevel)
@@ -186,6 +293,7 @@ class OpPoliticianHasOpEducationLevel(models.Model):
     class Meta:
         db_table = u'op_politician_has_op_education_level'
         managed = False
+
 
 class OpInstitution(models.Model):
     id = models.IntegerField(primary_key=True)
@@ -196,6 +304,7 @@ class OpInstitution(models.Model):
         db_table = u'op_institution'
         managed = False
 
+
 class OpChargeType(models.Model):
     id = models.IntegerField(primary_key=True)
     name = models.CharField(max_length=255, blank=True)
@@ -205,6 +314,7 @@ class OpChargeType(models.Model):
     class Meta:
         db_table = u'op_charge_type'
         managed = False
+
 
 class OpInstitutionHasChargeType(models.Model):
     institution = models.ForeignKey(OpInstitution)
@@ -224,12 +334,14 @@ class OpConstituency(models.Model):
         db_table = u'op_constituency'
         managed = False
 
+
 class OpConstituencyLocation(models.Model):
     constituency = models.ForeignKey(OpConstituency)
     location = models.ForeignKey(OpLocation)
     class Meta:
         db_table = u'op_constituency_location'
         managed = False
+
 
 class OpParty(models.Model):
     id = models.IntegerField(primary_key=True)
@@ -246,12 +358,14 @@ class OpParty(models.Model):
         db_table = u'op_party'
         managed = False
 
+
 class OpPartyLocation(models.Model):
     party = models.ForeignKey(OpParty)
     location = models.ForeignKey(OpLocation)
     class Meta:
         db_table = u'op_party_location'
         managed = False
+
 
 class OpGroup(models.Model):
     id = models.IntegerField(primary_key=True)
@@ -263,6 +377,7 @@ class OpGroup(models.Model):
         db_table = u'op_group'
         managed = False
 
+
 class OpGroupLocation(models.Model):
     group = models.ForeignKey(OpGroup)
     location = models.ForeignKey(OpLocation)
@@ -272,10 +387,11 @@ class OpGroupLocation(models.Model):
 
 
 class OpInstitutionChargeManager(models.Manager):
+    """class to handle queries on OpInstitutionCharge"""    
     def get_statistics(self, request):
         from django.db import connection
         cursor = connections['op'].cursor()
-
+        
         base_sql = """
             from op_institution_charge ic, op_institution i, op_open_content oc, op_politician p, 
               op_location l, op_profession pr, op_politician_has_op_education_level pe, op_education_level e 
@@ -290,8 +406,8 @@ class OpInstitutionChargeManager(models.Manager):
         
         clauses_sql = ""
         clauses_params = []
-
-
+        
+        
         #
         # building filters
         #
@@ -314,7 +430,7 @@ class OpInstitutionChargeManager(models.Manager):
         elif location_type == 'all':
           clauses_sql += " and l.location_type_id in (4, 5, 6) "
           filters['location_context'] = { 'type': 'all' }
-        
+          
         ages = {
           'twenties': 20, 
           'thirties': 30, 
@@ -336,7 +452,7 @@ class OpInstitutionChargeManager(models.Manager):
             filters['age'] = age
           else:
             raise Exception('wrong age parameter: %s not in (twenties, thirties, ..., nineties, venerables)' % age)
-
+            
         sexes = ('M', 'F')
         sex = 0
         if 'sex' in request.GET:
@@ -360,7 +476,7 @@ class OpInstitutionChargeManager(models.Manager):
             filters['institution'] = institution.replace('_', ' ')
           else:
             raise Exception('wrong institution parameter: %s not in (giunta_regionale, consiglio_regionale, ...)' % institution)
-         
+            
         professions = {}
         for profession in OpProfession.objects.db_manager('op').getBasic().values('id', 'description', 'odescription'):
           if profession['odescription']:
@@ -377,7 +493,7 @@ class OpInstitutionChargeManager(models.Manager):
             filters['profession'] = { 'id': profession_id, 'name': professions[profession_id] }
           else:
             raise Exception('wrong institution parameter: %s not in professions_ids' % profession_id)
-
+            
         educations = {}
         for education in OpEducationLevel.objects.db_manager('op').getBasic().values('id', 'description'):
           educations[education['id']] = education['description']
@@ -391,18 +507,15 @@ class OpInstitutionChargeManager(models.Manager):
             filters['education'] = { 'id': education_id, 'name': educations[education_id] }
           else:
             raise Exception('wrong institution parameter: %s not in educations_ids' % education_id)
-
+            
         #
         # building results
         #
-        total_sql = """
-            select count(*) as n
-            %s %s
-            """ % (base_sql, clauses_sql)
+        total_sql = "select count(*) as n %s %s" % (base_sql, clauses_sql)
         cursor.execute(total_sql, clauses_params)
         row = cursor.fetchone()
         results['total'] = row[0]
-
+        
         age_numbers = {
           'twenties':   { 'count': 0 },
           'thirties':   { 'count': 0 },
@@ -415,13 +528,11 @@ class OpInstitutionChargeManager(models.Manager):
           'venerables': { 'count': 0 }
         }
         if age == 0:
-          age_sql = """
-              select YEAR(CURDATE())-YEAR(p.birth_date) as age, count(*) as n
+          age_sql = """select YEAR(CURDATE())-YEAR(p.birth_date) as age, count(*) as n
               %s %s      
-              group by age order by n desc
-              """ % (base_sql, clauses_sql)
+              group by age order by n desc""" % (base_sql, clauses_sql)
           cursor.execute(age_sql, clauses_params)
-
+          
           for row in cursor.fetchall():
               age = row[0]
               if age < 25:
@@ -442,22 +553,20 @@ class OpInstitutionChargeManager(models.Manager):
                 age_numbers['nineties']['count'] += row[1]
               elif age >= 9:
                 age_numbers['venerables']['count'] += row[1]
-
+                
           results['age'] = age_numbers
           
-
+          
         if sex == 0:          
-          sex_sql = """
-              select p.sex, count(*) as n
+          sex_sql = """select p.sex, count(*) as n
               %s %s      
-              group by p.sex order by n desc
-              """ % (base_sql, clauses_sql)
+              group by p.sex order by n desc""" % (base_sql, clauses_sql)
           cursor.execute(sex_sql, clauses_params)          
           sex_numbers = {}
           for row in cursor.fetchall():
               sex = row[0]
               sex_numbers[sex] = int(row[1])
-
+              
           if 'M' in sex_numbers.keys():
             sex_numbers_m = sex_numbers['M']
           else:
@@ -476,11 +585,9 @@ class OpInstitutionChargeManager(models.Manager):
           if 'giunta' in inst['name'].lower() or 'consiglio' in inst['name'].lower() or 'commissariamento' in inst['name'].lower():
             institution_numbers[inst['id']] = { 'name': inst['name'], 'count': 0 }
         if institution == 0:
-          institution_sql = """
-              select i.id, count(*) as n
+          institution_sql = """select i.id, count(*) as n
               %s %s      
-              group by i.id order by n desc
-            """ % (base_sql, clauses_sql)
+              group by i.id order by n desc""" % (base_sql, clauses_sql)
           cursor.execute(institution_sql, clauses_params)          
           for row in cursor.fetchall():
               i_id = row[0]
@@ -491,19 +598,17 @@ class OpInstitutionChargeManager(models.Manager):
               else:
                 if settings.DEBUG:
                   print "Impossibile trovare institution_id: %s" % (i_id,)
-
+                  
           results['institutions'] = institution_numbers
-
-        
+          
+          
         profession_numbers = {}
         for profession in OpProfession.objects.db_manager('op').getBasic().values('id', 'odescription'):
           profession_numbers[profession['id']] = { 'name': profession['odescription'], 'count': 0 }
         if profession_id == 0:
-          profession_sql = """
-              select pr.id, pr.oid, count(*) as n
+          profession_sql = """select pr.id, pr.oid, count(*) as n
               %s %s
-              group by pr.id, pr.oid order by n desc
-            """ % (base_sql, clauses_sql)
+              group by pr.id, pr.oid order by n desc""" % (base_sql, clauses_sql)
           cursor.execute(profession_sql, clauses_params)             
           for row in cursor.fetchall():
               if row[1] != None:
@@ -516,19 +621,17 @@ class OpInstitutionChargeManager(models.Manager):
               else:
                 if settings.DEBUG:
                   print "Impossibile trovare profession_id (oid: %s, id: %s)" % (row[1], row[0])
-
+                  
           results['professions'] = profession_numbers
-
-
+          
+          
         education_numbers = {}
         for education in OpEducationLevel.objects.db_manager('op').getBasic().values('id', 'description'):
           education_numbers[education['id']] = { 'name': education['description'], 'count': 0 }
         if education_id == 0:
-          education_sql = """
-              select e.id, e.oid, count(*) as n
+          education_sql = """select e.id, e.oid, count(*) as n
               %s %s
-              group by e.id, e.oid order by n desc
-            """ % (base_sql, clauses_sql)
+              group by e.id, e.oid order by n desc""" % (base_sql, clauses_sql)
           cursor.execute(education_sql, clauses_params)             
           for row in cursor.fetchall():
               if row[1] != None:
@@ -536,21 +639,22 @@ class OpInstitutionChargeManager(models.Manager):
               else:
                 e_id = row[0]
               e_count = int(row[2])
-
+              
               if e_id in education_numbers:
                 education_numbers[e_id]['count'] += e_count
               else:
                 if settings.DEBUG:
                   print "Impossibile trovare education_id (oid: %s, id: %s)" % (row[0], row[1])
-                
+                  
           results['educations'] = education_numbers
-        
-
+          
+          
         return { 'filters': filters, 'results': results }
-        
+    
+
 
 class OpInstitutionCharge(models.Model):
-    content = models.ForeignKey(OpOpenContent)
+    content = models.OneToOneField(OpOpenContent, primary_key=True, db_column='content_id')
     politician = models.ForeignKey(OpPolitician)
     institution = models.ForeignKey(OpInstitution)
     charge_type = models.ForeignKey(OpChargeType)
@@ -562,9 +666,11 @@ class OpInstitutionCharge(models.Model):
     date_end = models.DateField(null=True, blank=True)
     description = models.CharField(max_length=255, blank=True)
     minint_verified_at = models.DateTimeField(null=True, blank=True)
-    
     objects = OpInstitutionChargeManager()
-    
     class Meta:
         db_table = u'op_institution_charge'
         managed = False
+
+
+
+
