@@ -128,41 +128,41 @@ class CityrepsHandler(BaseHandler):
             location_prov = location.getProvince()
             location_reg = location.getRegion()
             reps['location'] = "%s (%s)" % (location.name, location.prov)
-        except Exception as detail:
+        except Exception, detail:
             return { 'exception': 'location could not be found. %s' % detail }
         try:
             reps['europarl'] = location.getNationalReps('eu', location_prov.id)
-        except Exception as detail:
+        except Exception, detail:
             return { 'exception': 'could not extract euro parliament reps. %s' % detail }
         try:
             reps['camera'] = location.getNationalReps('camera', location_prov.id)
-        except Exception as detail:
+        except Exception, detail:
             return { 'exception': 'could not extract camera reps. %s' % detail }
 
         try:
             reps['senato'] = location.getNationalReps('senato', location_prov.id)
-        except Exception as detail:
+        except Exception, detail:
             return { 'exception': 'could not extract senato reps. %s' % detail }
 
         reps['regione'] = {}
         try:
             reps['regione']['giunta'] = location_reg.getLocalReps('Giunta Regionale')
             reps['regione']['consiglio'] = location_reg.getLocalReps('Consiglio Regionale')
-        except Exception as detail:
+        except Exception, detail:
             return { 'exception': 'could not extract regional reps. %s' % detail }
 
         reps['provincia'] = {}
         try:
             reps['provincia']['giunta'] = location_prov.getLocalReps('Giunta Provinciale')
             reps['provincia']['consiglio'] = location_prov.getLocalReps('Consiglio Provinciale')
-        except Exception as detail:
+        except Exception, detail:
             return { 'exception': 'could not extract provincial reps. %s' % detail }
 
         reps['comune'] = {}
         try:
             reps['comune']['giunta'] = location.getLocalReps('Giunta Comunale')
             reps['comune']['consiglio'] = location.getLocalReps('Consiglio Comunale')
-        except Exception as detail:
+        except Exception, detail:
             return { 'exception': 'could not extract giunta municipal reps. %s' % detail }
 
 
