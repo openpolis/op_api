@@ -1,5 +1,5 @@
 from piston.handler import BaseHandler
-from op_api.op.models import OpLocation, OpProfession, OpInstitutionCharge, OpEducationLevel
+from op_api.op.models import *
 from django.db.models import Q
 from piston.emitters import Emitter
 from op_api.emitters import OpXMLEmitter, OpLocationXMLEmitter, OpProfessionXMLEmitter, OpEducationLevelXMLEmitter
@@ -9,10 +9,9 @@ class LocationHandler(BaseHandler):
   model = OpLocation
   fields = ('id', 'name', 'macroregional_id', 'regional_id', 'provincial_id', 'city_id', 'inhabitants', ('location_type', ('name',)))
   allowed_methods = ('GET')
-
   def read(self, request, id=None, regional_id=None, provincial_id=None, city_id=None):
     Emitter.register('xml', OpLocationXMLEmitter, 'text/xml; charset=utf-8')
-
+    
     base = OpLocation.objects.using('op')
     
     try:    
@@ -29,7 +28,7 @@ class LocationHandler(BaseHandler):
             return base.filter(location_type__name__iexact='comune', city_id=city_id)
           else:
             return base.filter(location_type__name__iexact='comune')
-
+            
         if 'region_provinces' in request.path:
           return base.filter(location_type__name__iexact='provincia', regional_id=regional_id)
         
@@ -44,7 +43,7 @@ class LocationHandler(BaseHandler):
             return base.filter(location_type__name__iexact='regione', regional_id=regional_id)
           else:
             return base.filter(location_type__name__iexact='regione')
-
+            
         if 'namestartswith' in request.GET:
           return base.filter((Q(name__istartswith=request.GET['namestartswith']) |
                               Q(alternative_name__istartswith=request.GET['namestartswith'])) &
@@ -54,35 +53,37 @@ class LocationHandler(BaseHandler):
           return base.get((Q(name=request.GET['name']) | 
                            Q(alternative_name=request.GET['name'])) &
                           Q(location_type__name='comune'))
-
-          
+                          
+                          
         return base.all()
     except self.model.DoesNotExist:
       return None
-
+  
 
 
 class EducationLevelHandler(BaseHandler):
   model = OpEducationLevel
   fields = ('id', 'description', 'oid', 'odescription')
   allowed_methods = ('GET')
-
+  
   def read(self, request):
     '''
     documentazione per la api education_levels
     '''
     Emitter.register('xml', OpEducationLevelXMLEmitter, 'text/xml; charset=utf-8')
-
+    
     if 'type' in request.GET and request.GET['type'] == 'basic':
       return OpEducationLevel.objects.db_manager('op').getBasic().values('id', 'description')
     else:
       return OpProfession.objects.using('op').all()
+  
+
 
 class ProfessionHandler(BaseHandler):
   model = OpProfession
   fields = ('id', 'description', 'oid', 'odescription')
   allowed_methods = ('GET')
-
+  
   def read(self, request):
     Emitter.register('xml', OpProfessionXMLEmitter, 'text/xml; charset=utf-8')
     
@@ -91,9 +92,11 @@ class ProfessionHandler(BaseHandler):
     else:
       return OpProfession.objects.using('op').all()
   
+
+
 class StatisticsHandler(BaseHandler):
     methods_allowed = ('GET',)
-
+    
     def read(self, request):
         Emitter.register('xml', OpXMLEmitter, 'text/xml; charset=utf-8')
         request_s = request.GET.urlencode().replace('&', '+')
@@ -101,30 +104,31 @@ class StatisticsHandler(BaseHandler):
         if  statistics is None:
           statistics = OpInstitutionCharge.objects.db_manager('op').get_statistics(request)
           cache.set('op_api_'+request_s, statistics, 3600)
-
+          
         return { 'statistics': statistics }
+    
+
 
 class CityrepsHandler(BaseHandler):
     """docstring for CityrepsHandler"""
     methods_allowed = ('GET',)
-    def read(self, request):
+    
+    def read(self, request, id_type, city_id):
         Emitter.register('xml', OpXMLEmitter, 'text/xml; charset=utf-8')
-        mutable_qs = request.GET.copy()
-        if 'format' in mutable_qs:
-            del mutable_qs['format']
-        request_s = mutable_qs.urlencode().replace('&', '+')
+        request_s = request.GET.urlencode().replace('&', '+')
         reps = cache.get('op_api_' + request_s)
         # if reps is None:
         if True:
-            reps = self.get_cityreps(mutable_qs)
+            reps = self.get_cityreps(id_type, city_id)
             cache.set('op_api_'+request_s, reps, 3600)
         return reps
     
-    def get_cityreps(self, qs):
+    
+    def get_cityreps(self, id_type, city_id):
         """docstring for get_cityreps"""
         reps = {}
         try:
-            location = OpLocation.objects.db_manager('op').retrieveFromId(qs)
+            location = OpLocation.objects.db_manager('op').retrieveFromId(id_type, city_id)
             location_prov = location.getProvince()
             location_reg = location.getRegion()
             reps['location'] = "%s (%s)" % (location.name, location.prov)
@@ -138,35 +142,66 @@ class CityrepsHandler(BaseHandler):
             reps['camera'] = location.getNationalReps('camera', location_prov.id)
         except Exception, detail:
             return { 'exception': 'could not extract camera reps. %s' % detail }
-
+            
         try:
             reps['senato'] = location.getNationalReps('senato', location_prov.id)
         except Exception, detail:
             return { 'exception': 'could not extract senato reps. %s' % detail }
-
+            
         reps['regione'] = {}
         try:
             reps['regione']['giunta'] = location_reg.getLocalReps('Giunta Regionale')
             reps['regione']['consiglio'] = location_reg.getLocalReps('Consiglio Regionale')
         except Exception, detail:
             return { 'exception': 'could not extract regional reps. %s' % detail }
-
+            
         reps['provincia'] = {}
         try:
             reps['provincia']['giunta'] = location_prov.getLocalReps('Giunta Provinciale')
             reps['provincia']['consiglio'] = location_prov.getLocalReps('Consiglio Provinciale')
         except Exception, detail:
             return { 'exception': 'could not extract provincial reps. %s' % detail }
-
+            
         reps['comune'] = {}
         try:
             reps['comune']['giunta'] = location.getLocalReps('Giunta Comunale')
             reps['comune']['consiglio'] = location.getLocalReps('Consiglio Comunale')
         except Exception, detail:
             return { 'exception': 'could not extract giunta municipal reps. %s' % detail }
-
-
+            
         return { 'city_representatives': reps }
     
+    
 
-   
+
+class PoliticianHandler(BaseHandler):
+    """docstring for PoliticianHandler"""
+    model = OpPolitician
+    exclude = ('picture',)
+    allowed_methods = ('GET')
+    
+    def read(self, request, pol_id):
+        base = OpPolitician.objects.using('op')
+        Emitter.register('xml', OpXMLEmitter, 'text/xml; charset=utf-8')
+        try:    
+          if pol_id:
+            pol = base.get(pk=pol_id)
+            pol_detail = {
+                'content_id': pol_id,
+                'first_name': pol.first_name,
+                'last_name': pol.last_name,
+                'birth_date': pol.birth_date,
+                'birth_location': pol.birth_location,
+                'profession': pol.profession.getNormalizedDescription(),
+                'resources': pol.getResources(),
+                'education_levels': pol.getEducationLevels(),
+                'current_charges': pol.getInstitutionCharges('current'),
+                'past_charges': pol.getInstitutionCharges('past'),                
+            }
+            
+            return pol_detail
+        except self.model.DoesNotExist:
+          return None
+    
+
+        

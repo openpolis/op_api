@@ -15,20 +15,17 @@ class OpLocationType(models.Model):
 
 
 class OpLocationManager(models.Manager):
-  def retrieveFromId(self, args):
+  def retrieveFromId(self, id_type, city_id):
       """return OpLocation object from an ID (op, istat or minint)"""
       
-      if args is not None and len(args.keys()) == 1:
-          id_type = args.keys()[0]
-          id_val = args[id_type]
-          if id_type == 'op_id':
-              return self.retrieveFromOpId(id_val)
-          elif id_type == 'istat_id':
-              return self.retrieveFromIstatId(id_val)
-          elif id_type == 'minint_id':
-              return self.retrieveFromMinintId(id_val)
-          else:
-              raise Exception('wrong id type: %s use op_id, istat_id or minint_id' % (id_type,))
+      if id_type == 'op_id':
+          return self.retrieveFromOpId(city_id)
+      elif id_type == 'istat_id':
+          return self.retrieveFromIstatId(city_id)
+      elif id_type == 'minint_id':
+          return self.retrieveFromMinintId(city_id)
+      else:
+          raise Exception('wrong id type: %s use op_id, istat_id or minint_id' % (id_type,))
   
   def retrieveFromOpId(self, op_id):
       """return an OpLocation object from the openpolis id"""
@@ -87,9 +84,11 @@ class OpLocation(models.Model):
     date_end = models.DateField(null=True, blank=True)
     new_location_id = models.IntegerField(null=True, blank=True)
     objects = OpLocationManager()
+    
     class Meta:
         db_table = u'op_location'
         managed = False
+    
     def __unicode__(self):
       return self.name
     
@@ -98,24 +97,26 @@ class OpLocation(models.Model):
             raise Exception("This method can be called only for cities")
         return OpLocation.objects.db_manager('op').get(
             location_type__name='Provincia', 
-            provincial_id=self.provincial_id)
-
+            provincial_id=self.provincial_id
+        )
+    
     def getRegion(self):
         if self.location_type.name != 'Comune':
             raise Exception("This method can be called only for cities")
         return OpLocation.objects.db_manager('op').get(
             location_type__name='Regione', 
-            regional_id=self.regional_id)
-        
+            regional_id=self.regional_id
+        )
+    
     def getConstituency(self, election_type, prov_id=None):
         """docstring for getConstituency"""
         if prov_id is None:
             prov_id = self.getProvince().id      
         return OpConstituency.objects.db_manager('op').get(
             election_type__name=election_type,
-            opconstituencylocation__location__id=prov_id)
-
-
+            opconstituencylocation__location__id=prov_id
+        )
+        
     def getNationalReps(self, election_type, prov_id=None):
         """docstring for getNationalReps"""
         constituency = self.getConstituency(election_type, prov_id)
@@ -123,7 +124,7 @@ class OpLocation(models.Model):
             date_end=None, 
             constituency__id=constituency.id,
             content__deleted_at=None
-            )
+        )
         reps = []
         for charge in charges:
             reps.append({
@@ -132,11 +133,12 @@ class OpLocation(models.Model):
                 'charge': charge.charge_type.name,
                 'charge_id': charge.content_id,
                 'politician_id': charge.politician.content_id,
-                })
-        return { 'constituency': constituency.name,
-                 'representatives': reps }
+            })
+        return { 
+            'constituency': constituency.name,
+            'representatives': reps 
+        }
     
-
     def getLocalReps(self, institution_name):
         """docstring for getLocalReps"""
         charges = OpInstitutionCharge.objects.db_manager('op').filter(
@@ -154,9 +156,11 @@ class OpLocation(models.Model):
                 'charge': charge.charge_type.name,
                 'charge_id': charge.content_id,
                 'politician_id': charge.politician.content_id,
-                })
+            })
         return reps
-        
+    
+
+
 class OpUser(models.Model):
     id = models.IntegerField(primary_key=True)
     location = models.ForeignKey(OpLocation, null=True, blank=True)
@@ -227,9 +231,18 @@ class OpProfession(models.Model):
     oid = models.IntegerField(null=True, blank=True)
     odescription = models.CharField(max_length=255, blank=True)
     objects = OpProfessionManager()
+    
     class Meta:
         db_table = u'op_profession'
         managed = False
+    
+    def getNormalizedDescription(self):
+        if self.oid is not None:
+            norm = self.objects.db_manager('op').get(pk=self.oid)
+            return norm.description
+        else:
+            return self.description
+    
 
 
 class OpElectionType(models.Model):
@@ -265,9 +278,66 @@ class OpPolitician(models.Model):
     is_indexed = models.IntegerField()
     minint_aka = models.CharField(unique=True, max_length=255, blank=True)
     creator = models.ForeignKey(OpUser, null=True, blank=True, related_name='oppolitician_creator_set')
+    
     class Meta:
         db_table = u'op_politician'
         managed = False
+    
+    
+    def getResources(self):
+        """docstring for get_resources"""
+        resources = []
+        for res in self.opresources_set.db_manager('op').all():
+            resources.append({
+                'type': res.resources_type.resource_type,
+                'value': res.valore,
+                'descr': res.descrizione
+            })
+        return resources
+    
+    
+    def getEducationLevels(self):
+        """docstring for getEducationLevels"""
+        education_levels = []
+        for pol_edlev in self.oppoliticianhasopeducationlevel_set.db_manager('op').all():
+            education_levels.append({
+                'name': pol_edlev.education_level.getNormalizedDescription(),
+                'descr': pol_edlev.description
+            })
+        return education_levels
+    
+    
+    def getInstitutionCharges(self, type=None):
+        """docstring for getInstitutionCharges"""
+        if type == 'current':
+            pol_charges = self.opinstitutioncharge_set.db_manager('op').filter(
+                date_end__isnull=True,
+                content__deleted_at__isnull=True,
+            )
+        elif type == 'past':
+            pol_charges = self.opinstitutioncharge_set.db_manager('op').filter(
+                date_end__isnull=False,
+                content__deleted_at__isnull=True,
+            )
+        else:
+            pol_charges = self.opinstitutioncharge_set.db_manager('op').filter(
+                content__deleted_at__isnull=True,
+            )
+        charges = []
+        for charge in pol_charges:
+            charges.append({
+                'date_start': charge.date_start,
+                'date_end': charge.date_end,
+                'description': charge.description,
+                'institution': charge.institution.name,
+                'charge_type': charge.charge_type.name,
+                'location': charge.location.name,
+                'location_id': charge.location.id,
+                'group': charge.group.name,
+                'party': charge.party.name
+            })
+        return charges
+    
 
 
 class OpEducationLevelManager(models.Manager):
@@ -281,18 +351,29 @@ class OpEducationLevel(models.Model):
     oid = models.IntegerField(null=True, blank=True)
     odescription = models.CharField(max_length=255, blank=True)
     objects = OpEducationLevelManager()
+    
     class Meta:
         db_table = u'op_education_level'
         managed = False
+        
+    def getNormalizedDescription(self):
+        if self.oid is not None:
+            norm = self.objects.db_manager('op').get(pk=self.oid)
+            return norm.description
+        else:
+            return self.description
+    
 
 
 class OpPoliticianHasOpEducationLevel(models.Model):
-    politician = models.ForeignKey(OpPolitician)
-    education_level = models.ForeignKey(OpEducationLevel)
+    politician = models.ForeignKey(OpPolitician, primary_key=True)
+    education_level = models.ForeignKey(OpEducationLevel, primary_key=True)
     description = models.CharField(max_length=255, blank=True)
+    
     class Meta:
         db_table = u'op_politician_has_op_education_level'
         managed = False
+    
 
 
 class OpInstitution(models.Model):
@@ -300,9 +381,11 @@ class OpInstitution(models.Model):
     name = models.CharField(max_length=255, blank=True)
     short_name = models.CharField(max_length=45, blank=True)
     priority = models.IntegerField(null=True, blank=True)
+    
     class Meta:
         db_table = u'op_institution'
         managed = False
+    
 
 
 class OpChargeType(models.Model):
@@ -387,7 +470,8 @@ class OpGroupLocation(models.Model):
 
 
 class OpInstitutionChargeManager(models.Manager):
-    """class to handle queries on OpInstitutionCharge"""    
+    """class to handle queries on OpInstitutionCharge"""
+    
     def get_statistics(self, request):
         from django.db import connection
         cursor = connections['op'].cursor()
@@ -667,9 +751,33 @@ class OpInstitutionCharge(models.Model):
     description = models.CharField(max_length=255, blank=True)
     minint_verified_at = models.DateTimeField(null=True, blank=True)
     objects = OpInstitutionChargeManager()
+    
     class Meta:
         db_table = u'op_institution_charge'
         managed = False
+    
+
+
+class OpResourcesType(models.Model):
+    id = models.IntegerField(primary_key=True)
+    resource_type = models.CharField(max_length=80, blank=True)
+    
+    class Meta:
+        db_table = u'op_resources_type'
+        managed = False
+    
+
+
+class OpResources(models.Model):
+    content = models.OneToOneField(OpOpenContent, primary_key=True, db_column='content_id')
+    politician = models.ForeignKey(OpPolitician)
+    resources_type = models.ForeignKey(OpResourcesType)
+    valore = models.CharField(max_length=255, blank=True)
+    descrizione = models.TextField(blank=True)
+    class Meta:
+        db_table = u'op_resources'
+        managed = False
+    
 
 
 
