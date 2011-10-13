@@ -263,10 +263,10 @@ class HistoricHandler(BaseHandler):
             return { 'exception': 'location %s, id_type %s could not be found. %s' % (city_id, id_type, detail) }
         
         ic_mayors = OpInstitutionCharge.objects.db_manager('op').filter(
-            location__id=location.id,
-            charge_type__name='Sindaco',
-            date_end__gte='%s-01-01'%year,
-            date_start__lte='%s-12-31'%year
+            Q(location__id=location.id),
+            Q(charge_type__name='Sindaco'),
+            Q(date_end__gte='%s-01-01'%year) | Q(date_end__isnull=True),
+            Q(date_start__lte='%s-12-31'%year)
         )
         
         data['sindaci'] = []
@@ -309,10 +309,10 @@ class HistoricHandler(BaseHandler):
             return { 'exception': 'location %s, id_type %s could not be found. %s' % (location_id, id_type, detail) }
         
         g_members = OpInstitutionCharge.objects.db_manager('op').filter(
-            location__id=location.id,
-            institution__name__istartswith='giunta',
-            date_end__gte='%s-01-01'%year,
-            date_start__lte='%s-12-31'%year
+            Q(location__id=location.id),
+            Q(institution__name__istartswith='giunta'),
+            Q(date_end__gte='%s-01-01'%year) | Q(date_end__isnull=True),
+            Q(date_start__lte='%s-12-31'%year)
         ).order_by('charge_type__priority', '-date_end')
         
         data['giunta'] = []
@@ -332,10 +332,10 @@ class HistoricHandler(BaseHandler):
             data['giunta'].append(member)
         
         c_members = OpInstitutionCharge.objects.db_manager('op').filter(
-            location__id=location.id,
-            institution__name__istartswith='consiglio',
-            date_end__gte='%s-01-01'%year,
-            date_start__lte='%s-12-31'%year
+            Q(location__id=location.id),
+            Q(institution__name__istartswith='consiglio'),
+            Q(date_end__gte='%s-01-01'%year) | Q(date_end__isnull=True),
+            Q(date_start__lte='%s-12-31'%year)
         ).order_by('charge_type__priority', '-date_end')
         
         data['consiglio'] = []
