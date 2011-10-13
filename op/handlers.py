@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 from piston.handler import BaseHandler
 from op_api.op.models import *
 from django.db.models import Q
@@ -7,28 +9,43 @@ from django.core.cache import cache
 
 class LocationHandler(BaseHandler):
   model = OpLocation
-  fields = ('id', 'name', 'macroregional_id', 'regional_id', 'provincial_id', 'city_id', 'inhabitants', ('location_type', ('name',)))
+  fields = ('id', 'name', 'macroregional_id', 'regional_id', 'provincial_id', 'city_id', 
+            'gps_lat', 'gps_lon', 'inhabitants', ('location_type', ('name',)))
   allowed_methods = ('GET')
   def read(self, request, id=None, regional_id=None, provincial_id=None, city_id=None):
     Emitter.register('xml', OpLocationXMLEmitter, 'text/xml; charset=utf-8')
     
     base = OpLocation.objects.using('op')
+    request_s = request.GET.urlencode().replace('&', '+')
     
     try:    
       if id:
         return base.get(pk=id)
       else:
         if 'region_cities' in request.path:
-          return base.filter(location_type__name__iexact='comune', regional_id=regional_id)
+            reps = cache.get('op_api_' + request_s)
+            if reps is None:
+                reps = base.filter(location_type__name__iexact='comune', regional_id=regional_id)
+                cache.set('op_api_'+request_s, reps, 3600)
+            return reps
+        
         if 'province_cities' in request.path:
-          return base.filter(location_type__name__iexact='comune', provincial_id=provincial_id)
+            reps = cache.get('op_api_' + request_s)
+            if reps is None:
+                reps = base.filter(location_type__name__iexact='comune', provincial_id=provincial_id)
+                cache.set('op_api_'+request_s, reps, 3600)
+            return reps
         
         if '/cities' in request.path:
           if city_id:
             return base.filter(location_type__name__iexact='comune', city_id=city_id)
           else:
-            return base.filter(location_type__name__iexact='comune')
-            
+              reps = cache.get('op_api_' + request_s)
+              if reps is None:
+                  reps = base.filter(location_type__name__iexact='comune')
+                  cache.set('op_api_'+request_s, reps, 3600)
+              return reps
+        
         if 'region_provinces' in request.path:
           return base.filter(location_type__name__iexact='provincia', regional_id=regional_id)
         
@@ -195,8 +212,18 @@ class PoliticianHandler(BaseHandler):
                 'profession': pol.profession.getNormalizedDescription(),
                 'resources': pol.getResources(),
                 'education_levels': pol.getEducationLevels(),
-                'current_charges': pol.getInstitutionCharges('current'),
-                'past_charges': pol.getInstitutionCharges('past'),                
+                'institution_charges': {
+                    'current': pol.getInstitutionCharges('current'),
+                    'past': pol.getInstitutionCharges('past'),
+                },
+                'political_charges': {
+                    'current': pol.getPoliticalCharges('current'),
+                    'past': pol.getPoliticalCharges('past'),                
+                },
+                'organization_charges': {
+                    'current': pol.getOrganizationCharges('current'),
+                    'past': pol.getOrganizationCharges('past'),                
+                }
             }
             
             return pol_detail

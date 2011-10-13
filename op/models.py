@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 import sys
 
 from django.db import models
@@ -83,6 +85,9 @@ class OpLocation(models.Model):
     date_start = models.DateField(null=True, blank=True)
     date_end = models.DateField(null=True, blank=True)
     new_location_id = models.IntegerField(null=True, blank=True)
+    gps_lat = models.FloatField(null=True, blank=True)
+    gps_lon = models.FloatField(null=True, blank=True)
+    
     objects = OpLocationManager()
     
     class Meta:
@@ -334,8 +339,68 @@ class OpPolitician(models.Model):
                 'location': charge.location.name,
                 'location_id': charge.location.id,
                 'group': charge.group.name,
-                'party': charge.party.name
+                'party': charge.party.name,
+                'textual_rep': charge.getTextualRepresentation(),
             })
+        return charges
+    
+    
+    def getPoliticalCharges(self, type=None):
+        """get current or past political charges"""
+        if type == 'current':
+            pol_charges = self.oppoliticalcharge_set.db_manager('op').filter(
+                date_end__isnull=True,
+                content__deleted_at__isnull=True,
+            )
+        elif type == 'past':
+            pol_charges = self.oppoliticalcharge_set.db_manager('op').filter(
+                date_end__isnull=False,
+                content__deleted_at__isnull=True,
+            )
+        else:
+            pol_charges = self.oppoliticalcharge_set.db_manager('op').filter(
+                content__deleted_at__isnull=True,
+            )
+        charges = []
+        for charge in pol_charges:
+            charges.append({
+                'date_start': charge.date_start,
+                'date_end': charge.date_end,
+                'description': charge.description,
+                'charge_type': charge.charge_type.name,
+                'location': charge.location.name,
+                'location_id': charge.location.id,
+                'party': charge.party.name,
+                'textual_rep': charge.getTextualRepresentation(),
+            })
+        return charges
+    
+    
+    def getOrganizationCharges(self, type=None):
+        """get current or past political charges"""
+        if type == 'current':
+            pol_charges = self.oporganizationcharge_set.db_manager('op').filter(
+                date_end__isnull=True,
+                content__deleted_at__isnull=True,
+            )
+        elif type == 'past':
+            pol_charges = self.oporganizationcharge_set.db_manager('op').filter(
+                date_end__isnull=False,
+                content__deleted_at__isnull=True,
+            )
+        else:
+            pol_charges = self.oporganizationcharge_set.db_manager('op').filter(
+                content__deleted_at__isnull=True,
+            )
+        charges = []
+        for charge in pol_charges:
+            charges.append({
+                'date_start': charge.date_start,
+                'date_end': charge.date_end,
+                'organization': charge.organization.name,
+                'textual_rep': charge.getTextualRepresentation(),
+            })
+            
         return charges
     
 
@@ -437,9 +502,45 @@ class OpParty(models.Model):
     oid = models.IntegerField(null=True, blank=True)
     oname = models.CharField(max_length=80, blank=True)
     logo = models.TextField(blank=True)
+    
     class Meta:
         db_table = u'op_party'
         managed = False
+    
+    def getNormalized(self):
+        """look up for normalized partied in the db"""
+        if self.oid is not None and self.oid != 0:
+            return self.objects.db_manager('op').get(pk=self.oid)
+        else:
+            return self
+    
+    
+    def getName(self):
+        """get original, hand-modified name, if present"""
+        if self.oname:
+            return self.oname
+        else:
+            return self.name
+    
+    
+    def hasAcronym(self):
+        """check for acronym existance"""
+        return self.acronym is not None and self.acronym.strip() != ''
+    
+    
+    def getAcronymOrName(self):
+        """return acronym if it exists, else, the name"""
+        if self.hasAcronym():
+            return self.acronym
+        else:
+            return self.getName()
+    
+    
+    def getNormalizedAcronymOrName(self):
+        """lookup the normalized party, then return the acronym or the name"""
+        norm = self.getNormalized()
+        return norm.getAcronymOrName()
+    
 
 
 class OpPartyLocation(models.Model):
@@ -456,9 +557,46 @@ class OpGroup(models.Model):
     acronym = models.CharField(max_length=80, blank=True)
     oid = models.IntegerField(null=True, blank=True)
     oname = models.CharField(max_length=80, blank=True)
+    
     class Meta:
         db_table = u'op_group'
         managed = False
+    
+    def getNormalized(self):
+        """look up for normalized group in the db"""
+        if self.oid is not None and self.oid != 0:
+            return self.objects.db_manager('op').get(pk=self.oid)
+        else:
+            return self
+    
+    
+    def getName(self):
+        """get original, hand-modified name, if present"""
+        if self.oname:
+            return self.oname
+        else:
+            return self.name
+    
+    
+    def hasAcronym(self):
+        """check for acronym existance"""
+        return self.acronym is not None and self.acronym.strip() != ''
+    
+    
+    def getAcronymOrName(self):
+        """return acronym if it exists, else, the name"""
+        if self.hasAcronym():
+            return self.acronym
+        else:
+            return self.getName()
+    
+    
+    def getNormalizedAcronymOrName(self):
+        """lookup the normalized party, then return the acronym or the name"""
+        norm = self.getNormalized()
+        return norm.getAcronymOrName()
+    
+    
 
 
 class OpGroupLocation(models.Model):
@@ -754,6 +892,225 @@ class OpInstitutionCharge(models.Model):
     
     class Meta:
         db_table = u'op_institution_charge'
+        managed = False
+    
+    def getTextualRepresentation(self, extended=False):
+        """build a textual representation for the charge
+        extended may take the value true, if extended infos are required"""
+        s = ""
+        # start and end date
+        if self.date_start.month == 1 and self.date_start.day == 1:
+            s += "dal %s " % self.date_start.year
+        else:
+            s += "dal %02d/%02d/%04d " % (self.date_start.day, self.date_start.month, self.date_start.year)
+        
+        if self.date_end is not None:
+            if self.date_end.month == 1 and self.date_end.day == 1:
+                s += "al %s " % self.date_end.year
+            else:
+                s += "al %02d/%02d/%04d " % (self.date_end.day, self.date_end.month, self.date_end.year)
+            
+        # charge type and institution
+        institution_name = self.institution.name
+        charge_type = self.charge_type.short_name
+        
+        if institution_name == 'Governo Nazionale':
+            s += "%s %s" % (charge_type, self.description)
+        
+        elif (institution_name == 'Commissione Europea' or
+              institution_name == 'Parlamento Europeo'):
+            s += "%s %s" % (charge_type, institution_name)
+        
+        elif (institution_name == 'Senato della Eepubblica' or
+              institution_name == 'Camera dei Deputati'):
+            if (charge_type != 'Senatore' and
+                charge_type != 'Deputato' and
+                charge_type != 'Senatore a vita'):
+                s += "%s %s %s" % (charge_type, institution_name, self.description)
+            else:
+                s += "%s" % (charge_type,)
+        
+        elif (institution_name == 'Giunta Regionale' or 
+              institution_name == 'Giunta Provinciale' or
+              institution_name == 'Giunta Comunale'):
+            s += "%s" % (charge_type,)
+            if charge_type == 'Presidente':
+                s += " Giunta"
+            if extended and \
+               (charge_type == 'Assessore' or charge_type == 'Sottosegretario'):
+                s += " %s" % (self.description,)
+            s += " %s %s " % (institution_name, self.location.name)
+        
+        elif (institution_name == 'Consiglio Regionale' or
+              institution_name == 'Consiglio Provinciale' or
+              institution_name == 'Consiglio Comunale'):
+            s += "%s" % (charge_type,)
+            if charge_type == 'Presidente' or charge_type == 'Vicepresidente':
+                s += " Consiglio"
+            if extended and charge_type == 'Assessore':
+                s += " %s" % (self.description,)
+            s += " %s %s " % (institution_name, self.location.name)
+            
+        else:
+            s += "%s" % (charge_type)
+        
+        
+        # party, for executive charges
+        executive_institutions = ('Commissione Europea', 'Governo Nazionale', 
+                                  'Giunta Regionale', 'Giunta Provinciale', 'Giunta Comunale')
+        if institution_name in executive_institutions:
+            if self.party.name.lower() != 'non specificato':
+                s += "(Partito: %s)" % (self.party.getNormalizedAcronymOrName())
+        
+        # group or election party, for elective charges
+        elective_institutions = ('Parlamento Europea', 'Camera dei Deputati', 'Senato della Repubblica', 
+                                  'Consiglio Regionale', 'Consiglio Provinciale', 'Consiglio Comunale')
+        if (institution_name in elective_institutions and
+           self.charge_type.name.lower() != 'senatore a vita'):
+            if self.group.name.lower() != 'non specificato':
+                s += "(Gruppo: %s) " % (self.group.getNormalizedAcronymOrName())
+            elif self.party.name.lower() != 'non specificato':
+                s += "(Lista elettorale: %s) " % (self.party.getNormalizedAcronymOrName())
+            
+        
+        if extended:
+            if (self.constituency is not None and
+                self.charge_type.name.lower() != 'senatore a vita' and
+                self.institution.name.lower() != 'governo nazionale'):
+                s += " Eletto nella circoscrizione %s" % (self.constituency.name,)
+        
+        return s
+    
+
+
+class OpPoliticalCharge(models.Model):
+    content = models.OneToOneField(OpOpenContent, primary_key=True, db_column='content_id')
+    charge_type = models.ForeignKey(OpChargeType)
+    politician = models.ForeignKey(OpPolitician)
+    location = models.ForeignKey(OpLocation)
+    party = models.ForeignKey(OpParty)
+    date_start = models.DateField(null=True, blank=True)
+    date_end = models.DateField(null=True, blank=True)
+    description = models.CharField(max_length=255, blank=True)
+    current = models.IntegerField(null=True, blank=True)
+    
+    class Meta:
+        db_table = u'op_political_charge'
+        managed = False
+    
+    def getTextualRepresentation(self, extended=False):
+        """build a textual representation for the charge
+        extended may take the value true, if extended infos are required"""
+        s = ""
+        # start and end date
+        if self.date_start.month == 1 and self.date_start.day == 1:
+            s += "dal %s " % self.date_start.year
+        else:
+            s += "dal %02d/%02d/%04d " % (self.date_start.day, self.date_start.month, self.date_start.year)
+        
+        if self.date_end is not None:
+            if self.date_end.month == 1 and self.date_end.day == 1:
+                s += "al %s " % self.date_end.year
+            else:
+                s += "al %02d/%02d/%04d " % (self.date_end.day, self.date_end.month, self.date_end.year)
+            s += "è stato "
+        else:
+            s += "è "
+        
+        # charge type and party
+        charge_type = self.charge_type.name
+        if charge_type == 'iscritto':
+            s += "%s" % (charge_type,)
+        else:
+            s += "%s" % (self.description.encode('utf8'),)
+            
+        s += " - %s" % (self.party.getNormalized().getName().encode('utf8'))
+        
+        if self.location.location_type.name == 'Regione':
+            s += " (regione %s) " % (self.location.name,)
+        elif self.location.location_type.name == 'Provincia':
+            s += " (provincia di %s) " % (self.location.name,)
+        elif self.location.location_type.name == 'Comune':
+            s += " (comune di %s [%s]) " % (self.location.name, self.location.prov)
+        
+        return s
+    
+
+
+class OpOrganization(models.Model):
+    id = models.IntegerField(primary_key=True)
+    name = models.CharField(max_length=255, blank=True)
+    url = models.CharField(max_length=255, blank=True)
+    
+    class Meta:
+        db_table = u'op_organization'
+        managed = False
+    
+
+
+class OpOrganizationCharge(models.Model):
+    content = models.OneToOneField(OpOpenContent, primary_key=True, db_column='content_id')
+    politician = models.ForeignKey(OpPolitician)
+    date_start = models.DateField(null=True, blank=True)
+    date_end = models.DateField(null=True, blank=True)
+    charge_name = models.CharField(max_length=255, blank=True)
+    organization = models.ForeignKey(OpOrganization, null=True, blank=True)
+    current = models.IntegerField(null=True, blank=True)
+    
+    class Meta:
+        db_table = u'op_organization_charge'
+        managed = False
+    
+    
+    def getTextualRepresentation(self, extended=False):
+        """build a textual representation for the charge
+        extended may take the value true, if extended infos are required"""
+        s = ""
+        # start and end date
+        if self.date_start.month == 1 and self.date_start.day == 1:
+            s += "dal %s " % self.date_start.year
+        else:
+            s += "dal %02d/%02d/%04d " % (self.date_start.day, self.date_start.month, self.date_start.year)
+        
+        if self.date_end is not None:
+            if self.date_end.month == 1 and self.date_end.day == 1:
+                s += "al %s " % self.date_end.year
+            else:
+                s += "al %02d/%02d/%04d " % (self.date_end.day, self.date_end.month, self.date_end.year)
+            s += "è stato "
+        else:
+            s += "è "
+        
+        # charge type and party
+        if self.charge_name is not None:
+            s += "%s" % (self.charge_name.encode('utf8'),)
+        else:
+            s += "appartenente"
+        
+        s += " %s (%s)" %\
+             (self.organization.name.encode('utf8'), 
+              self.organization.url.encode('ascii', 'ignore'))
+        
+        return s
+    
+
+
+class OpOrganizationTag(models.Model):
+    id = models.IntegerField(primary_key=True)
+    name = models.CharField(max_length=32)
+    
+    class Meta:
+        db_table = u'op_organization_tag'
+        managed = False
+    
+
+
+class OpOrganizationHasOpOrganizationTag(models.Model):
+    organization_tag = models.ForeignKey(OpOrganizationTag)
+    organization = models.ForeignKey(OpOrganization)
+    
+    class Meta:
+        db_table = u'op_organization_has_op_organization_tag'
         managed = False
     
 
