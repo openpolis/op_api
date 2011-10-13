@@ -22,6 +22,6 @@ urlpatterns = patterns('',
     url(r'^statistics/$', Resource(handler=StatisticsHandler)), 
     url(r'^cityreps/(?P<id_type>[^/]+)/(?P<city_id>[^/]+)$', Resource(handler=CityrepsHandler)),
     url(r'^politician/(?P<pol_id>[^/]+)$', Resource(handler=PoliticianHandler)),
-    url(r'^historical_city_mayor/(?P<id_type>[^/]+)/(?P<city_id>[^/]+)/(?P<year>[^/]+)$', historical_resource),    
+    url(r'^historical_city_mayor/(?P<id_type>[^/]+)/(?P<location_id>[^/]+)/(?P<year>[^/]+)$', historical_resource),    
     url(r'^historical_location_government/(?P<id_type>[^/]+)/(?P<location_id>[^/]+)/(?P<year>[^/]+)$', historical_resource),    
 )

@@ -330,14 +330,14 @@ class HistoricHandler(BaseHandler):
                 'textual_rep': g_member.getTextualRepresentation()
             }
             data['giunta'].append(member)
-
+        
         c_members = OpInstitutionCharge.objects.db_manager('op').filter(
             location__id=location.id,
             institution__name__istartswith='consiglio',
             date_end__gte='%s-01-01'%year,
             date_start__lte='%s-12-31'%year
         ).order_by('charge_type__priority', '-date_end')
-
+        
         data['consiglio'] = []
         for c_member in c_members:
             member= {
@@ -357,3 +357,4 @@ class HistoricHandler(BaseHandler):
         
         return data
     
+
