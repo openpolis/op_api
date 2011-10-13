@@ -112,7 +112,7 @@ class ProfessionHandler(BaseHandler):
 
 
 class StatisticsHandler(BaseHandler):
-    methods_allowed = ('GET',)
+    allowed_methods = ('GET',)
     
     def read(self, request):
         Emitter.register('xml', OpXMLEmitter, 'text/xml; charset=utf-8')
@@ -231,4 +231,129 @@ class PoliticianHandler(BaseHandler):
           return None
     
 
+
+class HistoricHandler(BaseHandler):
+    allowed_methods = ('GET')
+    
+    def read(self, request, id_type, location_id, year):
+        Emitter.register('xml', OpLocationXMLEmitter, 'text/xml; charset=utf-8')
+        try:    
+            if 'city_mayor' in request.path:
+                return self.get_city_mayor_data(id_type, location_id, year)
+            if 'location_government' in request.path:
+                return self.get_location_government_data(id_type, location_id, year)
+            
+        except Exception, e:
+            return { 'error': e }
+    
+    
+    def get_city_mayor_data(self, id_type, city_id, year):
+        """docstring for get_city_mayor_data"""
+        from django.db import connection
+        cursor = connections['op'].cursor()
+        data = { 'year': year }
+        try:
+            location = OpLocation.objects.db_manager('op').retrieveFromId(id_type, city_id)
+            if location.location_type.name != 'Comune':
+                return { 'exception': 'location is not a city. only cities are accepted' }
+            location_prov = location.getProvince()
+            location_reg = location.getRegion()
+            data['location'] = "%s (%s)" % (location.name, location.prov)
+        except Exception, detail:
+            return { 'exception': 'location %s, id_type %s could not be found. %s' % (city_id, id_type, detail) }
         
+        ic_mayors = OpInstitutionCharge.objects.db_manager('op').filter(
+            location__id=location.id,
+            charge_type__name='Sindaco',
+            date_end__gte='%s-01-01'%year,
+            date_start__lte='%s-12-31'%year
+        )
+        
+        data['sindaci'] = []
+        for ic_mayor in ic_mayors:
+            charge_id = ic_mayor.content_id
+            sindaco = {
+                'date_start': ic_mayor.date_start,
+                'date_end': ic_mayor.date_start,
+                'party': ic_mayor.party.getNormalizedAcronymOrName(),
+                'first_name': ic_mayor.politician.first_name,
+                'last_name': ic_mayor.politician.last_name,
+                'birth_date': ic_mayor.politician.birth_date,
+                'birt_location': ic_mayor.politician.birth_location,
+                'op_link': 'http://www.openpolis.it/politico/%s' % ic_mayor.politician.content_id
+            }
+            data['sindaci'].append(sindaco)
+        
+        return data
+    
+    
+    def get_location_government_data(self, id_type, location_id, year):
+        """docstring for get_location_government_data"""
+        from django.db import connection
+        cursor = connections['op'].cursor()
+        data = { 'year': year }
+        try:
+            location = OpLocation.objects.db_manager('op').retrieveFromId(id_type, location_id)
+            if location.location_type.name not in ('Comune', 'Provincia', 'Regione'):
+                return { 'exception': 'location is neither a city, province nor a region.' }
+            data['location'] = {
+                'type': location.location_type.name,
+                'name': location.name,
+            }
+            if location.location_type.name in ('Comune', 'Provincia'):
+                data['location']['region'] = location.getRegion().name
+            if location.location_type.name == 'Comune':
+                data['location']['province'] = location.getProvince().name
+                
+        except Exception, detail:
+            return { 'exception': 'location %s, id_type %s could not be found. %s' % (location_id, id_type, detail) }
+        
+        g_members = OpInstitutionCharge.objects.db_manager('op').filter(
+            location__id=location.id,
+            institution__name__istartswith='giunta',
+            date_end__gte='%s-01-01'%year,
+            date_start__lte='%s-12-31'%year
+        ).order_by('charge_type__priority', '-date_end')
+        
+        data['giunta'] = []
+        for g_member in g_members:
+            member= {
+                'charge': g_member.charge_type.name,
+                'date_start': g_member.date_start,
+                'date_end': g_member.date_end,
+                'party': g_member.party.getNormalizedAcronymOrName(),
+                'first_name': g_member.politician.first_name,
+                'last_name': g_member.politician.last_name,
+                'birth_date': g_member.politician.birth_date,
+                'birt_location': g_member.politician.birth_location,
+                'op_link': 'http://www.openpolis.it/politico/%s' % g_member.politician.content_id,
+                'textual_rep': g_member.getTextualRepresentation()
+            }
+            data['giunta'].append(member)
+
+        c_members = OpInstitutionCharge.objects.db_manager('op').filter(
+            location__id=location.id,
+            institution__name__istartswith='consiglio',
+            date_end__gte='%s-01-01'%year,
+            date_start__lte='%s-12-31'%year
+        ).order_by('charge_type__priority', '-date_end')
+
+        data['consiglio'] = []
+        for c_member in c_members:
+            member= {
+                'charge': c_member.charge_type.name,
+                'date_start': c_member.date_start,
+                'date_end': c_member.date_end,
+                'party': c_member.party.getNormalizedAcronymOrName(),
+                'group': c_member.group.getNormalizedAcronymOrName(),
+                'first_name': c_member.politician.first_name,
+                'last_name': c_member.politician.last_name,
+                'birth_date': c_member.politician.birth_date,
+                'birt_location': c_member.politician.birth_location,
+                'op_link': 'http://www.openpolis.it/politico/%s' % c_member.politician.content_id,
+                'textual_rep': c_member.getTextualRepresentation()
+            }
+            data['consiglio'].append(member)
+        
+        return data
+    

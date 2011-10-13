@@ -6,6 +6,16 @@ from django.db import models
 from django.db import connections
 from django.conf import settings
 
+
+def dict_fetchall(cursor):
+    "Returns all rows from a cursor as a dict"
+    desc = cursor.description
+    return [
+        dict(zip([col[0] for col in desc], row))
+        for row in cursor.fetchall()
+    ]
+
+
 class OpLocationType(models.Model):
     id = models.IntegerField(primary_key=True)
     name = models.CharField(max_length=96)
@@ -45,7 +55,7 @@ class OpLocationManager(models.Manager):
       codes are unpacked from the argument
       """
       if len(minint_id) != 9:
-          raise Exception('minint_id code must be exactly 9 characters long')
+          raise Exception('minint_id code must be exactly 9 characters long: %s is %s char-long' % (minint_id, len(minint_id),))
       regional_code = int(minint_id[:2])
       provincial_code = int(minint_id[2:5])
       city_code = int(minint_id[5:])
@@ -491,7 +501,7 @@ class OpConstituencyLocation(models.Model):
         managed = False
 
 
-class OpParty(models.Model):
+class OpParty(models.Model):    
     id = models.IntegerField(primary_key=True)
     istat_code = models.CharField(max_length=15, blank=True)
     name = models.CharField(unique=True, max_length=80)
@@ -510,7 +520,7 @@ class OpParty(models.Model):
     def getNormalized(self):
         """look up for normalized partied in the db"""
         if self.oid is not None and self.oid != 0:
-            return self.objects.db_manager('op').get(pk=self.oid)
+            return OpParty.objects.db_manager('op').get(pk=self.oid)
         else:
             return self
     
@@ -565,7 +575,7 @@ class OpGroup(models.Model):
     def getNormalized(self):
         """look up for normalized group in the db"""
         if self.oid is not None and self.oid != 0:
-            return self.objects.db_manager('op').get(pk=self.oid)
+            return OpGroup.objects.db_manager('op').get(pk=self.oid)
         else:
             return self
     
