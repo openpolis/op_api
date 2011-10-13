@@ -274,7 +274,7 @@ class HistoricHandler(BaseHandler):
             charge_id = ic_mayor.content_id
             sindaco = {
                 'date_start': ic_mayor.date_start,
-                'date_end': ic_mayor.date_start,
+                'date_end': ic_mayor.date_end,
                 'party': ic_mayor.party.getNormalizedAcronymOrName(),
                 'first_name': ic_mayor.politician.first_name,
                 'last_name': ic_mayor.politician.last_name,
