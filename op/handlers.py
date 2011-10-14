@@ -10,6 +10,7 @@ from django.core.cache import cache
 class LocationHandler(BaseHandler):
   model = OpLocation
   fields = ('id', 'name', 'macroregional_id', 'regional_id', 'provincial_id', 'city_id', 
+            'minint_regional_code', 'minint_provincial_code', 'minint_city_code',
             'gps_lat', 'gps_lon', 'inhabitants', ('location_type', ('name',)))
   allowed_methods = ('GET')
   def read(self, request, id=None, regional_id=None, provincial_id=None, city_id=None):
@@ -63,13 +64,10 @@ class LocationHandler(BaseHandler):
             
         if 'namestartswith' in request.GET:
           return base.filter((Q(name__istartswith=request.GET['namestartswith']) |
-                              Q(alternative_name__istartswith=request.GET['namestartswith'])) &
-                             Q(location_type__name='comune')).order_by('-inhabitants')
+                              Q(alternative_name__istartswith=request.GET['namestartswith']))).order_by('location_type__id', '-inhabitants')
                           
         if 'name' in request.GET:
-          return base.get((Q(name=request.GET['name']) | 
-                           Q(alternative_name=request.GET['name'])) &
-                          Q(location_type__name='comune'))
+          return base.filter((Q(name=request.GET['name']) | Q(alternative_name=request.GET['name']))).order_by('location_type__id')
                           
                           
         return base.all()
