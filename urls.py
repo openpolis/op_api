@@ -7,8 +7,8 @@ admin.autodiscover()
 
 # api and admin urls
 urlpatterns = patterns('',
-    (r'^op/v1/', include('op_api.op.v1.urls')),
-    (r'^op/v2/', include('op_api.op.v2.urls')),
+    (r'^op/v1/', include('op_api.op.v1_free.urls')),
+    (r'^op/1.0/', include('op_api.op.v1_oauth.urls')),
     (r'^admin/doc/', include('django.contrib.admindocs.urls')),
     (r'^admin/', include(admin.site.urls)),
 )
