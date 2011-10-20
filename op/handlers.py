@@ -1,11 +1,15 @@
 # -*- coding: utf-8 -*-
 
-from piston.handler import BaseHandler
+import sys
+import time
+
+from piston.handler import AnonymousBaseHandler, BaseHandler
 from op_api.op.models import *
 from django.db.models import Q
 from piston.emitters import Emitter
 from op_api.emitters import OpXMLEmitter, OpLocationXMLEmitter, OpProfessionXMLEmitter, OpEducationLevelXMLEmitter
 from django.core.cache import cache
+
 
 class LocationHandler(BaseHandler):
   model = OpLocation
@@ -17,7 +21,11 @@ class LocationHandler(BaseHandler):
     Emitter.register('xml', OpLocationXMLEmitter, 'text/xml; charset=utf-8')
     
     base = OpLocation.objects.using('op')
-    request_s = request.GET.urlencode().replace('&', '+')
+    request_s = request.path + "?" + request.GET.urlencode().replace('&', '+')
+    
+    print >>sys.stderr, "%s, %s %s, %s" % \
+        (time.strftime("%d/%b/%Y %H:%M:%S",time.localtime(time.time())), 
+         request.method, request_s, request.user.username)
     
     try:    
       if id:
@@ -73,6 +81,7 @@ class LocationHandler(BaseHandler):
         return base.all()
     except self.model.DoesNotExist:
       return None
+  
   
 
 

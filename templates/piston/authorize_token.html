@@ -1,0 +1,23 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+  <head>
+    <title>Allow Access?</title>
+  </head>
+  <body>
+    <h1>Allow Access?</h1>
+    
+    <p>Permitting this application to access {{ site.name }} will allow
+    it to view, edit and delete your information on {{ site.name }}.  Access can
+    be revoked at any time on the Preferences page.</p>
+    <form action="{% url piston.authentication.oauth_user_auth %}" method="POST">
+        {{ form.oauth_token }}
+        {{ form.oauth_callback }}
+        {{ form.csrf_signature }}
+        <input type="hidden" name="authorize_access" value="on">
+        <br />
+        <input type="submit" value="Allow"> or <a href="{% url snowy_index %}">cancel</a>
+    </form>
+    
+  </body>
+</html>
+    
