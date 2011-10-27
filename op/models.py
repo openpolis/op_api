@@ -1031,7 +1031,7 @@ class OpPoliticalCharge(models.Model):
         # charge type and party
         charge_type = self.charge_type.name
         if charge_type == 'iscritto':
-            s += "%s" % (charge_type,)
+            s += "%s" % (charge_type.encode('utf8'),)
         else:
             s += "%s" % (self.description and self.description.encode('utf8'),)
             
