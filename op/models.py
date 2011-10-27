@@ -253,7 +253,7 @@ class OpProfession(models.Model):
     
     def getNormalizedDescription(self):
         if self.oid is not None:
-            norm = self.objects.db_manager('op').get(pk=self.oid)
+            norm = OpProfession.objects.db_manager('op').get(pk=self.oid)
             return norm.description
         else:
             return self.description
@@ -433,7 +433,7 @@ class OpEducationLevel(models.Model):
         
     def getNormalizedDescription(self):
         if self.oid is not None:
-            norm = self.objects.db_manager('op').get(pk=self.oid)
+            norm = OpEducationLevel.objects.db_manager('op').get(pk=self.oid)
             return norm.description
         else:
             return self.description
@@ -1013,10 +1013,11 @@ class OpPoliticalCharge(models.Model):
         extended may take the value true, if extended infos are required"""
         s = ""
         # start and end date
-        if self.date_start.month == 1 and self.date_start.day == 1:
-            s += "dal %s " % self.date_start.year
-        else:
-            s += "dal %02d/%02d/%04d " % (self.date_start.day, self.date_start.month, self.date_start.year)
+        if self.date_start is not None:
+            if self.date_start.month == 1 and self.date_start.day == 1:
+                s += "dal %s " % self.date_start.year
+            else:
+                s += "dal %02d/%02d/%04d " % (self.date_start.day, self.date_start.month, self.date_start.year)
         
         if self.date_end is not None:
             if self.date_end.month == 1 and self.date_end.day == 1:
@@ -1032,16 +1033,16 @@ class OpPoliticalCharge(models.Model):
         if charge_type == 'iscritto':
             s += "%s" % (charge_type,)
         else:
-            s += "%s" % (self.description.encode('utf8'),)
+            s += "%s" % (self.description and self.description.encode('utf8'),)
             
-        s += " - %s" % (self.party.getNormalized().getName().encode('utf8'))
+        s += " - %s" % (self.party and self.party.getNormalized().getName().encode('utf8'))
         
         if self.location.location_type.name == 'Regione':
-            s += " (regione %s) " % (self.location.name,)
+            s += " (regione %s) " % (self.location.name.encode('utf8'),)
         elif self.location.location_type.name == 'Provincia':
-            s += " (provincia di %s) " % (self.location.name,)
+            s += " (provincia di %s) " % (self.location.name.encode('utf8'),)
         elif self.location.location_type.name == 'Comune':
-            s += " (comune di %s [%s]) " % (self.location.name, self.location.prov)
+            s += " (comune di %s [%s]) " % (self.location.name.encode('utf8'), self.location.prov)
         
         return s
     
@@ -1099,7 +1100,7 @@ class OpOrganizationCharge(models.Model):
         
         s += " %s (%s)" %\
              (self.organization.name.encode('utf8'), 
-              self.organization.url.encode('ascii', 'ignore'))
+              self.organization.url and self.organization.url.encode('ascii', 'ignore'))
         
         return s
     

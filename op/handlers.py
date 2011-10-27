@@ -2,7 +2,10 @@
 
 import sys
 import time
+import datetime
+import logging
 
+from django.conf import settings
 from piston.handler import AnonymousBaseHandler, BaseHandler
 from op_api.op.models import *
 from django.db.models import Q
@@ -10,79 +13,80 @@ from piston.emitters import Emitter
 from op_api.emitters import OpXMLEmitter, OpLocationXMLEmitter, OpProfessionXMLEmitter, OpEducationLevelXMLEmitter
 from django.core.cache import cache
 
+class LoggingHandler(BaseHandler):
+    
+    def getlogger(self):
+        logger = logging.getLogger()
+        hdlr = logging.FileHandler(settings.LOG_FILE)
+        formatter = logging.Formatter('[%(asctime)s]%(levelname)-8s"%(message)s"','%Y-%m-%d %a %H:%M:%S') 
+        hdlr.setFormatter(formatter)
+        logger.addHandler(hdlr)
+        logger.setLevel(logging.DEBUG)
+        
+        return logger
+    
+    def debug(self, msg):
+        logger = self.getlogger()
+        logger.debug(msg)
+    
+
 
 class LocationHandler(BaseHandler):
-  model = OpLocation
-  fields = ('id', 'name', 'macroregional_id', 'regional_id', 'provincial_id', 'city_id', 
-            'minint_regional_code', 'minint_provincial_code', 'minint_city_code',
-            'gps_lat', 'gps_lon', 'inhabitants', ('location_type', ('name',)))
-  allowed_methods = ('GET')
-  def read(self, request, id=None, regional_id=None, provincial_id=None, city_id=None):
-    Emitter.register('xml', OpLocationXMLEmitter, 'text/xml; charset=utf-8')
-    
+    model = OpLocation
+    fields = ['id', 'name', 'macroregional_id', 'regional_id', 'provincial_id', 'city_id', 
+              'minint_regional_code', 'minint_provincial_code', 'minint_city_code',
+              'gps_lat', 'gps_lon', 'inhabitants', ('location_type', ('name',))]
+    exclude = ()
+    allowed_methods = ('GET')
     base = OpLocation.objects.using('op')
-    request_s = request.path + "?" + request.GET.urlencode().replace('&', '+')
+    request_s = ''
     
-    print >>sys.stderr, "%s, %s %s, %s" % \
-        (time.strftime("%d/%b/%Y %H:%M:%S",time.localtime(time.time())), 
-         request.method, request_s, request.user.username)
+    @classmethod
+    def resource_uri(cls, loc=None):
+        loc_id = "id"
+        if loc:
+            loc_id = loc.id
+        return ('api_location_detail', [loc_id,])
     
-    try:    
-      if id:
-        return base.get(pk=id)
-      else:
-        if 'region_cities' in request.path:
-            reps = cache.get('op_api_' + request_s)
-            if reps is None:
-                reps = base.filter(location_type__name__iexact='comune', regional_id=regional_id)
-                cache.set('op_api_'+request_s, reps, 3600)
-            return reps
+    
+    def read(self, request, id=None):
+        Emitter.register('xml', OpLocationXMLEmitter, 'text/xml; charset=utf-8')
         
-        if 'province_cities' in request.path:
-            reps = cache.get('op_api_' + request_s)
-            if reps is None:
-                reps = base.filter(location_type__name__iexact='comune', provincial_id=provincial_id)
-                cache.set('op_api_'+request_s, reps, 3600)
-            return reps
+        self.request_s = request.get_full_path().replace('&', '+')
         
-        if '/cities' in request.path:
-          if city_id:
-            return base.filter(location_type__name__iexact='comune', city_id=city_id)
-          else:
-              reps = cache.get('op_api_' + request_s)
-              if reps is None:
-                  reps = base.filter(location_type__name__iexact='comune')
-                  cache.set('op_api_'+request_s, reps, 3600)
-              return reps
+        msg = "%s, %s %s, %s, %s" % \
+            (time.strftime("%d/%b/%Y %H:%M:%S",time.localtime(time.time())), 
+            request.method, self.request_s, request.user.username, request.META['REMOTE_ADDR'])
         
-        if 'region_provinces' in request.path:
-          return base.filter(location_type__name__iexact='provincia', regional_id=regional_id)
-        
-        if '/provinces' in request.path:
-          if provincial_id:
-            return base.filter(location_type__name__iexact='provincia', provincial_id=provincial_id)
-          else:
-            return base.filter(location_type__name__iexact='provincia')
-          
-        if '/regions' in request.path:
-          if  regional_id:
-            return base.filter(location_type__name__iexact='regione', regional_id=regional_id)
-          else:
-            return base.filter(location_type__name__iexact='regione')
-            
-        if 'namestartswith' in request.GET:
-          return base.filter((Q(name__istartswith=request.GET['namestartswith']) |
-                              Q(alternative_name__istartswith=request.GET['namestartswith']))).order_by('location_type__id', '-inhabitants')
-                          
-        if 'name' in request.GET:
-          return base.filter((Q(name=request.GET['name']) | Q(alternative_name=request.GET['name']))).order_by('location_type__id')
-                          
-                          
-        return base.all()
-    except self.model.DoesNotExist:
-      return None
-  
-  
+        try:    
+            if id:
+                return self.base.get(pk=id)
+            else:
+                locs = cache.get('op_api_' + self.request_s)
+                if locs is None:
+                    locs = self.base.all()
+                    if 'namestartswith' in request.GET:
+                      locs = locs.filter((Q(name__istartswith=request.GET['namestartswith']) |
+                                               Q(alternative_name__istartswith=request.GET['namestartswith']))).order_by('location_type__id', '-inhabitants')
+                    if 'name' in request.GET:
+                      locs = locs.filter((Q(name=request.GET['name']) | Q(alternative_name=request.GET['name']))).order_by('location_type__id')
+                    if 'location_type' in request.GET:
+                        location_type = request.GET['location_type']
+                        self.fields.remove(('location_type', ('name',)))
+                        if location_type in ('comune', 'provincia', 'regione'):
+                            locs = locs.filter(location_type__name__iexact=location_type)
+                        else:
+                            logger.warning('Wrong location_type: %s. Comune, provincia or regione expected.' % location_type)
+                            return None
+                        if location_type in ('comune', 'provincia') and 'regional_id' in request.GET:
+                            locs = locs.filter(regional_id=request.GET['regional_id'])
+                        if location_type == 'comune' and 'provincial_id' in request.GET:
+                            locs = locs.filter(provincial_id=request.GET['provincial_id'])
+                    cache.set('op_api_'+self.request_s, locs, 3600)
+                return locs
+        except self.model.DoesNotExist:
+            return None
+    
 
 
 class EducationLevelHandler(BaseHandler):
@@ -216,7 +220,7 @@ class PoliticianHandler(BaseHandler):
                 'last_name': pol.last_name,
                 'birth_date': pol.birth_date,
                 'birth_location': pol.birth_location,
-                'profession': pol.profession.getNormalizedDescription(),
+                'profession': pol.profession and pol.profession.getNormalizedDescription(),
                 'resources': pol.getResources(),
                 'education_levels': pol.getEducationLevels(),
                 'institution_charges': {
@@ -242,12 +246,15 @@ class PoliticianHandler(BaseHandler):
 class HistoricHandler(BaseHandler):
     allowed_methods = ('GET')
     
-    def read(self, request, id_type, location_id, year):
+    def read(self, request, id_type, location_id, year=datetime.datetime.now().year):
         Emitter.register('xml', OpLocationXMLEmitter, 'text/xml; charset=utf-8')
         try:    
             if 'city_mayor' in request.path:
                 return self.get_city_mayor_data(id_type, location_id, year)
-            if 'location_government' in request.path:
+            if 'historical_location_government' in request.path:
+                return self.get_location_government_data(id_type, location_id, year)
+            if 'current_location_government' in request.path:
+                now = datetime.datetime.now()
                 return self.get_location_government_data(id_type, location_id, year)
             
         except Exception, e:
