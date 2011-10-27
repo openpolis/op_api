@@ -72,7 +72,7 @@ class LocationHandler(BaseHandler):
                       locs = locs.filter((Q(name=request.GET['name']) | Q(alternative_name=request.GET['name']))).order_by('location_type__id')
                     if 'location_type' in request.GET:
                         location_type = request.GET['location_type']
-                        self.fields.remove(('location_type', ('name',)))
+                        # self.fields.remove(('location_type', ('name', )))
                         if location_type in ('comune', 'provincia', 'regione'):
                             locs = locs.filter(location_type__name__iexact=location_type)
                         else:
