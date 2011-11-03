@@ -177,3 +177,4 @@ LOGGING = {
         },
     }
 }
+LOG_FILE = os.path.join(BASE_DIR, 'log/api_access.log')

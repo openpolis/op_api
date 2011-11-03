@@ -89,6 +89,15 @@ class LocationHandler(BaseHandler):
     
 
 
+class InstitutionHandler(BaseHandler):
+  model = OpInstitution
+  fields = ('id', 'name', 'short_name', 'priority')
+  allowed_methods = ('GET')
+
+  def read(self, request):
+    Emitter.register('xml', OpXMLEmitter, 'text/xml; charset=utf-8')
+    return OpInstitution.objects.using('op').all()
+
 class EducationLevelHandler(BaseHandler):
   model = OpEducationLevel
   fields = ('id', 'description', 'oid', 'odescription')
@@ -207,37 +216,94 @@ class PoliticianHandler(BaseHandler):
     model = OpPolitician
     exclude = ('picture',)
     allowed_methods = ('GET')
+    base = OpPolitician.objects.using('op')
+    request_s = ''
     
-    def read(self, request, pol_id):
-        base = OpPolitician.objects.using('op')
+    @classmethod
+    def resource_uri(cls, pol=None):
+        pol_id = "id"
+        if pol:
+            pol_id = pol.content_id
+        return ('api_politician_detail', [pol_id,])
+    
+    
+    def read(self, request, pol_id=None):
         Emitter.register('xml', OpXMLEmitter, 'text/xml; charset=utf-8')
+        self.request_s = request.get_full_path().replace('&', '+')        
         try:    
-          if pol_id:
-            pol = base.get(pk=pol_id)
-            pol_detail = {
-                'content_id': pol_id,
-                'first_name': pol.first_name,
-                'last_name': pol.last_name,
-                'birth_date': pol.birth_date,
-                'birth_location': pol.birth_location,
-                'profession': pol.profession and pol.profession.getNormalizedDescription(),
-                'resources': pol.getResources(),
-                'education_levels': pol.getEducationLevels(),
-                'institution_charges': {
-                    'current': pol.getInstitutionCharges('current'),
-                    'past': pol.getInstitutionCharges('past'),
-                },
-                'political_charges': {
-                    'current': pol.getPoliticalCharges('current'),
-                    'past': pol.getPoliticalCharges('past'),                
-                },
-                'organization_charges': {
-                    'current': pol.getOrganizationCharges('current'),
-                    'past': pol.getOrganizationCharges('past'),                
+            if pol_id is not None:
+                pol = self.base.get(pk=pol_id)
+                pol_detail = {
+                    'content_id': pol_id,
+                    'first_name': pol.first_name,
+                    'last_name': pol.last_name,
+                    'birth_date': pol.birth_date,
+                    'birth_location': pol.birth_location,
+                    'profession': pol.profession and pol.profession.getNormalizedDescription(),
+                    'resources': pol.getResources(),
+                    'education_levels': pol.getEducationLevels(),
+                    'institution_charges': {
+                        'current': pol.getInstitutionCharges('current'),
+                        'past': pol.getInstitutionCharges('past'),
+                    },
+                    'political_charges': {
+                        'current': pol.getPoliticalCharges('current'),
+                        'past': pol.getPoliticalCharges('past'),                
+                    },
+                    'organization_charges': {
+                        'current': pol.getOrganizationCharges('current'),
+                        'past': pol.getOrganizationCharges('past'),                
+                    }
                 }
-            }
-            
-            return pol_detail
+                
+                return pol_detail
+            else:
+                # if no institution, return empty
+                if 'institution' in request.GET:
+                    institution_name = request.GET['institution']
+                elif 'institution_id' in request.GET:
+                    institution_id = request.GET['institution_id']
+                    institution = OpInstitution.objects.db_manager('op').get(pk=institution_id)
+                    institution_name = institution.name
+                else:
+                    return {'error': 'must specify location_id for this kind of institution'}
+                    
+                    
+                if 'giunta' in institution_name.lower() or 'consiglio' in institution_name.lower():
+                    if 'location_id' not in request.GET:
+                        return {'error': 'location_id must be specified for this institution'}
+                    else:
+                        location_id = request.GET['location_id']
+                        members = OpInstitutionCharge.objects.db_manager('op').filter(
+                            Q(location__id=location_id),
+                            Q(institution__name__iexact=institution_name.lower),
+                            Q(date_end__isnull=True)
+                        ).order_by('charge_type__priority', '-date_end')
+                else:
+                    members = OpInstitutionCharge.objects.db_manager('op').filter(
+                        Q(institution__name__iexact=institution_name.lower),
+                        Q(date_end__isnull=True)
+                    ).order_by('charge_type__priority', '-date_end')
+                
+                        
+                pols = []
+                for member in members:
+                    member= {
+                        'op_id': member.politician.content_id,
+                        'charge': member.charge_type.name,
+                        'date_start': member.date_start,
+                        'date_end': member.date_end,
+                        'party': member.party.getNormalizedAcronymOrName(),
+                        'first_name': member.politician.first_name,
+                        'last_name': member.politician.last_name,
+                        'birth_date': member.politician.birth_date,
+                        'birt_location': member.politician.birth_location,
+                        'op_link': 'http://www.openpolis.it/politico/%s' % member.politician.content_id,
+                        'textual_rep': member.getTextualRepresentation()
+                    }
+                    pols.append(member)
+                return pols
+                    
         except self.model.DoesNotExist:
           return None
     
@@ -251,10 +317,7 @@ class HistoricHandler(BaseHandler):
         try:    
             if 'city_mayor' in request.path:
                 return self.get_city_mayor_data(id_type, location_id, year)
-            if 'historical_location_government' in request.path:
-                return self.get_location_government_data(id_type, location_id, year)
-            if 'current_location_government' in request.path:
-                now = datetime.datetime.now()
+            else:
                 return self.get_location_government_data(id_type, location_id, year)
             
         except Exception, e:
