@@ -1,0 +1,8 @@
+<div class="politician_result">
+    <h5>{{ result.first_name }} {{ result.last_name }}</h5>
+    <p>nato a 
+      {% if result.birth_location %}
+        {{result.birth_location}}
+      {% endif %}
+      il {{ result.birth_date }} (op id: {{result.pol_id}}) </p>
+</div>

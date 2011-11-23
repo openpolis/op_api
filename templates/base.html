@@ -1,0 +1,54 @@
+{% load i18n %}
+
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="utf-8" />
+  <title>{% trans "Productivity index" %} {% block title %}{% endblock %}</title>
+  {% block head_includes %}
+  {% endblock %}
+	<link rel="stylesheet" href="/css/styles.css" type="text/css" media="screen" />
+	<link rel="stylesheet" href="/css/print.css"  type="text/css" media="print" />
+	<!--[if IE]><script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+</head>
+<body>
+
+<div id="wrapper"><!-- #wrapper -->
+
+  <header>
+    <section id="logos">
+      <div style="float:right;">
+        <a href="http://associazione.openpolis.it" target="_blank"><img src="/images/logo-associazione.png" alt="associazione openpolis" border="0"/></a><a href="http://www.openparlamento.it" target="_blank"><img src="/images/logo-openparlamento.png" alt="openparlamento" border="0"/></a>
+      </div>
+    </section>
+    
+  </header>
+
+	<section id="main"><!-- #main content and sidebar area -->
+
+		<section id="content"><!-- #content -->
+		
+		
+		  {% block content %}      
+      {% endblock %}      
+
+		</section><!-- end of #content -->
+
+	</section><!-- end of #main content and sidebar-->
+
+	<footer>
+  		<section id="footer-area" style="text-align: center;">
+        <p style="color: grey; margin-bottom: 5px;">{% trans "openpolis association web sites:" %}</p>
+        <span style="margin-top: 100px;">
+          <a href="http://www.openpolis.it"><img src="http://associazione.openpolis.it/images/button_op.png" border="0" alt=" logo di openpolis"></a>
+          <a href="http://www.openparlamento.it"><img src="http://associazione.openpolis.it/images/button_opp.png" border="0" alt="logo di openparlamento"></a>
+          <a href="http://www.voisietequi.it"><img src="http://associazione.openpolis.it/images/button_vsq.png" border="0" alt="logo di voi siete qui"></a>
+          <a href="http://associazione.openpolis.it"><img src="http://associazione.openpolis.it/images/button_ass_op.png" border="0" alt="logo associazione openpolis"></a>
+        </span>
+  		</section><!-- end of footer-area -->
+  	</footer>
+</div><!-- #wrapper -->
+
+
+</body>
+</html>

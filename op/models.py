@@ -407,6 +407,7 @@ class OpPolitician(models.Model):
             charges.append({
                 'date_start': charge.date_start,
                 'date_end': charge.date_end,
+                'charge_name': charge.charge_name.encode('utf8'),
                 'organization': charge.organization.name,
                 'textual_rep': charge.getTextualRepresentation(),
             })

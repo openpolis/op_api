@@ -5,6 +5,7 @@ from op_api.op.handlers import *
 historical_resource = Resource(handler=HistoricHandler)
 
 urlpatterns = patterns('',
+    url(r'^search/$', Resource(handler=SearchHandler), name='api_search'),
     url(r'^locations/$', Resource(handler=LocationHandler), name='api_locations_list'),
     url(r'^locations/(?P<id>[^/]+)/$', Resource(handler=LocationHandler), name='api_location_detail'),
     url(r'^politician/(?P<pol_id>[^/]+)$', Resource(handler=PoliticianHandler)),

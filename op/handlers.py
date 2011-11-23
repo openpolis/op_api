@@ -12,6 +12,8 @@ from django.db.models import Q
 from piston.emitters import Emitter
 from op_api.emitters import OpXMLEmitter, OpLocationXMLEmitter, OpProfessionXMLEmitter, OpEducationLevelXMLEmitter
 from django.core.cache import cache
+from haystack.query import SearchQuerySet
+
 
 class LoggingHandler(BaseHandler):
     
@@ -29,6 +31,47 @@ class LoggingHandler(BaseHandler):
         logger = self.getlogger()
         logger.debug(msg)
     
+
+
+class SearchHandler(BaseHandler):
+    request_s = ''
+
+    def read(self, request):
+        Emitter.register('xml', OpXMLEmitter, 'text/xml; charset=utf-8')
+        self.request_s = request.get_full_path().replace('&', '+')
+
+        msg = "%s, %s %s, %s, %s" % \
+            (time.strftime("%d/%b/%Y %H:%M:%S",time.localtime(time.time())), 
+            request.method, self.request_s, request.user.username, request.META['REMOTE_ADDR'])
+
+        if 'q' in request.GET:
+            q = request.GET['q']
+            if len(q) < 3:
+                return { 'warning': 'search key must be longer than 3 characters' }
+            politicians = []
+            for res in SearchQuerySet().autocomplete(content_auto=q).models(OpPolitician):
+                if (res.sex == 'M'):
+                    born = 'nato'
+                else:
+                    born = 'nata'
+                politicians.append((res.pol_id, "%s, %s a %s il %s" % (res.text, born, res.birth_location, res.birth_date)) )
+                
+            locations = []
+            for res in SearchQuerySet().autocomplete(content_auto=q).models(OpLocation):
+                if  res.location_type != 'Regione':
+                    locations.append((res.location_id, "%s di %s" % (res.location_type, res.text)))
+                else:
+                    locations.append((res.location_id, "Regione %s" % (res.text)))
+                    
+            results = {
+                'locations': locations,
+                'politicians': politicians
+            }
+            return results
+        else:
+            return { 'warning': 'empty query will yeld no results' }
+
+
 
 
 class LocationHandler(BaseHandler):
@@ -93,10 +136,11 @@ class InstitutionHandler(BaseHandler):
   model = OpInstitution
   fields = ('id', 'name', 'short_name', 'priority')
   allowed_methods = ('GET')
-
+  
   def read(self, request):
     Emitter.register('xml', OpXMLEmitter, 'text/xml; charset=utf-8')
     return OpInstitution.objects.using('op').all()
+
 
 class EducationLevelHandler(BaseHandler):
   model = OpEducationLevel

@@ -4,6 +4,13 @@ import os, sys
 OAUTH_AUTH_VIEW = "piston.authentication.oauth_auth_view"
 OAUTH_CALLBACK_VIEW = "piston.authentication.oauth_user_auth"
 
+ENVIRONMENT = 'development'
+
+HAYSTACK_SITECONF = 'op_api.search_sites'
+HAYSTACK_SEARCH_ENGINE = 'solr'
+HAYSTACK_SOLR_URL = 'http://localhost:8983/solr'
+
+
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
@@ -149,6 +156,8 @@ INSTALLED_APPS = (
     'django_extensions',
     'op_api.op',
     'piston',
+    'haystack',
+    'flashpolicies',
     # Uncomment the next line to enable the admin:
     'django.contrib.admin',
     # Uncomment the next line to enable admin documentation:
