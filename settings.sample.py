@@ -4,14 +4,7 @@ import os, sys
 OAUTH_AUTH_VIEW = "piston.authentication.oauth_auth_view"
 OAUTH_CALLBACK_VIEW = "piston.authentication.oauth_user_auth"
 
-ENVIRONMENT = 'development'
-
-HAYSTACK_SITECONF = 'op_api.search_sites'
-HAYSTACK_SEARCH_ENGINE = 'solr'
-HAYSTACK_SOLR_URL = 'http://localhost:8983/solr'
-
-
-DEBUG = True
+DEBUG = False
 TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (
@@ -31,19 +24,19 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 DATABASES = {
     'default': {
-        'NAME': 'op_api_auth.sqlite',
+        'NAME': '%s/op_api_auth.sqlite' % BASE_DIR,
         'ENGINE': 'django.db.backends.sqlite3',
     },
     'opp': {
         'NAME': 'op_openparlamento',
         'ENGINE': 'django.db.backends.mysql',
-        'USER': 'selector',
+        'USER': 'xxx',
         'PASSWORD': ''
     },
     'op': {
         'NAME': 'op_openpolis',
         'ENGINE': 'django.db.backends.mysql',
-        'USER': 'selector',
+        'USER': 'xxx',
         'PASSWORD': ''
     }
 }
@@ -101,7 +94,7 @@ STATIC_URL = '/static/'
 # URL prefix for admin static files -- CSS, JavaScript and images.
 # Make sure to use a trailing slash.
 # Examples: "http://foo.com/static/admin/", "/static/admin/".
-ADMIN_MEDIA_PREFIX = '/static/admin/'
+ADMIN_MEDIA_PREFIX = '/media/'
 
 # Additional locations of static files
 STATICFILES_DIRS = (
@@ -119,7 +112,7 @@ STATICFILES_FINDERS = (
 )
 
 # Make this unique, and don't share it with anybody.
-SECRET_KEY = '#9t4l*(*g&20x*5jiyg2jom3$q(e-*keim3ftalb4bsnyjm_qf'
+SECRET_KEY = 'xxx'
 
 # List of callables that know how to import templates from various sources.
 TEMPLATE_LOADERS = (
@@ -156,7 +149,6 @@ INSTALLED_APPS = (
     'django_extensions',
     'op_api.op',
     'piston',
-    'haystack',
     'flashpolicies',
     # Uncomment the next line to enable the admin:
     'django.contrib.admin',
