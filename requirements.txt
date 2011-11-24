@@ -1,0 +1,12 @@
+django
+django-extensions
+django-flashpolicies
+django-piston
+docutils
+haystack
+httplib2
+python-memcached
+oauth
+oauth2
+pysolr
+twisted
