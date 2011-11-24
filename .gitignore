@@ -4,7 +4,6 @@ log/*
 op_api_auth.sqlite
 op_original_models.py
 schema.xml
-search_sites.py
 site
 site-packages
 oauth_client.py
