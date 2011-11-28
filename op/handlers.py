@@ -30,7 +30,7 @@ class LoggingHandler(BaseHandler):
     def debug(self, msg):
         logger = self.getlogger()
         logger.debug(msg)
-    
+
 
 
 class SearchHandler(BaseHandler):
