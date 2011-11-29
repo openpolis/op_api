@@ -35,7 +35,7 @@ class LoggingHandler(BaseHandler):
 
 class SearchHandler(BaseHandler):
     request_s = ''
-
+    
     def read(self, request):
         Emitter.register('xml', OpXMLEmitter, 'text/xml; charset=utf-8')
         
@@ -46,17 +46,17 @@ class SearchHandler(BaseHandler):
             
             locations = []
             politicians = []
-
+            
             if ('filter' not in request.GET or
                 'filter' in request.GET and request.GET['filter'] == 'politicians'):
-        
+            
                 for res in SearchQuerySet().autocomplete(content_auto=q).models(OpPolitician):
                     if (res.sex == 'M'):
                         born = 'nato'
                     else:
                         born = 'nata'
                     politicians.append((res.pol_id, "%s, %s a %s il %s" % (res.text, born, res.birth_location, res.birth_date)) )
-
+            
             if ('filter' not in request.GET or
                 'filter' in request.GET and request.GET['filter'] == 'locations'):
             
@@ -73,7 +73,7 @@ class SearchHandler(BaseHandler):
             return results
         else:
             return { 'warning': 'empty query will yeld no results' }
-
+    
 
 
 
@@ -437,7 +437,7 @@ class HistoricHandler(BaseHandler):
             Q(institution__name__istartswith='giunta'),
             Q(date_end__gte='%s-01-01'%year) | Q(date_end__isnull=True),
             Q(date_start__lte='%s-12-31'%year)
-        ).order_by('charge_type__priority', '-date_end')
+        ).order_by('charge_type__priority', 'politician__last_name')
         
         data['giunta'] = []
         for g_member in g_members:
@@ -460,7 +460,7 @@ class HistoricHandler(BaseHandler):
             Q(institution__name__istartswith='consiglio'),
             Q(date_end__gte='%s-01-01'%year) | Q(date_end__isnull=True),
             Q(date_start__lte='%s-12-31'%year)
-        ).order_by('charge_type__priority', '-date_end')
+        ).order_by('charge_type__priority', 'politician__last_name')
         
         data['consiglio'] = []
         for c_member in c_members:

@@ -139,7 +139,7 @@ class OpLocation(models.Model):
             date_end=None, 
             constituency__id=constituency.id,
             content__deleted_at=None
-        )
+        ).order_by('politician__last_name')
         reps = []
         for charge in charges:
             reps.append({
@@ -161,7 +161,7 @@ class OpLocation(models.Model):
             location__id=self.id,
             date_end=None,
             content__deleted_at=None,
-        ).order_by('charge_type__priority','politician__last_name')
+        ).order_by('charge_type__priority', 'politician__last_name')
         reps  = []
         
         for charge in charges:
@@ -328,12 +328,12 @@ class OpPolitician(models.Model):
             pol_charges = self.opinstitutioncharge_set.db_manager('op').filter(
                 date_end__isnull=True,
                 content__deleted_at__isnull=True,
-            )
+            ).order_by('-date_start')
         elif type == 'past':
             pol_charges = self.opinstitutioncharge_set.db_manager('op').filter(
                 date_end__isnull=False,
                 content__deleted_at__isnull=True,
-            )
+            ).order_by('-date_end')
         else:
             pol_charges = self.opinstitutioncharge_set.db_manager('op').filter(
                 content__deleted_at__isnull=True,
@@ -361,16 +361,16 @@ class OpPolitician(models.Model):
             pol_charges = self.oppoliticalcharge_set.db_manager('op').filter(
                 date_end__isnull=True,
                 content__deleted_at__isnull=True,
-            )
+            ).order_by('-date_start')
         elif type == 'past':
             pol_charges = self.oppoliticalcharge_set.db_manager('op').filter(
                 date_end__isnull=False,
                 content__deleted_at__isnull=True,
-            )
+            ).order_by('-date_end')
         else:
             pol_charges = self.oppoliticalcharge_set.db_manager('op').filter(
                 content__deleted_at__isnull=True,
-            )
+            ).order_by('-date_end')
         charges = []
         for charge in pol_charges:
             charges.append({
@@ -392,16 +392,16 @@ class OpPolitician(models.Model):
             pol_charges = self.oporganizationcharge_set.db_manager('op').filter(
                 date_end__isnull=True,
                 content__deleted_at__isnull=True,
-            )
+            ).order_by('-date_start')
         elif type == 'past':
             pol_charges = self.oporganizationcharge_set.db_manager('op').filter(
                 date_end__isnull=False,
                 content__deleted_at__isnull=True,
-            )
+            ).order_by('-date_end')
         else:
             pol_charges = self.oporganizationcharge_set.db_manager('op').filter(
                 content__deleted_at__isnull=True,
-            )
+            ).order_by('-date_end')
         charges = []
         for charge in pol_charges:
             charges.append({
