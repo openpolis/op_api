@@ -38,24 +38,36 @@ class SearchHandler(BaseHandler):
 
     def read(self, request):
         Emitter.register('xml', OpXMLEmitter, 'text/xml; charset=utf-8')
-
-        msg = "%s, %s %s, %s, %s" % \
-            (time.strftime("%d/%b/%Y %H:%M:%S",time.localtime(time.time())), 
-            request.method, self.request_s, request.user.username, request.META['REMOTE_ADDR'])
         
         if 'q' in request.GET:
             q = request.GET['q']
             if len(q) < 3:
                 return { 'warning': 'search key must be longer than 3 characters' }
-                
+            
             locations = []
-            for res in SearchQuerySet().autocomplete(content_auto=q).models(OpLocation):
-                if  res.location_type != 'Regione':
-                    locations.append((res.location_id, "%s di %s" % (res.location_type, res.text)))
-                else:
-                    locations.append((res.location_id, "Regione %s" % (res.text)))
+            politicians = []
+
+            if ('filter' not in request.GET or
+                'filter' in request.GET and request.GET['filter'] == 'politicians'):
+        
+                for res in SearchQuerySet().autocomplete(content_auto=q).models(OpPolitician):
+                    if (res.sex == 'M'):
+                        born = 'nato'
+                    else:
+                        born = 'nata'
+                    politicians.append((res.pol_id, "%s, %s a %s il %s" % (res.text, born, res.birth_location, res.birth_date)) )
+
+            if ('filter' not in request.GET or
+                'filter' in request.GET and request.GET['filter'] == 'locations'):
+            
+                for res in SearchQuerySet().autocomplete(content_auto=q).models(OpLocation):
+                    if  res.location_type != 'Regione':
+                        locations.append((res.location_id, "%s di %s" % (res.location_type, res.text)))
+                    else:
+                        locations.append((res.location_id, "Regione %s" % (res.text)))
                     
             results = {
+                'politicians': politicians,
                 'locations': locations,
             }
             return results
