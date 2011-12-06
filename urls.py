@@ -15,7 +15,7 @@ urlpatterns = patterns('',
     (r'^admin/', include(admin.site.urls)),
     (r'^crossdomain.xml$',
         'flashpolicies.views.simple',
-        {'domains': ['api.openpolis.com']}),
+        {'domains': ['*.openpolis.com']}),
     
 )
 
