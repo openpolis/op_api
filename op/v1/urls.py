@@ -6,7 +6,10 @@ from op_api.op.handlers import *
 
 auth = HttpBasicAuthentication(realm="Openpolis API")
 authoauth = TwoLeggedOAuthAuthentication(realm='Openpolis API')
-ad = { 'authentication': authoauth }
+noauth = None
+
+# switch auth type by changing the 'authentication' parameter below
+ad = { 'authentication': noauth }
 
 
 """ piston resources are marked csrf_exempt to ensure the the django

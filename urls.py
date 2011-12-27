@@ -9,7 +9,7 @@ admin.autodiscover()
 # api and admin urls
 urlpatterns = patterns('',
     (r'^op/v1/', include('op_api.op.v1_free.urls')),
-    (r'^op/1.0/', include('op_api.op.v1_oauth.urls')),
+    (r'^op/1.0/', include('op_api.op.v1.urls')),
     (r'^search/', include('haystack.urls')),
     (r'^admin/doc/', include('django.contrib.admindocs.urls')),
     (r'^admin/', include(admin.site.urls)),
@@ -18,14 +18,6 @@ urlpatterns = patterns('',
         {'domains': ['*']}),
     
 )
-
-# OAUTH three-legged
-# urlpatterns += patterns(
-#    'piston.authentication',
-#    url(r'^oauth/request_token/$','oauth_request_token', name='oauth_request_token'),
-#    url(r'^oauth/authorize/$','oauth_user_auth', name='oauth_user_auth'),
-#    url(r'^oauth/access_token/$','oauth_access_token', name='oauth_access_token'),
-#)
 
 
 # static media (not for production!)
