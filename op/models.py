@@ -438,7 +438,6 @@ class OpEducationLevel(models.Model):
             return norm.description
         else:
             return self.description
-    
 
 
 class OpPoliticianHasOpEducationLevel(models.Model):
