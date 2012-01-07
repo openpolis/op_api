@@ -21,17 +21,30 @@ class CsrfExemptResource( Resource ):
         self.csrf_exempt = getattr( self.handler, 'csrf_exempt', True )
 
 historical_resource = Resource(handler=HistoricHandler, **ad)
+# politician_shortcuts_resource = Resource(handler=PoliticianShortcutsHandler, **ad)
 
 urlpatterns = patterns('',
+    # locations list
+    #
+    # available filters: 
+    #   namestartswith
+    #   name
+    #   location_type
+    #   regional_id
+    #   provincial_id
     url(r'^locations\.(?P<emitter_format>[^\.]+)$', 
         CsrfExemptResource(handler=LocationHandler, **ad)),
     url(r'^locations/$', CsrfExemptResource(handler=LocationHandler, **ad), name='api_op_locations_list'),
     
+    # single location
     url(r'^locations/(?P<id>[^/]+)\.(?P<emitter_format>[^\.]+)$', 
         CsrfExemptResource(handler=LocationHandler, **ad)),
     url(r'^locations/(?P<id>[^/]+)/$', CsrfExemptResource(handler=LocationHandler, **ad), name='api_op_location_detail'),
     
-    url(r'^politicians/$', CsrfExemptResource(handler=PoliticianHandler, **ad), name='api_op_politicians_list'),
+    # politicians list for a given location
+    # url(r'^locations/(?P<id>[^/]+)/politicians\.(?P<emitter_format>[^\.]+)$', politician_shortcuts_resource) 
+    # url(r'^locations/(?P<id>[^/]+)/politicians/$', politician_shortcuts_resource, name='api_op_location_detail'),
+
     url(r'^politicians/(?P<pol_id>[^/]+)$', CsrfExemptResource(handler=PoliticianHandler, **ad), name='api_op_politician_detail'),
     url(r'^professions/$', CsrfExemptResource(handler=ProfessionHandler, **ad), name='professions_list'),
     url(r'^education_levels/$', CsrfExemptResource(handler=EducationLevelHandler, **ad), name='profession_detail'),
