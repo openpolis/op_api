@@ -97,7 +97,6 @@ class LocationHandler(BaseHandler):
         return ('api_op_location_detail', [loc_id,])
     
     
-    @require_permission('read')
     def read(self, request, id=None):
         Emitter.register('xml', OpLocationXMLEmitter, 'text/xml; charset=utf-8')
         
