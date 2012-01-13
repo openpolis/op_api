@@ -3,7 +3,15 @@ from django.conf.urls.defaults import patterns, include, url
 
 # Uncomment the next two lines to enable the admin:
 from django.contrib import admin
+from flashpolicies import policies
 admin.autodiscover()
+
+
+domain = '*.openpolis.it'
+headers = ['Authorization',]
+policy = policies.Policy()
+policy.allow_domain(domain)
+policy.allow_headers(domain, headers, secure=False)
 
 
 # api and admin urls
@@ -13,8 +21,8 @@ urlpatterns = patterns('',
     (r'^admin/doc/', include('django.contrib.admindocs.urls')),
     (r'^admin/', include(admin.site.urls)),
     (r'^crossdomain.xml$',
-        'flashpolicies.views.simple',
-        {'domains': ['*']}),
+        'flashpolicies.views.serve',
+        {'policy': policy}),
     
 )
 
