@@ -46,32 +46,31 @@ class SearchHandler(BaseHandler):
         if q:
             if len(q) < 3:
                 return { 'warning': 'search key must be longer than 3 characters' }
-            
-            politicians = []
+
+            results = {}
             if ('filter' not in request.GET or
                 'filter' in request.GET and request.GET['filter'] == 'politicians'):
             
+                politicians = []
                 for res in SearchQuerySet().filter(content_auto=q, django_ct='op.oppolitician').models(OpPolitician):
                     if (res.sex == 'M'):
                         born = 'nato'
                     else:
                         born = 'nata'
                     politicians.append(("%s/op/1.0/politicians/%s" % (settings.SITE_URL, res.pol_id,), "%s, %s a %s il %s" % (res.text, born, res.birth_location, res.birth_date)))
+                results['politicians'] = politicians
             
-            locations = []
             if ('filter' not in request.GET or
                 'filter' in request.GET and request.GET['filter'] == 'locations'):
             
+                locations = []
                 for res in SearchQuerySet().filter(content_auto=q, django_ct='op.oplocation').models(OpLocation):
                     if  res.location_type != 'Regione':
                         locations.append(("%s/op/1.0/locations/%s" % (settings.SITE_URL, res.location_id,), "%s di %s" % (res.location_type, res.text)))
                     else:
                         locations.append(("%s/op/1.0/locations/%s" % (settings.SITE_URL, res.location_id,), "Regione %s" % (res.text)))
+                results['locations'] = locations
                     
-            results = {
-                'politicians': politicians,
-                'locations': locations,
-            }
             return results
         else:
             return { 'warning': 'empty query will yeld no results' }

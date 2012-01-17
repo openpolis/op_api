@@ -7,7 +7,7 @@ from flashpolicies import policies
 admin.autodiscover()
 
 
-domain = '*.openpolis.it'
+domain = '*'
 headers = ['Authorization',]
 policy = policies.Policy()
 policy.allow_domain(domain)

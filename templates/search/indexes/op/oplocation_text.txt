@@ -1,0 +1,1 @@
+{{ object.name }} - {{ object.prov}} ({{ object.location_type }})
