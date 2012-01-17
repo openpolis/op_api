@@ -11,7 +11,7 @@ domain = '*'
 headers = ['Authorization',]
 policy = policies.Policy()
 policy.allow_domain(domain)
-policy.allow_headers(domain, headers, secure=False)
+policy.allow_headers(domain, headers)
 
 
 # api and admin urls
