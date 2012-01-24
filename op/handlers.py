@@ -127,7 +127,10 @@ class LocationHandler(BaseHandler):
                             locs = locs.filter(regional_id=request.GET['regional_id'])
                         if location_type == 'comune' and 'provincial_id' in request.GET:
                             locs = locs.filter(provincial_id=request.GET['provincial_id'])
+                    if 'limit' in request.GET:
+                        locs = locs[:request.GET['limit']]
                     cache.set('op_api_'+self.request_s, locs, 3600)
+                    
                 return locs
         except self.model.DoesNotExist:
             return None
@@ -309,6 +312,10 @@ class PoliticianHandler(BaseHandler):
                     members = self.base.filter(
                         Q(last_name__istartswith=request.GET['namestartswith'])
                     )
+                    
+                    if 'limit' in request.GET:
+                        members = members[:request.GET['limit']]
+                    
                     pols = []
                     for member in members:
                         api_url = reverse('api_op_politician_detail', args=[member.content_id])
