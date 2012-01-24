@@ -25,13 +25,6 @@ historical_resource = Resource(handler=HistoricHandler, **ad)
 
 urlpatterns = patterns('',
     # locations list
-    #
-    # available filters: 
-    #   namestartswith
-    #   name
-    #   location_type
-    #   regional_id
-    #   provincial_id
     url(r'^locations\.(?P<emitter_format>[^\.]+)$', 
         CsrfExemptResource(handler=LocationHandler, **ad)),
     url(r'^locations/$', CsrfExemptResource(handler=LocationHandler, **ad), name='api_op_locations_list'),
@@ -41,17 +34,27 @@ urlpatterns = patterns('',
         CsrfExemptResource(handler=LocationHandler, **ad)),
     url(r'^locations/(?P<id>[^/]+)/$', CsrfExemptResource(handler=LocationHandler, **ad), name='api_op_location_detail'),
     
-    # politicians list for a given location
-    # url(r'^locations/(?P<id>[^/]+)/politicians\.(?P<emitter_format>[^\.]+)$', politician_shortcuts_resource) 
-    # url(r'^locations/(?P<id>[^/]+)/politicians/$', politician_shortcuts_resource, name='api_op_location_detail'),
+    
+    # politicians list
+    url(r'^politicians\.(?P<emitter_format>[^\.]+)$', CsrfExemptResource(handler=PoliticianHandler, **ad) ),
+    url(r'^politicians/$', CsrfExemptResource(handler=PoliticianHandler, **ad), name='api_op_politicians_list'),
 
+    # single politician
     url(r'^politicians/(?P<pol_id>[^/]+)$', CsrfExemptResource(handler=PoliticianHandler, **ad), name='api_op_politician_detail'),
     url(r'^professions/$', CsrfExemptResource(handler=ProfessionHandler, **ad), name='professions_list'),
+
+
+    # institution handler
+    url(r'^institutions\.(?P<emitter_format>[^\.]+)$', CsrfExemptResource(handler=InstitutionHandler, **ad) ),
+    url(r'^institutions/$', CsrfExemptResource(handler=InstitutionHandler, **ad), name='institutions_list'),
+    
+    
     url(r'^education_levels/$', CsrfExemptResource(handler=EducationLevelHandler, **ad), name='profession_detail'),
     url(r'^statistics/$', Resource(handler=StatisticsHandler, **ad)), 
     url(r'^cityreps/(?P<id_type>[^/]+)/(?P<city_id>[^/]+)$', Resource(handler=CityrepsHandler, **ad)),
     url(r'^historical_city_mayor/(?P<id_type>[^/]+)/(?P<location_id>[^/]+)/(?P<year>[^/]+)$', historical_resource),    
     url(r'^historical_location_government/(?P<id_type>[^/]+)/(?P<location_id>[^/]+)/(?P<year>[^/]+)$', historical_resource),    
     url(r'^current_location_government/(?P<id_type>[^/]+)/(?P<location_id>[^/]+)$', historical_resource),
+    
     url(r'^search/(?P<q>[^/]+)$', Resource(handler=SearchHandler, **ad)),
 )

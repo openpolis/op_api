@@ -36,8 +36,8 @@ class LoggingHandler(BaseHandler):
         logger.debug(msg)
 
 
-
 class SearchHandler(BaseHandler):
+    """da rivedere"""
     request_s = ''
     
     def read(self, request, q=None):
@@ -46,13 +46,13 @@ class SearchHandler(BaseHandler):
         if q:
             if len(q) < 3:
                 return { 'warning': 'search key must be longer than 3 characters' }
-
+        
             results = {}
             if ('filter' not in request.GET or
                 'filter' in request.GET and request.GET['filter'] == 'politicians'):
             
                 politicians = []
-                for res in SearchQuerySet().filter(content_auto=q, django_ct='op.oppolitician').models(OpPolitician):
+                for res in SearchQuerySet().filter(content=q, django_ct='op.oppolitician'):
                     if (res.sex == 'M'):
                         born = 'nato'
                     else:
@@ -64,7 +64,7 @@ class SearchHandler(BaseHandler):
                 'filter' in request.GET and request.GET['filter'] == 'locations'):
             
                 locations = []
-                for res in SearchQuerySet().filter(content_auto=q, django_ct='op.oplocation').models(OpLocation):
+                for res in SearchQuerySet().filter(content=q, django_ct='op.oplocation').models(OpLocation):
                     if  res.location_type != 'Regione':
                         locations.append(("%s/op/1.0/locations/%s" % (settings.SITE_URL, res.location_id,), "%s di %s" % (res.location_type, res.text)))
                     else:
@@ -75,7 +75,6 @@ class SearchHandler(BaseHandler):
         else:
             return { 'warning': 'empty query will yeld no results' }
     
-
 
 
 class LocationHandler(BaseHandler):
@@ -113,8 +112,7 @@ class LocationHandler(BaseHandler):
                 if locs is None:
                     locs = self.base.all()
                     if 'namestartswith' in request.GET:
-                      locs = locs.filter((Q(name__istartswith=request.GET['namestartswith']) |
-                                               Q(alternative_name__istartswith=request.GET['namestartswith']))).order_by('location_type__id', '-inhabitants')
+                      locs = locs.filter((Q(name__istartswith=request.GET['namestartswith']) |                                               Q(alternative_name__istartswith=request.GET['namestartswith']))).order_by('location_type__id', '-inhabitants')
                     if 'name' in request.GET:
                       locs = locs.filter((Q(name=request.GET['name']) | Q(alternative_name=request.GET['name']))).order_by('location_type__id')
                     if 'location_type' in request.GET:
@@ -306,6 +304,27 @@ class PoliticianHandler(BaseHandler):
                 
                 return pol_detail
             else:
+                
+                if 'namestartswith' in request.GET:
+                    members = self.base.filter(
+                        Q(last_name__istartswith=request.GET['namestartswith'])
+                    )
+                    pols = []
+                    for member in members:
+                        api_url = reverse('api_op_politician_detail', args=[member.content_id])
+                        member= {
+                            'op_id': member.content_id,
+                            'first_name': member.first_name,
+                            'last_name': member.last_name,
+                            'birth_date': member.birth_date,
+                            'birt_location': member.birth_location,
+                            'op_link': 'http://www.openpolis.it/politico/%s' % member.content_id,
+                            'api_link': '%s%s' % (settings.SITE_URL, api_url)
+                        }
+                        pols.append(member)
+                    return pols
+                    
+                    
                 # if no institution, return empty
                 if 'institution' in request.GET:
                     institution_name = request.GET['institution']
@@ -315,8 +334,8 @@ class PoliticianHandler(BaseHandler):
                     institution_name = institution.name
                 else:
                     return {'error': 'must specify an institution'}
-                    
-                    
+                
+                
                 if 'giunta' in institution_name.lower() or 'consiglio' in institution_name.lower():
                     if 'location_id' not in request.GET:
                         return {'error': 'location_id must be specified for this institution'}
