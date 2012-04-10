@@ -486,13 +486,16 @@ class HistoricHandler(BaseHandler):
         for g_member in g_members:
             member= {
                 'charge': g_member.charge_type.name,
+                'charge_descr': g_member.description,
                 'date_start': g_member.date_start,
                 'date_end': g_member.date_end,
                 'party': g_member.party.getNormalizedAcronymOrName(),
                 'first_name': g_member.politician.first_name,
                 'last_name': g_member.politician.last_name,
                 'birth_date': g_member.politician.birth_date,
-                'birt_location': g_member.politician.birth_location,
+                'birth_location': g_member.politician.birth_location,
+                'sex': g_member.politician.sex,
+                'op_id': g_member.politician.content_id,
                 'op_link': 'http://www.openpolis.it/politico/%s' % g_member.politician.content_id,
                 'textual_rep': g_member.getTextualRepresentation()
             }
@@ -523,7 +526,9 @@ class HistoricHandler(BaseHandler):
                 'first_name': c_member.politician.first_name,
                 'last_name': c_member.politician.last_name,
                 'birth_date': c_member.politician.birth_date,
-                'birt_location': c_member.politician.birth_location,
+                'birth_location': c_member.politician.birth_location,
+                'sex': c_member.politician.sex,
+                'op_id': c_member.politician.content_id,
                 'op_link': 'http://www.openpolis.it/politico/%s' % c_member.politician.content_id,
                 'textual_rep': c_member.getTextualRepresentation()
             }
