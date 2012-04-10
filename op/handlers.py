@@ -388,7 +388,7 @@ class PoliticianHandler(BaseHandler):
 class HistoricHandler(BaseHandler):
     allowed_methods = ('GET')
     
-    def read(self, request, id_type, location_id, year=datetime.datetime.now().year):
+    def read(self, request, id_type, location_id, year=None):
         Emitter.register('xml', OpLocationXMLEmitter, 'text/xml; charset=utf-8')
         try:    
             if 'city_mayor' in request.path:
@@ -400,7 +400,7 @@ class HistoricHandler(BaseHandler):
             return { 'error': e }
     
     
-    def get_city_mayor_data(self, id_type, city_id, year):
+    def get_city_mayor_data(self, id_type, city_id, year=None):
         """docstring for get_city_mayor_data"""
         from django.db import connection
         cursor = connections['op'].cursor()
@@ -415,12 +415,19 @@ class HistoricHandler(BaseHandler):
         except Exception, detail:
             return { 'exception': 'location %s, id_type %s could not be found. %s' % (city_id, id_type, detail) }
         
-        ic_mayors = OpInstitutionCharge.objects.db_manager('op').filter(
-            Q(location__id=location.id),
-            Q(charge_type__name='Sindaco'),
-            Q(date_end__gte='%s-01-01'%year) | Q(date_end__isnull=True),
-            Q(date_start__lte='%s-12-31'%year)
-        )
+        if year is None:
+            ic_mayors = OpInstitutionCharge.objects.db_manager('op').filter(
+                location__id=location.id, 
+                charge_type__name='Sindaco', 
+                date_end__isnull=True
+            )
+        else:
+            ic_mayors = OpInstitutionCharge.objects.db_manager('op').filter(
+                Q(location__id=location.id),
+                Q(charge_type__name='Sindaco'),
+                Q(date_end__gte='%s-01-01'%year) | Q(date_end__isnull=True),
+                Q(date_start__lte='%s-12-31'%year)
+            )
         
         data['sindaci'] = []
         for ic_mayor in ic_mayors:
@@ -440,7 +447,7 @@ class HistoricHandler(BaseHandler):
         return data
     
     
-    def get_location_government_data(self, id_type, location_id, year):
+    def get_location_government_data(self, id_type, location_id, year=None):
         """docstring for get_location_government_data"""
         from django.db import connection
         cursor = connections['op'].cursor()
@@ -461,12 +468,19 @@ class HistoricHandler(BaseHandler):
         except Exception, detail:
             return { 'exception': 'location %s, id_type %s could not be found. %s' % (location_id, id_type, detail) }
         
-        g_members = OpInstitutionCharge.objects.db_manager('op').filter(
-            Q(location__id=location.id),
-            Q(institution__name__istartswith='giunta'),
-            Q(date_end__gte='%s-01-01'%year) | Q(date_end__isnull=True),
-            Q(date_start__lte='%s-12-31'%year)
-        ).order_by('charge_type__priority', 'politician__last_name')
+        if year is None:
+            g_members = OpInstitutionCharge.objects.db_manager('op').filter(
+                location__id=location.id,
+                institution__name__istartswith='giunta',
+                date_end__isnull=True
+            ).order_by('charge_type__priority', 'politician__last_name')
+        else:
+            g_members = OpInstitutionCharge.objects.db_manager('op').filter(
+                Q(location__id=location.id),
+                Q(institution__name__istartswith='giunta'),
+                Q(date_end__gte='%s-01-01'%year) | Q(date_end__isnull=True),
+                Q(date_start__lte='%s-12-31'%year)
+            ).order_by('charge_type__priority', 'politician__last_name')
         
         data['giunta'] = []
         for g_member in g_members:
@@ -484,12 +498,19 @@ class HistoricHandler(BaseHandler):
             }
             data['giunta'].append(member)
         
-        c_members = OpInstitutionCharge.objects.db_manager('op').filter(
-            Q(location__id=location.id),
-            Q(institution__name__istartswith='consiglio'),
-            Q(date_end__gte='%s-01-01'%year) | Q(date_end__isnull=True),
-            Q(date_start__lte='%s-12-31'%year)
-        ).order_by('charge_type__priority', 'politician__last_name')
+        if year is None:
+            c_members = OpInstitutionCharge.objects.db_manager('op').filter(
+                location__id=location.id,
+                institution__name__istartswith='consiglio',
+                date_end__isnull=True
+            ).order_by('charge_type__priority', 'politician__last_name')            
+        else:
+            c_members = OpInstitutionCharge.objects.db_manager('op').filter(
+                Q(location__id=location.id),
+                Q(institution__name__istartswith='consiglio'),
+                Q(date_end__gte='%s-01-01'%year) | Q(date_end__isnull=True),
+                Q(date_start__lte='%s-12-31'%year)
+            ).order_by('charge_type__priority', 'politician__last_name')
         
         data['consiglio'] = []
         for c_member in c_members:

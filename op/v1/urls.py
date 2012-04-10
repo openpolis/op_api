@@ -51,10 +51,11 @@ urlpatterns = patterns('',
     
     url(r'^education_levels/$', CsrfExemptResource(handler=EducationLevelHandler, **ad), name='profession_detail'),
     url(r'^statistics/$', Resource(handler=StatisticsHandler, **ad)), 
-    url(r'^cityreps/(?P<id_type>[^/]+)/(?P<city_id>[^/]+)$', Resource(handler=CityrepsHandler, **ad)),
-    url(r'^historical_city_mayor/(?P<id_type>[^/]+)/(?P<location_id>[^/]+)/(?P<year>[^/]+)$', historical_resource),    
-    url(r'^historical_location_government/(?P<id_type>[^/]+)/(?P<location_id>[^/]+)/(?P<year>[^/]+)$', historical_resource),    
-    url(r'^current_location_government/(?P<id_type>[^/]+)/(?P<location_id>[^/]+)$', historical_resource),
+    url(r'^cityreps/(?P<id_type>[^/]+)/(?P<city_id>[^/]+)/$', Resource(handler=CityrepsHandler, **ad)),
+    url(r'^historical_city_mayor/(?P<id_type>[^/]+)/(?P<location_id>[^/]+)/(?P<year>[^/]+)/$', historical_resource),    
+    url(r'^historical_location_government/(?P<id_type>[^/]+)/(?P<location_id>[^/]+)/(?P<year>[^/]+)/$', historical_resource),    
+    url(r'^current_city_mayor/(?P<id_type>[^/]+)/(?P<location_id>[^/]+)/$', historical_resource),    
+    url(r'^current_location_government/(?P<id_type>[^/]+)/(?P<location_id>[^/]+)/$', historical_resource),
     
     url(r'^search/(?P<q>[^/]+)$', Resource(handler=SearchHandler, **ad)),
 )
