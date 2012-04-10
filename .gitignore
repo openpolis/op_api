@@ -1,4 +1,5 @@
 *.pyc
+.idea/
 settings.py
 log/*
 op_api_auth.sqlite
