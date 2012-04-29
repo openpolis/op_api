@@ -9,5 +9,5 @@ site
 site-packages
 oauth_client.py
 apache
-static
 solr
+sitestatic
