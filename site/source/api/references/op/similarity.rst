@@ -8,9 +8,10 @@ Openpolis politicians may be looked for by first_name, last_name and birth_date.
 This is useful to integrate with other, external applications.
 
 The criteria used to fetch similar politicians is:
-* same first_name and last_name, any birth_date
-* same first_name and birth_date, any last_name (if birth_date given)
-* same last_name and birth_date, any first_name (if birth_date given)
+
+ * same first_name and last_name, any birth_date
+ * same first_name and birth_date, any last_name (if birth_date given)
+ * same last_name and birth_date, any first_name (if birth_date given)
 
 The criteria are alternative (OR).
 

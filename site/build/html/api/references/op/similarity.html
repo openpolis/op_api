@@ -25,7 +25,10 @@
     <script type="text/javascript" src="../../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../../_static/doctools.js"></script>
-    <link rel="top" title="Openpolis REST API" href="../../../index.html" /> 
+    <link rel="top" title="Openpolis REST API" href="../../../index.html" />
+    <link rel="up" title="API: Openpolis Resources" href="resources.html" />
+    <link rel="next" title="Professions" href="professions.html" />
+    <link rel="prev" title="Politicians" href="politicians.html" /> 
   </head>
   <body>
     <div class="related">
@@ -34,7 +37,15 @@
         <li class="right" style="margin-right: 10px">
           <a href="../../../genindex.html" title="General Index"
              accesskey="I">index</a></li>
-        <li><a href="../../../index.html">Openpolis REST API</a> &raquo;</li> 
+        <li class="right" >
+          <a href="professions.html" title="Professions"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="politicians.html" title="Politicians"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../../../index.html">Openpolis REST API</a> &raquo;</li>
+          <li><a href="../../reference.html" >REST API reference</a> &raquo;</li>
+          <li><a href="resources.html" accesskey="U">API: Openpolis Resources</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -47,10 +58,14 @@
 <span id="api-res-op-similarity"></span><h1>Similarity<a class="headerlink" href="#similarity" title="Permalink to this headline">¶</a></h1>
 <p>Openpolis politicians may be looked for by first_name, last_name and birth_date.
 This is useful to integrate with other, external applications.</p>
-<p>The criteria used to fetch similar politicians is:
-* same first_name and last_name, any birth_date
-* same first_name and birth_date, any last_name (if birth_date given)
-* same last_name and birth_date, any first_name (if birth_date given)</p>
+<p>The criteria used to fetch similar politicians is:</p>
+<blockquote>
+<div><ul class="simple">
+<li>same first_name and last_name, any birth_date</li>
+<li>same first_name and birth_date, any last_name (if birth_date given)</li>
+<li>same last_name and birth_date, any first_name (if birth_date given)</li>
+</ul>
+</div></blockquote>
 <p>The criteria are alternative (OR).</p>
 <div class="section" id="similarity-list">
 <h2>Similarity list<a class="headerlink" href="#similarity-list" title="Permalink to this headline">¶</a></h2>
@@ -185,6 +200,12 @@ The number of such results is returned if the <cite>count=true</cite> parameter 
 </li>
 </ul>
 
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="politicians.html"
+                        title="previous chapter">Politicians</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="professions.html"
+                        title="next chapter">Professions</a></p>
   <h3>This Page</h3>
   <ul class="this-page-menu">
     <li><a href="../../../_sources/api/references/op/similarity.txt"
@@ -213,7 +234,15 @@ The number of such results is returned if the <cite>count=true</cite> parameter 
         <li class="right" style="margin-right: 10px">
           <a href="../../../genindex.html" title="General Index"
              >index</a></li>
-        <li><a href="../../../index.html">Openpolis REST API</a> &raquo;</li> 
+        <li class="right" >
+          <a href="professions.html" title="Professions"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="politicians.html" title="Politicians"
+             >previous</a> |</li>
+        <li><a href="../../../index.html">Openpolis REST API</a> &raquo;</li>
+          <li><a href="../../reference.html" >REST API reference</a> &raquo;</li>
+          <li><a href="resources.html" >API: Openpolis Resources</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
