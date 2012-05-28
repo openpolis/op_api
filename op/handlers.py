@@ -294,7 +294,7 @@ class SimilarityHandler(BaseHandler):
             if members:
                 if 'count' in request.GET and request.GET['count'] == 'true':
                     return len(members)
-                
+
                 if 'limit' in request.GET:
                     members = members[:request.GET['limit']]
 
