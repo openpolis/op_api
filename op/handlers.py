@@ -279,11 +279,14 @@ class SimilarityHandler(BaseHandler):
         try:
             members = None
 
+            if 'first_name' not in request.GET or 'last_name' not in request.GET:
+                return {'error': 'must specify first_name, last_name and, optionally, birth_date'}
+
+
             if 'first_name' in request.GET and 'last_name' in request.GET:
                 members = self.base.select_related().filter(
                     Q(first_name=request.GET['first_name'], last_name=request.GET['last_name']),
                 )
-
             if 'first_name' in request.GET and 'last_name' in request.GET and 'birth_date' in request.GET:
                 members = self.base.select_related().filter(
                     Q(first_name=request.GET['first_name'], last_name=request.GET['last_name']) |
@@ -315,7 +318,10 @@ class SimilarityHandler(BaseHandler):
                     pols.append(member)
                 return pols
             else:
-                return {'error': 'must specify first_name, last_name and, optionally, birth_date'}
+                if 'count' in request.GET:
+                    return 0
+                else:
+                    return []
 
         except self.model.DoesNotExist:
             return None
