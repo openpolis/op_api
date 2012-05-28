@@ -1,0 +1,299 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Request Formats &mdash; Openpolis REST API</title>
+    
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="Openpolis REST API" href="../index.html" />
+    <link rel="up" title="API: Overview" href="overview.html" />
+    <link rel="next" title="Response Formats" href="overview_responses.html" />
+    <link rel="prev" title="API: Overview" href="overview.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="overview_responses.html" title="Response Formats"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="overview.html" title="API: Overview"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">Openpolis REST API</a> &raquo;</li>
+          <li><a href="reference.html" >REST API reference</a> &raquo;</li>
+          <li><a href="overview.html" accesskey="U">API: Overview</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="request-formats">
+<span id="api-overview-requests"></span><h1>Request Formats<a class="headerlink" href="#request-formats" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="retrieving-resources-with-the-http-get-method">
+<h2>Retrieving Resources with the HTTP GET Method<a class="headerlink" href="#retrieving-resources-with-the-http-get-method" title="Permalink to this headline">¶</a></h2>
+<p>You can retrieve a representation of a resource by GETting its url.
+The easiest way to do this is to copy and paste a URL into your web browser&#8217;s address bar.</p>
+<div class="section" id="possible-get-response-status-codes">
+<h3>Possible GET Response Status Codes<a class="headerlink" href="#possible-get-response-status-codes" title="Permalink to this headline">¶</a></h3>
+<table border="1" class="docutils">
+<colgroup>
+<col width="4%" />
+<col width="15%" />
+<col width="81%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">code</th>
+<th class="head">message</th>
+<th class="head">description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>200</td>
+<td>OK</td>
+<td>The request was successful and the response body contains the representation requested.</td>
+</tr>
+<tr class="row-odd"><td>302</td>
+<td>FOUND</td>
+<td>A common redirect response; you can GET the representation at the URI in the Location response header.</td>
+</tr>
+<tr class="row-even"><td>304</td>
+<td>NOT MODIFIED</td>
+<td>Your client&#8217;s cached version of the representation is still up to date.</td>
+</tr>
+<tr class="row-odd"><td>401</td>
+<td>UNAUTHORIZED</td>
+<td>The supplied credentials, if any, are not sufficient to access the resource.</td>
+</tr>
+<tr class="row-even"><td>404</td>
+<td>NOT FOUND</td>
+<td>You know this one.</td>
+</tr>
+<tr class="row-odd"><td>500</td>
+<td>SERVER ERROR</td>
+<td>We couldn&#8217;t return the representation due to an internal server error.</td>
+</tr>
+<tr class="row-even"><td>503</td>
+<td>SERVICE UNAVAILABLE</td>
+<td>We are temporarily unable to return the representation. Please wait for a bit and try again.</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="section" id="creating-or-updating-resources-with-the-http-post-and-put-methods">
+<h2>Creating or Updating Resources with the HTTP POST and PUT Methods<a class="headerlink" href="#creating-or-updating-resources-with-the-http-post-and-put-methods" title="Permalink to this headline">¶</a></h2>
+<p>Creating or updating a resource involves performing an HTTP PUT or HTTP POST to a resource URL. In the PUT or POST, you represent the properties of the object you wish to update as form urlencoded key/value pairs. Don&#8217;t worry, this is already the way browsers encode POSTs by default. But be sure to set the HTTP Content-Type header to &#8220;application/x-www-form-urlencoded&#8221; for your requests if you are writing your own client.</p>
+<div class="section" id="possible-post-or-put-response-status-codes">
+<h3>Possible POST or PUT Response Status Codes<a class="headerlink" href="#possible-post-or-put-response-status-codes" title="Permalink to this headline">¶</a></h3>
+<table border="1" class="docutils">
+<colgroup>
+<col width="4%" />
+<col width="15%" />
+<col width="81%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">code</th>
+<th class="head">message</th>
+<th class="head">description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>200</td>
+<td>OK</td>
+<td>The request was successful, we updated the resource and the response body contains the representation.</td>
+</tr>
+<tr class="row-odd"><td>201</td>
+<td>CREATED</td>
+<td>The request was successful, we created a new resource and the response body contains the representation.</td>
+</tr>
+<tr class="row-even"><td>400</td>
+<td>BAD REQUEST</td>
+<td>The data given in the POST or PUT failed validation. Inspect the response body for details.</td>
+</tr>
+<tr class="row-odd"><td>401</td>
+<td>UNAUTHORIZED</td>
+<td>The supplied credentials, if any, are not sufficient to create or update the resource.</td>
+</tr>
+<tr class="row-even"><td>404</td>
+<td>NOT FOUND</td>
+<td>You know this one.</td>
+</tr>
+<tr class="row-odd"><td>405</td>
+<td>METHOD NOT ALLOWED</td>
+<td>You can&#8217;t POST or PUT to the resource.</td>
+</tr>
+<tr class="row-even"><td>409</td>
+<td>DUPLICATED</td>
+<td>The data provided would insert a record having the same primary key of an existing one.</td>
+</tr>
+<tr class="row-odd"><td>500</td>
+<td>SERVER ERROR</td>
+<td>We couldn&#8217;t create or update the resource. Please try again.</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="section" id="deleting-resources-with-the-http-delete-method">
+<h2>Deleting Resources with the HTTP DELETE Method<a class="headerlink" href="#deleting-resources-with-the-http-delete-method" title="Permalink to this headline">¶</a></h2>
+<p>To delete a resource make an HTTP DELETE request to the resource&#8217;s URL. Not all Twilio REST API resources support DELETE.</p>
+<div class="section" id="possible-delete-response-status-codes">
+<h3>Possible DELETE Response Status Codes<a class="headerlink" href="#possible-delete-response-status-codes" title="Permalink to this headline">¶</a></h3>
+<table border="1" class="docutils">
+<colgroup>
+<col width="4%" />
+<col width="15%" />
+<col width="81%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">code</th>
+<th class="head">message</th>
+<th class="head">description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>204</td>
+<td>OK</td>
+<td>The request was successful; the resource was deleted.</td>
+</tr>
+<tr class="row-odd"><td>401</td>
+<td>UNAUTHORIZED</td>
+<td>The supplied credentials, if any, are not sufficient to delete the resource.</td>
+</tr>
+<tr class="row-even"><td>404</td>
+<td>NOT FOUND</td>
+<td>You know this one.</td>
+</tr>
+<tr class="row-odd"><td>405</td>
+<td>METHOD NOT ALLOWED</td>
+<td>You can&#8217;t DELETE the resource.</td>
+</tr>
+<tr class="row-even"><td>409</td>
+<td>DUPLICATED</td>
+<td>The data provided would insert a record having the same primary key of an existing one.</td>
+</tr>
+<tr class="row-odd"><td>500</td>
+<td>SERVER ERROR</td>
+<td>We couldn&#8217;t delete the resource. Please try again.</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="section" id="http-method-overloading">
+<h2>HTTP Method Overloading<a class="headerlink" href="#http-method-overloading" title="Permalink to this headline">¶</a></h2>
+<p>openpolis REST API uses HTTP GET, POST, PUT and DELETE methods. Since some HTTP clients do not support methods PUT and DELETE, you can <strong>simulate</strong> them via POST by appending the query string parameter <tt class="docutils literal"><span class="pre">_method</span></tt> (yes, underscore method) to a resource URL. Valid values are <strong>PUT</strong> and <strong>DELETE</strong>.</p>
+<p>For example, if you want to perform a DELETE request on a particular location resource you could:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">DELETE</span> <span class="o">/</span><span class="mf">1.0</span><span class="o">/</span><span class="n">locations</span><span class="o">/</span><span class="mi">1248</span>
+</pre></div>
+</div>
+<p>But if your client is only capable of GET and POST, then you could perform a POST with a <tt class="docutils literal"><span class="pre">_method</span></tt> query string variable to achieve the same result:</p>
+<div class="highlight-python"><pre>POST /1.0/locations/1248?_method=DELETE</pre>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Request Formats</a><ul>
+<li><a class="reference internal" href="#retrieving-resources-with-the-http-get-method">Retrieving Resources with the HTTP GET Method</a><ul>
+<li><a class="reference internal" href="#possible-get-response-status-codes">Possible GET Response Status Codes</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#creating-or-updating-resources-with-the-http-post-and-put-methods">Creating or Updating Resources with the HTTP POST and PUT Methods</a><ul>
+<li><a class="reference internal" href="#possible-post-or-put-response-status-codes">Possible POST or PUT Response Status Codes</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#deleting-resources-with-the-http-delete-method">Deleting Resources with the HTTP DELETE Method</a><ul>
+<li><a class="reference internal" href="#possible-delete-response-status-codes">Possible DELETE Response Status Codes</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#http-method-overloading">HTTP Method Overloading</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="overview.html"
+                        title="previous chapter">API: Overview</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="overview_responses.html"
+                        title="next chapter">Response Formats</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/api/overview_requests.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="overview_responses.html" title="Response Formats"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="overview.html" title="API: Overview"
+             >previous</a> |</li>
+        <li><a href="../index.html">Openpolis REST API</a> &raquo;</li>
+          <li><a href="reference.html" >REST API reference</a> &raquo;</li>
+          <li><a href="overview.html" >API: Overview</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2011, Associazione Openpolis.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.2.
+    </div>
+  </body>
+</html>

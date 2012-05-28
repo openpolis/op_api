@@ -5,7 +5,6 @@ log/*
 op_api_auth.sqlite
 op_original_models.py
 schema.xml
-site
 site-packages
 oauth_client.py
 apache
