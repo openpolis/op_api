@@ -41,6 +41,10 @@ urlpatterns = patterns('',
 
     # single politician
     url(r'^politicians/(?P<pol_id>[^/]+)$', CsrfExemptResource(handler=PoliticianHandler, **ad), name='api_op_politician_detail'),
+
+    # politicians similar, given names and date
+    url(r'^similar_politicians/$', CsrfExemptResource(handler=SimilarityHandler, **ad), name='api_op_similar_politicians'),
+
     url(r'^professions/$', CsrfExemptResource(handler=ProfessionHandler, **ad), name='professions_list'),
 
 

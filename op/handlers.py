@@ -258,6 +258,67 @@ class CityrepsHandler(BaseHandler):
         return { 'city_representatives': reps }
     
     
+class SimilarityHandler(BaseHandler):
+    model = OpPolitician
+    exclude = ('picture',)
+    allowed_methods = ('GET')
+    base = model.objects.using('op')
+    request_s = ''
+
+    @classmethod
+    def resource_uri(cls, pol=None):
+        pol_id = "id"
+        if pol:
+            pol_id = pol.content_id
+        return ('api_op_politician_detail', [pol_id,])
+
+
+    def read(self, request, pol_id=None):
+        Emitter.register('xml', OpXMLEmitter, 'text/xml; charset=utf-8')
+        self.request_s = request.get_full_path().replace('&', '+')
+        try:
+            members = None
+
+            if 'first_name' in request.GET and 'last_name' in request.GET:
+                members = self.base.select_related().filter(
+                    Q(first_name=request.GET['first_name'], last_name=request.GET['last_name']),
+                )
+
+            if 'first_name' in request.GET and 'last_name' in request.GET and 'birth_date' in request.GET:
+                members = self.base.select_related().filter(
+                    Q(first_name=request.GET['first_name'], last_name=request.GET['last_name']) |
+                    Q(first_name=request.GET['first_name'], birth_date=request.GET['birth_date']) |
+                    Q(last_name=request.GET['last_name'], birth_date=request.GET['birth_date'])
+                )
+
+            if members:
+                if 'count' in request.GET and request.GET['count'] == 'true':
+                    return len(members)
+                
+                if 'limit' in request.GET:
+                    members = members[:request.GET['limit']]
+
+                pols = []
+                for member in members:
+                    api_url = reverse('api_op_politician_detail', args=[member.content_id])
+                    member_charges = [c['textual_rep'] for c in member.getInstitutionCharges()]
+                    member= {
+                        'op_id': member.content_id,
+                        'first_name': member.first_name,
+                        'last_name': member.last_name,
+                        'birth_date': member.birth_date,
+                        'birt_location': member.birth_location,
+                        'charges': member_charges,
+                        'op_link': 'http://www.openpolis.it/politico/%s' % member.content_id,
+                        'api_link': '%s%s' % (settings.SITE_URL, api_url)
+                    }
+                    pols.append(member)
+                return pols
+            else:
+                return {'error': 'must specify first_name, last_name and, optionally, birth_date'}
+
+        except self.model.DoesNotExist:
+            return None
 
 
 class PoliticianHandler(BaseHandler):
@@ -265,7 +326,7 @@ class PoliticianHandler(BaseHandler):
     model = OpPolitician
     exclude = ('picture',)
     allowed_methods = ('GET')
-    base = OpPolitician.objects.using('op')
+    base = model.objects.using('op')
     request_s = ''
     
     @classmethod
@@ -307,12 +368,27 @@ class PoliticianHandler(BaseHandler):
                 
                 return pol_detail
             else:
-                
+                members = None
+
+                if 'first_name' in request.GET and 'last_name' in request.GET:
+                    members = self.base.filter(
+                        Q(first_name=request.GET['first_name'], last_name=request.GET['last_name']),
+                    )
+
+
                 if 'namestartswith' in request.GET:
                     members = self.base.filter(
                         Q(last_name__istartswith=request.GET['namestartswith'])
                     )
-                    
+
+                if 'first_name' in request.GET and 'last_name' in request.GET and 'birth_date' in request.GET:
+                    members = self.base.filter(
+                        Q(first_name=request.GET['first_name'], last_name=request.GET['last_name']) |
+                        Q(first_name=request.GET['first_name'], birth_date=request.GET['birth_date']) |
+                        Q(last_name=request.GET['last_name'], birth_date=request.GET['birth_date'])
+                    )
+
+                if members:
                     if 'limit' in request.GET:
                         members = members[:request.GET['limit']]
                     
@@ -325,6 +401,7 @@ class PoliticianHandler(BaseHandler):
                             'last_name': member.last_name,
                             'birth_date': member.birth_date,
                             'birt_location': member.birth_location,
+                            'charge': member.charge_type.name,
                             'op_link': 'http://www.openpolis.it/politico/%s' % member.content_id,
                             'api_link': '%s%s' % (settings.SITE_URL, api_url)
                         }
@@ -362,18 +439,18 @@ class PoliticianHandler(BaseHandler):
                         
                 pols = []
                 for member in members:
-                    api_url = reverse('api_op_politician_detail', args=[member.politician.content_id])
+                    api_url = reverse('api_op_politician_detail', args=[member.content_id])
                     member= {
-                        'op_id': member.politician.content_id,
+                        'op_id': member.content_id,
                         'charge': member.charge_type.name,
                         'date_start': member.date_start,
                         'date_end': member.date_end,
                         'party': member.party.getNormalizedAcronymOrName(),
-                        'first_name': member.politician.first_name,
-                        'last_name': member.politician.last_name,
-                        'birth_date': member.politician.birth_date,
-                        'birt_location': member.politician.birth_location,
-                        'op_link': 'http://www.openpolis.it/politico/%s' % member.politician.content_id,
+                        'first_name': member.first_name,
+                        'last_name': member.last_name,
+                        'birth_date': member.birth_date,
+                        'birt_location': member.birth_location,
+                        'op_link': 'http://www.openpolis.it/politico/%s' % member.content_id,
                         'api_link': '%s%s' % (settings.SITE_URL, api_url),
                         'textual_rep': member.getTextualRepresentation()
                     }
@@ -436,11 +513,11 @@ class HistoricHandler(BaseHandler):
                 'date_start': ic_mayor.date_start,
                 'date_end': ic_mayor.date_end,
                 'party': ic_mayor.party.getNormalizedAcronymOrName(),
-                'first_name': ic_mayor.politician.first_name,
-                'last_name': ic_mayor.politician.last_name,
-                'birth_date': ic_mayor.politician.birth_date,
-                'birt_location': ic_mayor.politician.birth_location,
-                'op_link': 'http://www.openpolis.it/politico/%s' % ic_mayor.politician.content_id
+                'first_name': ic_mayor.first_name,
+                'last_name': ic_mayor.last_name,
+                'birth_date': ic_mayor.birth_date,
+                'birt_location': ic_mayor.birth_location,
+                'op_link': 'http://www.openpolis.it/politico/%s' % ic_mayor.content_id
             }
             data['sindaci'].append(sindaco)
         
@@ -490,13 +567,13 @@ class HistoricHandler(BaseHandler):
                 'date_start': g_member.date_start,
                 'date_end': g_member.date_end,
                 'party': g_member.party.getNormalizedAcronymOrName(),
-                'first_name': g_member.politician.first_name,
-                'last_name': g_member.politician.last_name,
-                'birth_date': g_member.politician.birth_date,
-                'birth_location': g_member.politician.birth_location,
-                'sex': g_member.politician.sex,
-                'op_id': g_member.politician.content_id,
-                'op_link': 'http://www.openpolis.it/politico/%s' % g_member.politician.content_id,
+                'first_name': g_member.first_name,
+                'last_name': g_member.last_name,
+                'birth_date': g_member.birth_date,
+                'birth_location': g_member.birth_location,
+                'sex': g_member.sex,
+                'op_id': g_member.content_id,
+                'op_link': 'http://www.openpolis.it/politico/%s' % g_member.content_id,
                 'textual_rep': g_member.getTextualRepresentation()
             }
             data['giunta'].append(member)
@@ -523,13 +600,13 @@ class HistoricHandler(BaseHandler):
                 'date_end': c_member.date_end,
                 'party': c_member.party.getNormalizedAcronymOrName(),
                 'group': c_member.group.getNormalizedAcronymOrName(),
-                'first_name': c_member.politician.first_name,
-                'last_name': c_member.politician.last_name,
-                'birth_date': c_member.politician.birth_date,
-                'birth_location': c_member.politician.birth_location,
-                'sex': c_member.politician.sex,
-                'op_id': c_member.politician.content_id,
-                'op_link': 'http://www.openpolis.it/politico/%s' % c_member.politician.content_id,
+                'first_name': c_member.first_name,
+                'last_name': c_member.last_name,
+                'birth_date': c_member.birth_date,
+                'birth_location': c_member.birth_location,
+                'sex': c_member.sex,
+                'op_id': c_member.content_id,
+                'op_link': 'http://www.openpolis.it/politico/%s' % c_member.content_id,
                 'textual_rep': c_member.getTextualRepresentation()
             }
             data['consiglio'].append(member)
