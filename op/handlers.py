@@ -387,13 +387,6 @@ class PoliticianHandler(BaseHandler):
                         Q(last_name__istartswith=request.GET['namestartswith'])
                     )
 
-                if 'first_name' in request.GET and 'last_name' in request.GET and 'birth_date' in request.GET:
-                    members = self.base.filter(
-                        Q(first_name=request.GET['first_name'], last_name=request.GET['last_name']) |
-                        Q(first_name=request.GET['first_name'], birth_date=request.GET['birth_date']) |
-                        Q(last_name=request.GET['last_name'], birth_date=request.GET['birth_date'])
-                    )
-
                 if members:
                     if 'limit' in request.GET:
                         members = members[:request.GET['limit']]
@@ -519,11 +512,11 @@ class HistoricHandler(BaseHandler):
                 'date_start': ic_mayor.date_start,
                 'date_end': ic_mayor.date_end,
                 'party': ic_mayor.party.getNormalizedAcronymOrName(),
-                'first_name': ic_mayor.first_name,
-                'last_name': ic_mayor.last_name,
-                'birth_date': ic_mayor.birth_date,
-                'birt_location': ic_mayor.birth_location,
-                'op_link': 'http://www.openpolis.it/politico/%s' % ic_mayor.content_id
+                'first_name': ic_mayor.politician.first_name,
+                'last_name': ic_mayor.politician.last_name,
+                'birth_date': ic_mayor.politician.birth_date,
+                'birt_location': ic_mayor.politician.birth_location,
+                'op_link': 'http://www.openpolis.it/politico/%s' % ic_mayor.politician.content_id
             }
             data['sindaci'].append(sindaco)
         
@@ -573,13 +566,13 @@ class HistoricHandler(BaseHandler):
                 'date_start': g_member.date_start,
                 'date_end': g_member.date_end,
                 'party': g_member.party.getNormalizedAcronymOrName(),
-                'first_name': g_member.first_name,
-                'last_name': g_member.last_name,
-                'birth_date': g_member.birth_date,
-                'birth_location': g_member.birth_location,
-                'sex': g_member.sex,
-                'op_id': g_member.content_id,
-                'op_link': 'http://www.openpolis.it/politico/%s' % g_member.content_id,
+                'first_name': g_member.politician.first_name,
+                'last_name': g_member.politician.last_name,
+                'birth_date': g_member.politician.birth_date,
+                'birth_location': g_member.politician.birth_location,
+                'sex': g_member.politician.sex,
+                'op_id': g_member.politician.content_id,
+                'op_link': 'http://www.openpolis.it/politico/%s' % g_member.politician.content_id,
                 'textual_rep': g_member.getTextualRepresentation()
             }
             data['giunta'].append(member)
@@ -606,13 +599,13 @@ class HistoricHandler(BaseHandler):
                 'date_end': c_member.date_end,
                 'party': c_member.party.getNormalizedAcronymOrName(),
                 'group': c_member.group.getNormalizedAcronymOrName(),
-                'first_name': c_member.first_name,
-                'last_name': c_member.last_name,
-                'birth_date': c_member.birth_date,
-                'birth_location': c_member.birth_location,
-                'sex': c_member.sex,
-                'op_id': c_member.content_id,
-                'op_link': 'http://www.openpolis.it/politico/%s' % c_member.content_id,
+                'first_name': c_member.politician.first_name,
+                'last_name': c_member.politician.last_name,
+                'birth_date': c_member.politician.birth_date,
+                'birth_location': c_member.politician.birth_location,
+                'sex': c_member.politician.sex,
+                'op_id': c_member.politician.content_id,
+                'op_link': 'http://www.openpolis.it/politico/%s' % c_member.politician.content_id,
                 'textual_rep': c_member.getTextualRepresentation()
             }
             data['consiglio'].append(member)
