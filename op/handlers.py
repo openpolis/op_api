@@ -269,7 +269,7 @@ class SimilarityHandler(BaseHandler):
                         'first_name': member.first_name,
                         'last_name': member.last_name,
                         'birth_date': member.birth_date,
-                        'birt_location': member.birth_location,
+                        'birth_location': member.birth_location,
                         'charges': member_charges,
                         'op_link': 'http://www.openpolis.it/politico/%s' % member.content_id,
                         'api_link': '%s%s' % (settings.SITE_URL, api_url)
@@ -365,7 +365,7 @@ class PoliticianHandler(BaseHandler):
                             'first_name': member.first_name,
                             'last_name': member.last_name,
                             'birth_date': member.birth_date,
-                            'birt_location': member.birth_location,
+                            'birth_location': member.birth_location,
                             'charges': member_charges,
                             'op_link': 'http://www.openpolis.it/politico/%s' % member.content_id,
                             'api_link': '%s%s' % (settings.SITE_URL, api_url)
@@ -414,7 +414,7 @@ class PoliticianHandler(BaseHandler):
                         'first_name': member.first_name,
                         'last_name': member.last_name,
                         'birth_date': member.birth_date,
-                        'birt_location': member.birth_location,
+                        'birth_location': member.birth_location,
                         'op_link': 'http://www.openpolis.it/politico/%s' % member.content_id,
                         'api_link': '%s%s' % (settings.SITE_URL, api_url),
                         'textual_rep': member.getTextualRepresentation()
@@ -481,7 +481,7 @@ class HistoricHandler(BaseHandler):
                 'first_name': ic_mayor.politician.first_name,
                 'last_name': ic_mayor.politician.last_name,
                 'birth_date': ic_mayor.politician.birth_date,
-                'birt_location': ic_mayor.politician.birth_location,
+                'birth_location': ic_mayor.politician.birth_location,
                 'op_link': 'http://www.openpolis.it/politico/%s' % ic_mayor.politician.content_id
             }
             data['sindaci'].append(sindaco)
