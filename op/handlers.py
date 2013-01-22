@@ -14,7 +14,6 @@ from piston.handler import AnonymousBaseHandler, BaseHandler
 from piston.emitters import Emitter
 
 from op_api.op.models import *
-from op_api.utils import require_permission
 from op_api.emitters import OpXMLEmitter, OpLocationXMLEmitter, OpProfessionXMLEmitter, OpEducationLevelXMLEmitter
 
 
@@ -335,42 +334,43 @@ class PoliticianHandler(BaseHandler):
             else:
                 members = None
 
-                if 'first_name' in request.GET and 'last_name' in request.GET:
-                    members = self.base.select_related().filter(
-                        Q(first_name=request.GET['first_name'], last_name=request.GET['last_name']),
-                    )
-                if 'first_name' in request.GET and 'last_name' in request.GET and 'birth_date' in request.GET:
-                    members = self.base.select_related().filter(
-                        Q(first_name=request.GET['first_name'],
-                          last_name=request.GET['last_name'],
-                          birth_date=request.GET['birth_date'])
-                    )
+                if 'first_name' in request.GET or\
+                    'namestartswith' in request.GET:
 
+                    if 'first_name' in request.GET and 'last_name' in request.GET and 'birth_date' in request.GET:
+                        members = self.base.select_related().filter(
+                            Q(first_name=request.GET['first_name'],
+                              last_name=request.GET['last_name'],
+                              birth_date=request.GET['birth_date'])
+                        )
+                    elif 'first_name' in request.GET and 'last_name' in request.GET:
+                        members = self.base.select_related().filter(
+                            Q(first_name=request.GET['first_name'], last_name=request.GET['last_name']),
+                            )
+                    elif 'namestartswith' in request.GET:
+                        members = self.base.select_related().filter(
+                            Q(last_name__istartswith=request.GET['namestartswith'])
+                        )
 
-                if 'namestartswith' in request.GET:
-                    members = self.base.select_related().filter(
-                        Q(last_name__istartswith=request.GET['namestartswith'])
-                    )
-
-                if members:
-                    if 'limit' in request.GET:
-                        members = members[:request.GET['limit']]
-                    
                     pols = []
-                    for member in members:
-                        api_url = reverse('api_op_politician_detail', args=[member.content_id])
-                        member_charges = [c['textual_rep'] for c in member.getInstitutionCharges()]
-                        member= {
-                            'op_id': member.content_id,
-                            'first_name': member.first_name,
-                            'last_name': member.last_name,
-                            'birth_date': member.birth_date,
-                            'birth_location': member.birth_location,
-                            'charges': member_charges,
-                            'op_link': 'http://www.openpolis.it/politico/%s' % member.content_id,
-                            'api_link': '%s%s' % (settings.SITE_URL, api_url)
-                        }
-                        pols.append(member)
+                    if members:
+                        if 'limit' in request.GET:
+                            members = members[:request.GET['limit']]
+
+                        for member in members:
+                            api_url = reverse('api_op_politician_detail', args=[member.content_id])
+                            member_charges = [c['textual_rep'] for c in member.getInstitutionCharges()]
+                            member= {
+                                'op_id': member.content_id,
+                                'first_name': member.first_name,
+                                'last_name': member.last_name,
+                                'birth_date': member.birth_date,
+                                'birth_location': member.birth_location,
+                                'charges': member_charges,
+                                'op_link': 'http://www.openpolis.it/politico/%s' % member.content_id,
+                                'api_link': '%s%s' % (settings.SITE_URL, api_url)
+                            }
+                            pols.append(member)
                     return pols
                     
                     
