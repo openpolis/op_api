@@ -1,4 +1,4 @@
-from django.conf.urls.defaults import patterns, url
+from django.conf.urls import patterns, url
 from piston.resource import Resource
 from piston.authentication import HttpBasicAuthentication, OAuthAuthentication
 from op_api.authentication import TwoLeggedOAuthAuthentication
@@ -60,6 +60,4 @@ urlpatterns = patterns('',
     url(r'^historical_location_government/(?P<id_type>[^/]+)/(?P<location_id>[^/]+)/(?P<year>[^/]+)/$', historical_resource),    
     url(r'^current_city_mayor/(?P<id_type>[^/]+)/(?P<location_id>[^/]+)/$', historical_resource),    
     url(r'^current_location_government/(?P<id_type>[^/]+)/(?P<location_id>[^/]+)/$', historical_resource),
-    
-    url(r'^search/(?P<q>[^/]+)$', Resource(handler=SearchHandler, **ad)),
 )

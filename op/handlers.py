@@ -12,7 +12,6 @@ from django.core.urlresolvers import reverse
 
 from piston.handler import AnonymousBaseHandler, BaseHandler
 from piston.emitters import Emitter
-from haystack.query import SearchQuerySet
 
 from op_api.op.models import *
 from op_api.utils import require_permission
@@ -35,46 +34,6 @@ class LoggingHandler(BaseHandler):
         logger = self.getlogger()
         logger.debug(msg)
 
-
-class SearchHandler(BaseHandler):
-    """da rivedere"""
-    request_s = ''
-    
-    def read(self, request, q=None):
-        Emitter.register('xml', OpXMLEmitter, 'text/xml; charset=utf-8')
-        
-        if q:
-            if len(q) < 3:
-                return { 'warning': 'search key must be longer than 3 characters' }
-        
-            results = {}
-            if ('filter' not in request.GET or
-                'filter' in request.GET and request.GET['filter'] == 'politicians'):
-            
-                politicians = []
-                for res in SearchQuerySet().filter(content=q, django_ct='op.oppolitician'):
-                    if (res.sex == 'M'):
-                        born = 'nato'
-                    else:
-                        born = 'nata'
-                    politicians.append(("%s/op/1.0/politicians/%s" % (settings.SITE_URL, res.pol_id,), "%s, %s a %s il %s" % (res.text, born, res.birth_location, res.birth_date)))
-                results['politicians'] = politicians
-            
-            if ('filter' not in request.GET or
-                'filter' in request.GET and request.GET['filter'] == 'locations'):
-            
-                locations = []
-                for res in SearchQuerySet().filter(content=q, django_ct='op.oplocation').models(OpLocation):
-                    if  res.location_type != 'Regione':
-                        locations.append(("%s/op/1.0/locations/%s" % (settings.SITE_URL, res.location_id,), "%s di %s" % (res.location_type, res.text)))
-                    else:
-                        locations.append(("%s/op/1.0/locations/%s" % (settings.SITE_URL, res.location_id,), "Regione %s" % (res.text)))
-                results['locations'] = locations
-                    
-            return results
-        else:
-            return { 'warning': 'empty query will yeld no results' }
-    
 
 
 class LocationHandler(BaseHandler):
@@ -394,13 +353,14 @@ class PoliticianHandler(BaseHandler):
                     pols = []
                     for member in members:
                         api_url = reverse('api_op_politician_detail', args=[member.content_id])
+                        member_charges = [c['textual_rep'] for c in member.getInstitutionCharges()]
                         member= {
                             'op_id': member.content_id,
                             'first_name': member.first_name,
                             'last_name': member.last_name,
                             'birth_date': member.birth_date,
                             'birt_location': member.birth_location,
-                            'charge': member.charge_type.name,
+                            'charges': member_charges,
                             'op_link': 'http://www.openpolis.it/politico/%s' % member.content_id,
                             'api_link': '%s%s' % (settings.SITE_URL, api_url)
                         }
