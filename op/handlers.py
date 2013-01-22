@@ -336,13 +336,19 @@ class PoliticianHandler(BaseHandler):
                 members = None
 
                 if 'first_name' in request.GET and 'last_name' in request.GET:
-                    members = self.base.filter(
+                    members = self.base.select_related().filter(
                         Q(first_name=request.GET['first_name'], last_name=request.GET['last_name']),
+                    )
+                if 'first_name' in request.GET and 'last_name' in request.GET and 'birth_date' in request.GET:
+                    members = self.base.select_related().filter(
+                        Q(first_name=request.GET['first_name'],
+                          last_name=request.GET['last_name'],
+                          birth_date=request.GET['birth_date'])
                     )
 
 
                 if 'namestartswith' in request.GET:
-                    members = self.base.filter(
+                    members = self.base.select_related().filter(
                         Q(last_name__istartswith=request.GET['namestartswith'])
                     )
 
