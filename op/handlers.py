@@ -37,7 +37,7 @@ class LoggingHandler(BaseHandler):
 
 class LocationHandler(BaseHandler):
     model = OpLocation
-    fields = ['id', 'name', 'macroregional_id', 'regional_id', 'provincial_id', 'city_id', 
+    fields = ['id', 'name', 'prov', 'macroregional_id', 'regional_id', 'provincial_id', 'city_id', 
               'minint_regional_code', 'minint_provincial_code', 'minint_city_code',
               'gps_lat', 'gps_lon', 'inhabitants', ('location_type', ('name',))]
     exclude = ()
