@@ -81,6 +81,7 @@ class OpLocation(models.Model):
     id = models.IntegerField(primary_key=True)
     location_type = models.ForeignKey(OpLocationType)
     name = models.CharField(max_length=255, blank=True)
+    slug = models.CharField(max_length=255, blank=True)
     macroregional_id = models.IntegerField(null=True, blank=True)
     regional_id = models.IntegerField(null=True, blank=True)
     provincial_id = models.IntegerField(null=True, blank=True)
@@ -106,7 +107,16 @@ class OpLocation(models.Model):
     
     def __unicode__(self):
       return self.name
-    
+
+    def is_region(self):
+        return self.location_type.name.lower() == 'regione'
+
+    def is_province(self):
+        return self.location_type.name.lower() == 'provincia'
+
+    def is_city(self):
+        return self.location_type.name.lower() == 'comune'
+
     def getProvince(self):
         if self.location_type.name != 'Comune':
             raise Exception("This method can be called only for cities")
@@ -122,6 +132,16 @@ class OpLocation(models.Model):
             location_type__name='Regione', 
             regional_id=self.regional_id
         )
+
+    def getProvincesInRegion(self):
+        """
+        Returns the list of all provinces in the region of the location
+        @return: QuerySet
+        """
+        if self.regional_id:
+            return OpLocation.objects.db_manager('op').filter(location_type__name='Provincia', regional_id=self.regional_id)
+        else:
+            raise Exception("This method can be called only for location within a region")
     
     def getConstituency(self, election_type, prov_id=None):
         """docstring for getConstituency"""
@@ -340,7 +360,7 @@ class OpPolitician(models.Model):
             )
         charges = []
         for charge in pol_charges:
-            charges.append({
+            charge_dict = {
                 'date_start': charge.date_start,
                 'date_end': charge.date_end,
                 'description': charge.description,
@@ -351,7 +371,10 @@ class OpPolitician(models.Model):
                 'group': charge.group.name,
                 'party': charge.party.name,
                 'textual_rep': charge.getTextualRepresentation(),
-            })
+            }
+            if charge.constituency:
+                charge_dict['constituency'] = charge.constituency.name
+            charges.append(charge_dict)
         return charges
     
     
@@ -969,7 +992,7 @@ class OpInstitutionCharge(models.Model):
         executive_institutions = ('Commissione Europea', 'Governo Nazionale', 
                                   'Giunta Regionale', 'Giunta Provinciale', 'Giunta Comunale')
         if institution_name in executive_institutions:
-            if self.party.name.lower() != 'non specificato':
+            if self.party.name and self.party.name.lower() != 'non specificato':
                 s += "(Partito: %s)" % (self.party.getNormalizedAcronymOrName())
         
         # group or election party, for elective charges
@@ -977,9 +1000,9 @@ class OpInstitutionCharge(models.Model):
                                   'Consiglio Regionale', 'Consiglio Provinciale', 'Consiglio Comunale')
         if (institution_name in elective_institutions and
            self.charge_type.name.lower() != 'senatore a vita'):
-            if self.group.name.lower() != 'non specificato':
+            if self.group.name and self.group.name.lower() != 'non specificato':
                 s += "(Gruppo: %s) " % (self.group.getNormalizedAcronymOrName())
-            elif self.party.name.lower() != 'non specificato':
+            elif self.party.name and self.party.name.lower() != 'non specificato':
                 s += "(Lista elettorale: %s) " % (self.party.getNormalizedAcronymOrName())
             
         

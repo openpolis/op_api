@@ -21,7 +21,7 @@ class Command(NoArgsCommand):
 
       print "handler: ", h_doc.name
       print "model: ", h_doc.handler.model
-      print h_doc.resource_uri_template # -> '/api//{id}'
+      print "resource_uri", h_doc.resource_uri_template
       print "methods --"
       for m in h_doc.get_methods():
           print "  %s(%s)" % (m.name, m.signature)

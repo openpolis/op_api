@@ -24,40 +24,44 @@ historical_resource = Resource(handler=HistoricHandler, **ad)
 # politician_shortcuts_resource = Resource(handler=PoliticianShortcutsHandler, **ad)
 
 urlpatterns = patterns('',
-    # locations list
-    url(r'^locations\.(?P<emitter_format>[^\.]+)$', 
-        CsrfExemptResource(handler=LocationHandler, **ad)),
+    # locations
     url(r'^locations/$', CsrfExemptResource(handler=LocationHandler, **ad), name='api_op_locations_list'),
-    
-    # single location
-    url(r'^locations/(?P<id>[^/]+)\.(?P<emitter_format>[^\.]+)$', 
-        CsrfExemptResource(handler=LocationHandler, **ad)),
     url(r'^locations/(?P<id>[^/]+)/$', CsrfExemptResource(handler=LocationHandler, **ad), name='api_op_location_detail'),
-    
-    
-    # politicians list
-    url(r'^politicians\.(?P<emitter_format>[^\.]+)$', CsrfExemptResource(handler=PoliticianHandler, **ad) ),
-    url(r'^politicians/$', CsrfExemptResource(handler=PoliticianHandler, **ad), name='api_op_politicians_list'),
 
-    # single politician
+    # politicians
+    url(r'^politicians/$', CsrfExemptResource(handler=PoliticianHandler, **ad), name='api_op_politicians_list'),
     url(r'^politicians/(?P<pol_id>[^/]+)$', CsrfExemptResource(handler=PoliticianHandler, **ad), name='api_op_politician_detail'),
 
-    # politicians similar, given names and date
+    # useful to resolve similarities
+    # extracts similar politicians, given names and date
     url(r'^similar_politicians/$', CsrfExemptResource(handler=SimilarityHandler, **ad), name='api_op_similar_politicians'),
 
+    # professions
     url(r'^professions/$', CsrfExemptResource(handler=ProfessionHandler, **ad), name='professions_list'),
 
+    # education levels
+    url(r'^education_levels/$', CsrfExemptResource(handler=EducationLevelHandler, **ad), name='education_levels_list'),
 
-    # institution handler
-    url(r'^institutions\.(?P<emitter_format>[^\.]+)$', CsrfExemptResource(handler=InstitutionHandler, **ad) ),
+    # institutions
     url(r'^institutions/$', CsrfExemptResource(handler=InstitutionHandler, **ad), name='institutions_list'),
-    
-    
-    url(r'^education_levels/$', CsrfExemptResource(handler=EducationLevelHandler, **ad), name='profession_detail'),
-    url(r'^statistics/$', Resource(handler=StatisticsHandler, **ad)), 
+
+    # charge types
+    url(r'^chargetypes/$', CsrfExemptResource(handler=ChargeTypeHandler, **ad), name='chargetypes_list'),
+
+    # age, gender, profession, education level statistics (takes much time)
+    url(r'^statistics/$', Resource(handler=StatisticsHandler, **ad)),
+
+    # api calls used in open_bilanci, to extracts city representatives, mayor or city government, in a given period of time
     url(r'^cityreps/(?P<id_type>[^/]+)/(?P<city_id>[^/]+)/$', Resource(handler=CityrepsHandler, **ad)),
     url(r'^historical_city_mayor/(?P<id_type>[^/]+)/(?P<location_id>[^/]+)/(?P<year>[^/]+)/$', historical_resource),    
     url(r'^historical_location_government/(?P<id_type>[^/]+)/(?P<location_id>[^/]+)/(?P<year>[^/]+)/$', historical_resource),    
     url(r'^current_city_mayor/(?P<id_type>[^/]+)/(?P<location_id>[^/]+)/$', historical_resource),    
     url(r'^current_location_government/(?P<id_type>[^/]+)/(?P<location_id>[^/]+)/$', historical_resource),
+
+    # institution charges with politician links (to op and api)
+    # used in open_action to extract decision_makers
+    url(r'^decisionmakers/$',
+        CsrfExemptResource(handler=InstitutionChargeHandler, **ad), name='api_op_decisionmakers_list'),
+
+
 )

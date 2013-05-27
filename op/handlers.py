@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 
-import sys
 import time
-import datetime
 import logging
 
 from django.conf import settings
@@ -15,7 +13,7 @@ from piston.emitters import Emitter
 
 from op_api.op.models import *
 from op_api.emitters import OpXMLEmitter, OpLocationXMLEmitter, OpProfessionXMLEmitter, OpEducationLevelXMLEmitter
-
+from utils import set_query_parameter
 
 class LoggingHandler(BaseHandler):
     
@@ -34,12 +32,11 @@ class LoggingHandler(BaseHandler):
         logger.debug(msg)
 
 
-
 class LocationHandler(BaseHandler):
     model = OpLocation
-    fields = ['id', 'name', 'prov', 'macroregional_id', 'regional_id', 'provincial_id', 'city_id', 
+    fields = ['id', 'name', 'prov', 'slug', 'macroregional_id', 'regional_id', 'provincial_id', 'city_id',
               'minint_regional_code', 'minint_provincial_code', 'minint_city_code',
-              'gps_lat', 'gps_lon', 'inhabitants', ('location_type', ('name',))]
+              'gps_lat', 'gps_lon', 'inhabitants', ('location_type', ('name',)), 'date_start', 'date_end', 'new_location_id']
     exclude = ()
     allowed_methods = ('GET')
     base = OpLocation.objects.using('op')
@@ -50,19 +47,20 @@ class LocationHandler(BaseHandler):
         loc_id = "id"
         if loc:
             loc_id = loc.id
-        return ('api_op_location_detail', [loc_id,])
+        return ('api_op_location_detail', [loc_id, ])
     
     
     def read(self, request, id=None):
         Emitter.register('xml', OpLocationXMLEmitter, 'text/xml; charset=utf-8')
-        
+
+        # store request as a string, as cache key
         self.request_s = request.get_full_path().replace('&', '+')
         
         msg = "%s, %s %s, %s, %s" % \
             (time.strftime("%d/%b/%Y %H:%M:%S",time.localtime(time.time())), 
             request.method, self.request_s, request.user.username, request.META['REMOTE_ADDR'])
-        
-        try:    
+
+        try:
             if id:
                 return self.base.get(pk=id)
             else:
@@ -70,7 +68,8 @@ class LocationHandler(BaseHandler):
                 if locs is None:
                     locs = self.base.all()
                     if 'namestartswith' in request.GET:
-                      locs = locs.filter((Q(name__istartswith=request.GET['namestartswith']) |                                               Q(alternative_name__istartswith=request.GET['namestartswith']))).order_by('location_type__id', '-inhabitants')
+                      locs = locs.filter((Q(name__istartswith=request.GET['namestartswith']) |
+                                          Q(alternative_name__istartswith=request.GET['namestartswith']))).order_by('location_type__id', '-inhabitants')
                     if 'name' in request.GET:
                       locs = locs.filter((Q(name=request.GET['name']) | Q(alternative_name=request.GET['name']))).order_by('location_type__id')
                     if 'location_type' in request.GET:
@@ -79,7 +78,6 @@ class LocationHandler(BaseHandler):
                         if location_type in ('comune', 'provincia', 'regione'):
                             locs = locs.filter(location_type__name__iexact=location_type)
                         else:
-                            logger.warning('Wrong location_type: %s. Comune, provincia or regione expected.' % location_type)
                             return None
                         if location_type in ('comune', 'provincia') and 'regional_id' in request.GET:
                             locs = locs.filter(regional_id=request.GET['regional_id'])
@@ -93,6 +91,15 @@ class LocationHandler(BaseHandler):
         except self.model.DoesNotExist:
             return None
     
+
+class ChargeTypeHandler(BaseHandler):
+  model = OpChargeType
+  fields = ('id', 'name', 'short_name', 'priority', 'category')
+  allowed_methods = ('GET')
+
+  def read(self, request):
+    Emitter.register('xml', OpXMLEmitter, 'text/xml; charset=utf-8')
+    return OpChargeType.objects.using('op').all()
 
 
 class InstitutionHandler(BaseHandler):
@@ -122,7 +129,6 @@ class EducationLevelHandler(BaseHandler):
       return OpProfession.objects.using('op').all()
   
 
-
 class ProfessionHandler(BaseHandler):
   model = OpProfession
   fields = ('id', 'description', 'oid', 'odescription')
@@ -137,7 +143,6 @@ class ProfessionHandler(BaseHandler):
       return OpProfession.objects.using('op').all()
   
 
-
 class StatisticsHandler(BaseHandler):
     allowed_methods = ('GET',)
     
@@ -151,7 +156,6 @@ class StatisticsHandler(BaseHandler):
           
         return { 'statistics': statistics }
     
-
 
 class CityrepsHandler(BaseHandler):
     """docstring for CityrepsHandler"""
@@ -293,14 +297,7 @@ class PoliticianHandler(BaseHandler):
     base = model.objects.using('op')
     request_s = ''
     
-    @classmethod
-    def resource_uri(cls, pol=None):
-        pol_id = "id"
-        if pol:
-            pol_id = pol.content_id
-        return ('api_op_politician_detail', [pol_id,])
-    
-    
+
     def read(self, request, pol_id=None):
         Emitter.register('xml', OpXMLEmitter, 'text/xml; charset=utf-8')
         self.request_s = request.get_full_path().replace('&', '+')        
@@ -424,7 +421,6 @@ class PoliticianHandler(BaseHandler):
                     
         except self.model.DoesNotExist:
           return None
-    
 
 
 class HistoricHandler(BaseHandler):
@@ -578,4 +574,281 @@ class HistoricHandler(BaseHandler):
         
         return data
     
+
+class InstitutionChargeHandler(BaseHandler):
+    """
+    Handler to extract institution charges, used in open_action.
+    Extracts a list of complex objects, containing some institution charge details,
+    and politician and resources details, too, used while selecting the recipients of a campaign.
+    Limit is set by default to 10.
+    """
+    model = OpInstitutionCharge
+    allowed_methods = ('GET')
+    base = model.objects.using('op').filter(date_end__isnull=True)
+    fields = ('content_id', 'politician')
+
+    @classmethod
+    def resource_uri(cls, charge=None):
+        charge_id = "content_id"
+        if charge:
+            charge_id = charge.id
+        return ('api_op_institutioncharge_detail', [charge_id, ])
+
+    def read(self, request, charge_id=None):
+        Emitter.register('xml', OpXMLEmitter, 'text/xml; charset=utf-8')
+        try:
+            if charge_id is not None:
+                return {'error': 'Not implemented'}
+            else:
+                members = self.base
+                context = None
+                is_parliament = False
+
+                if 'context' in request.GET:
+                    context = request.GET['context']
+
+                location = None
+                if 'location_id' in request.GET:
+                    location = OpLocation.objects.db_manager('op').get(pk=request.GET['location_id'])
+
+                #
+                # filters building
+                #
+
+                # no context, pre-set filters for location types
+                # returning all members of a given location
+                if context is None:
+                    if location is None:
+                        # whole (limits are on by default)
+                        pass
+                    elif location.is_region():
+                        # governatore, assessori and consiglieri
+                        members = members.filter(
+                            location__location_type__name='Regione', location__regional_id=location.regional_id)
+                    elif location.is_province():
+                        # president of la provincia, assessori and consiglieri
+                        members = members.filter(
+                            location__location_type__name='Provincia', location__provincial_id=location.provincial_id)
+                    elif location.is_city():
+                        # sindaco, assessori and consiglieri
+                        members = members.filter(
+                            location__location_type__name='Comune', location__city_id=location.city_id)
+
+                # location-independent contexts
+                elif context == 'euro-commissario':
+                    members = members.filter(institution__id=1)
+                elif context == 'pres-della-repubblica':
+                    members = members.filter(charge_type__id=19)
+                elif context == 'pres-del-consiglio':
+                    members = members.filter(institution__id=3, charge_type__id=7)
+                elif context == 'ministro' or context == 'ministri':
+                    members = members.filter(institution__id=3, charge_type__id=9)
+
+                # italian and european parliaments
+                elif context == 'euro-deputato' or context == 'euro-deputati':
+                    members = members.filter(institution__id=2)
+                    # add constituency filtering in case of parliaments charges
+                    if location:
+                        members = members.filter(constituency__election_type__name='EU')
+                        if location.is_city() or location.is_province():
+                            members = members.filter(
+                                constituency__opconstituencylocation__location__provincial_id=location.provincial_id
+                            )
+                        elif location.is_region():
+                            members = members.filter(
+                                constituency__opconstituencylocation__location__provincial_id__in=location.getProvincesInRegion()
+                            )
+
+                elif context == 'deputato' or context == 'deputati':
+                    members = members.filter(charge_type__id=5)
+                    # add constituency filtering in case of parliaments charges
+                    if location:
+                        members = members.filter(constituency__election_type__name='Camera')
+                        if location.is_city() or location.is_province():
+                            members = members.filter(
+                                constituency__opconstituencylocation__location__provincial_id=location.provincial_id
+                            )
+                        elif location.is_region():
+                            members = members.filter(
+                                constituency__opconstituencylocation__location__provincial_id__in=location.getProvincesInRegion()
+                            )
+
+                elif context == 'senatore' or context == 'senatori':
+                    from django.db import Q
+                    members = members.filter(Q(charge_type__id=6) | Q(charge_type__id=20))
+                    # add constituency filtering in case of parliaments charges
+                    if location:
+                        members = members.filter(constituency__election_type__name='Senato')
+                        if location.is_city() or location.is_province():
+                            members = members.filter(
+                                constituency__opconstituencylocation__location__provincial_id=location.provincial_id
+                            )
+                        elif location.is_region():
+                            members = members.filter(
+                                constituency__opconstituencylocation__location__provincial_id__in=location.getProvincesInRegion()
+                            )
+
+
+                # governatori
+                elif context == 'governatore' or context == 'governatori':
+                    members = members.filter(institution__id=6, charge_type__id=1)
+                    if location is None:
+                        pass
+                    else:
+                        members = members.filter(location__regional_id=location.regional_id)
+
+                # assessori regionali
+                elif context == 'assessore-reg' or context == 'assessore-regionale' or context == 'assessori-regionali':
+                    members = members.filter(institution__id=6, charge_type__id=12)
+                    if location is None:
+                        return {'error': 'Location ID of a region at least must be specified for this context.'}
+                    else:
+                        members = members.filter(location__regional_id=location.regional_id)
+
+                # consiglieri regionali
+                elif context == 'consigliere-reg' or context == 'consigliere-regionale' or context == 'consiglieri-regionali':
+                    members = members.filter(institution__id=7, charge_type__id=13)
+                    if location is None:
+                        return {'error': 'Location ID of a region at least, must be specified for this context.'}
+                    else:
+                        members = members.filter(location__regional_id=location.regional_id)
+
+
+                # presidenti di provincia
+                elif context == 'pres-prov' or context == 'presidente-provincia' or context == 'presidenti-provincia':
+                    members = members.filter(institution__id=8, charge_type__id=1)
+                    if location is None:
+                        pass
+                    elif location.is_region():
+                        members = members.filter(location__regional_id=location.regional_id)
+                    else:
+                        members = members.filter(location__provincial_id=location.provincial_id)
+
+                # assessori provinciali
+                elif context == 'assessore-prov' or context == 'assessore-provinciale' or context == 'assessori-provinciali':
+                    members = members.filter(institution__id=8, charge_type__id=12)
+                    if location is None or location.is_region():
+                        return {'error': 'Location ID of a province at least must be specified for this context.'}
+                    else:
+                        members = members.filter(location__provincial_id=location.provincial_id)
+
+                # consiglieri provinciali
+                elif context == 'consigliere-prov' or context == 'consigliere-provinciale' or context == 'consiglieri-provinciali':
+                    members = members.filter(institution__id=9, charge_type__id=13)
+                    if location is None or location.is_region():
+                        return {'error': 'Location ID of a province at least must be specified for this context.'}
+                    else:
+                        members = members.filter(location__provincial_id=location.provincial_id)
+
+
+                # sindaci
+                elif context == 'sindaco' or context == 'sindaci':
+                    members = members.filter(charge_type__id=14)
+                    if location is None:
+                        return {'error': 'Location ID of a province at least must be specified for this context.'}
+                    elif location.is_region():
+                        members = members.filter(location__regional_id=location.regional_id)
+                    elif location.is_province():
+                        members = members.filter(location__provincial_id=location.provincial_id)
+                    else:
+                        members = members.filter(location__city_id=location.city_id)
+
+                # assessori comunali
+                elif context == 'assessore-com' or context == 'assessore-comunale' or context == 'assessori-comunali':
+                    members = members.filter(institution__id=10, charge_type__id=12)
+                    if not location or not location.is_city():
+                        return {'error': 'Location ID of a city must be specified for this context.'}
+                    else:
+                        members = members.filter(location__provincial_id=location.provincial_id)
+
+                # consiglieri comunali
+                elif context == 'consigliere-com' or context == 'consigliere-comunale' or context == 'consiglieri-comunali':
+                    members = members.filter(institution__id=11, charge_type__id=13)
+                    if not location or not location.is_city():
+                        return {'error': 'Location ID of a city must be specified for this context.'}
+                    else:
+                        members = members.filter(location__provincial_id=location.provincial_id)
+
+
+                # commissariamenti
+                elif context == 'commissario' or context == 'commissari':
+                    members = members.filter(institution__id=12)
+                    if location is None:
+                        pass
+                    elif location.is_region():
+                        members = members.filter(location__regional_id=location.regional_id)
+                    elif location.is_province():
+                        members = members.filter(location__provincial_id=location.provincial_id)
+                    else:
+                        members = members.filter(location__city_id=location.city_id)
+
+                # add sorting criteria
+                members = members.order_by('charge_type__priority', '-date_start')
+
+
+                if 'limit' in request.GET:
+                    limit = int(request.GET['limit'])
+                else:
+                    limit = 20
+
+                if 'offset' in request.GET:
+                    offset = int(request.GET['offset'])
+                else:
+                    offset = 0
+
+                sliced_members = members[offset:limit+offset]
+
+                n_results = members.count()
+
+                # build results array
+                results = {
+                    'n_results': n_results,
+                    'offset': offset,
+                    'limit': limit,
+                    'members': [],
+                }
+
+
+                # add next and previous links, to navigate through pages
+                current_url = '%s%s' % (settings.SITE_URL, request.get_full_path())
+                if limit + offset < n_results:
+                    results['next'] = set_query_parameter(current_url, 'offset', limit + offset)
+                if offset >= limit:
+                    results['previous'] = set_query_parameter(current_url, 'offset', limit - offset)
+
+
+                for m in sliced_members:
+                    p = m.politician
+                    api_politician_url = reverse('api_op_politician_detail', args=(p.content_id,))
+                    member= {
+                        'op_charge_id': m.content_id,
+                        'charge': m.charge_type.name,
+                        'description': m.description,
+                        'institution': m.institution.name,
+                        'location': m.location.name,
+                        'location_type': m.location.location_type.name,
+                        'date_start': m.date_start,
+                        'date_end': m.date_end,
+                        'party': m.party.getNormalizedAcronymOrName(),
+                        'politician': {
+                            'op_politician_id': p.content_id,
+                            'first_name': p.first_name,
+                            'last_name': p.last_name,
+                            'sex': p.sex,
+                            'birth_date': p.birth_date,
+                            'birth_location': p.birth_location,
+                            'resources': p.getResources(),
+                        },
+                        'op_link': 'http://politici.openpolis.it/politico/%s' % m.politician.content_id,
+                        'politician_uri': '%s%s' % (settings.SITE_URL, api_politician_url),
+                        'textual_rep': m.getTextualRepresentation()
+                    }
+                    results['members'].append(member)
+
+                return results
+
+        except self.model.DoesNotExist:
+          return None
+
+
 
