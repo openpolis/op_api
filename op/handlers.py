@@ -595,6 +595,29 @@ class InstitutionChargeHandler(BaseHandler):
             charge_id = charge.id
         return ('api_op_institutioncharge_detail', [charge_id, ])
 
+    def filterByConstituencies(self, members, election_type, location):
+        """
+        Filter members through constituency, given an election type and a location
+        @return: members queryset
+        """
+        locations = ()
+        members = members.filter(constituency__election_type__name=election_type)
+        if location.is_city() or location.is_province():
+            locations = (location.provincial_id,)
+        elif location.is_region():
+            locations = location.getProvincesInRegion().values('id')
+
+        constituencies = OpConstituencyLocation.objects.db_manager('op').filter(
+            constituency__election_type__name=election_type,
+            location__provincial_id__in=locations).values('constituency').distinct()
+        members = members.filter(
+            constituency__in=constituencies,
+        )
+
+        return members
+
+
+
     def read(self, request, charge_id=None):
         Emitter.register('xml', OpXMLEmitter, 'text/xml; charset=utf-8')
         try:
@@ -648,46 +671,24 @@ class InstitutionChargeHandler(BaseHandler):
                 # italian and european parliaments
                 elif context == 'euro-deputato' or context == 'euro-deputati':
                     members = members.filter(institution__id=2)
-                    # add constituency filtering in case of parliaments charges
+                    # constituency filtering, from location, in case of euro parliament
                     if location:
-                        members = members.filter(constituency__election_type__name='EU')
-                        if location.is_city() or location.is_province():
-                            members = members.filter(
-                                constituency__opconstituencylocation__location__provincial_id=location.provincial_id
-                            )
-                        elif location.is_region():
-                            members = members.filter(
-                                constituency__opconstituencylocation__location__provincial_id__in=location.getProvincesInRegion()
-                            )
+                        members = self.filterByConstituencies(members, election_type='EU', location=location)
 
                 elif context == 'deputato' or context == 'deputati':
                     members = members.filter(charge_type__id=5)
-                    # add constituency filtering in case of parliaments charges
+
+                    # constituency filtering, from location, in case of camera
                     if location:
-                        members = members.filter(constituency__election_type__name='Camera')
-                        if location.is_city() or location.is_province():
-                            members = members.filter(
-                                constituency__opconstituencylocation__location__provincial_id=location.provincial_id
-                            )
-                        elif location.is_region():
-                            members = members.filter(
-                                constituency__opconstituencylocation__location__provincial_id__in=location.getProvincesInRegion()
-                            )
+                        members = self.filterByConstituencies(members, election_type='Camera', location=location)
+
 
                 elif context == 'senatore' or context == 'senatori':
                     from django.db import Q
                     members = members.filter(Q(charge_type__id=6) | Q(charge_type__id=20))
-                    # add constituency filtering in case of parliaments charges
+                    # constituency filtering, from location, in case of senato
                     if location:
-                        members = members.filter(constituency__election_type__name='Senato')
-                        if location.is_city() or location.is_province():
-                            members = members.filter(
-                                constituency__opconstituencylocation__location__provincial_id=location.provincial_id
-                            )
-                        elif location.is_region():
-                            members = members.filter(
-                                constituency__opconstituencylocation__location__provincial_id__in=location.getProvincesInRegion()
-                            )
+                        members = self.filterByConstituencies(members, election_type='Senato', location=location)
 
 
                 # governatori
@@ -783,6 +784,8 @@ class InstitutionChargeHandler(BaseHandler):
                     else:
                         members = members.filter(location__city_id=location.city_id)
 
+
+
                 # add sorting criteria
                 members = members.order_by('charge_type__priority', '-date_start')
 
@@ -797,6 +800,7 @@ class InstitutionChargeHandler(BaseHandler):
                 else:
                     offset = 0
 
+                members = members.distinct()
                 sliced_members = members[offset:limit+offset]
 
                 n_results = members.count()
@@ -828,6 +832,7 @@ class InstitutionChargeHandler(BaseHandler):
                         'institution': m.institution.name,
                         'location': m.location.name,
                         'location_type': m.location.location_type.name,
+                        'constituency': m.constituency.name,
                         'date_start': m.date_start,
                         'date_end': m.date_end,
                         'party': m.party.getNormalizedAcronymOrName(),
