@@ -13,7 +13,8 @@ from piston.emitters import Emitter
 
 from op_api.op.models import *
 from op_api.emitters import OpXMLEmitter, OpLocationXMLEmitter, OpProfessionXMLEmitter, OpEducationLevelXMLEmitter
-from utils import set_query_parameter
+from op_api.utils import set_query_parameter
+
 
 class LoggingHandler(BaseHandler):
     
