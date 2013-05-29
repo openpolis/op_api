@@ -5,6 +5,7 @@ Quickstart Guides
 =================
 
 To query our API you need to authenticate.
+
 You can ask us by writing to ``lab [chiocciola] openpolis [punto] it`` and we'll send your username and password along.
 
 Suppose you've done it and we've sent you the following auth tokens:
@@ -13,8 +14,10 @@ Suppose you've done it and we've sent you the following auth tokens:
 Username          Password
 ================= ====================================================================================
 user              pass
+================= ====================================================================================
 
-Then you should tell us we're dumb mofos, but, hey, this is just an example, so take it easy!
+
+Then you should really tell us we're dumb weirdos, but wait, take it easy, it's just an example!
 
 ---------------
 Access examples

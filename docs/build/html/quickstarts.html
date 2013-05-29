@@ -3,16 +3,13 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
-
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
     <title>Quickstart Guides &mdash; Openpolis REST API</title>
-    
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '',
@@ -53,11 +50,26 @@
             
   <div class="section" id="quickstart-guides">
 <span id="quickstart"></span><h1>Quickstart Guides<a class="headerlink" href="#quickstart-guides" title="Permalink to this headline">¶</a></h1>
-<p>To query our API you need to authenticate.
-You can ask us by writing to <tt class="docutils literal"><span class="pre">lab</span> <span class="pre">[chiocciola]</span> <span class="pre">openpolis</span> <span class="pre">[punto]</span> <span class="pre">it</span></tt> and we&#8217;ll send your username and password along.</p>
+<p>To query our API you need to authenticate.</p>
+<p>You can ask us by writing to <tt class="docutils literal"><span class="pre">lab</span> <span class="pre">[chiocciola]</span> <span class="pre">openpolis</span> <span class="pre">[punto]</span> <span class="pre">it</span></tt> and we&#8217;ll send your username and password along.</p>
 <p>Suppose you&#8217;ve done it and we&#8217;ve sent you the following auth tokens:</p>
-<p>user              pass</p>
-<p>Then you should tell us we&#8217;re dumb mofos, but, hey, this is just an example, so take it easy!</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="17%" />
+<col width="83%" />
+</colgroup>
+<thead valign="bottom">
+<tr><th class="head">Username</th>
+<th class="head">Password</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr><td>user</td>
+<td>pass</td>
+</tr>
+</tbody>
+</table>
+<p>Then you should really tell us we&#8217;re dumb weirdos, but wait, take it easy, it&#8217;s just an example!</p>
 <div class="section" id="access-examples">
 <h2>Access examples<a class="headerlink" href="#access-examples" title="Permalink to this headline">¶</a></h2>
 <p>The API is accessed trough python&#8217;s <a class="reference external" href="http://docs.python-requests.org/en/latest/">request</a> in the following examples,
@@ -101,7 +113,7 @@ languages would fit.</p>
 <div id="searchbox" style="display: none">
   <h3>Quick search</h3>
     <form class="search" action="search.html" method="get">
-      <input type="text" name="q" />
+      <input type="text" name="q" size="18" />
       <input type="submit" value="Go" />
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
@@ -132,7 +144,7 @@ languages would fit.</p>
     </div>
     <div class="footer">
         &copy; Copyright 2011, Associazione Openpolis.
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.2.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
     </div>
   </body>
 </html>

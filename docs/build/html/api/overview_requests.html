@@ -3,16 +3,13 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
-
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
     <title>Request Formats &mdash; Openpolis REST API</title>
-    
     <link rel="stylesheet" href="../_static/default.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
@@ -69,37 +66,37 @@ The easiest way to do this is to copy and paste a URL into your web browser&#821
 <col width="81%" />
 </colgroup>
 <thead valign="bottom">
-<tr class="row-odd"><th class="head">code</th>
+<tr><th class="head">code</th>
 <th class="head">message</th>
 <th class="head">description</th>
 </tr>
 </thead>
 <tbody valign="top">
-<tr class="row-even"><td>200</td>
+<tr><td>200</td>
 <td>OK</td>
 <td>The request was successful and the response body contains the representation requested.</td>
 </tr>
-<tr class="row-odd"><td>302</td>
+<tr><td>302</td>
 <td>FOUND</td>
 <td>A common redirect response; you can GET the representation at the URI in the Location response header.</td>
 </tr>
-<tr class="row-even"><td>304</td>
+<tr><td>304</td>
 <td>NOT MODIFIED</td>
 <td>Your client&#8217;s cached version of the representation is still up to date.</td>
 </tr>
-<tr class="row-odd"><td>401</td>
+<tr><td>401</td>
 <td>UNAUTHORIZED</td>
 <td>The supplied credentials, if any, are not sufficient to access the resource.</td>
 </tr>
-<tr class="row-even"><td>404</td>
+<tr><td>404</td>
 <td>NOT FOUND</td>
 <td>You know this one.</td>
 </tr>
-<tr class="row-odd"><td>500</td>
+<tr><td>500</td>
 <td>SERVER ERROR</td>
 <td>We couldn&#8217;t return the representation due to an internal server error.</td>
 </tr>
-<tr class="row-even"><td>503</td>
+<tr><td>503</td>
 <td>SERVICE UNAVAILABLE</td>
 <td>We are temporarily unable to return the representation. Please wait for a bit and try again.</td>
 </tr>
@@ -119,41 +116,41 @@ The easiest way to do this is to copy and paste a URL into your web browser&#821
 <col width="81%" />
 </colgroup>
 <thead valign="bottom">
-<tr class="row-odd"><th class="head">code</th>
+<tr><th class="head">code</th>
 <th class="head">message</th>
 <th class="head">description</th>
 </tr>
 </thead>
 <tbody valign="top">
-<tr class="row-even"><td>200</td>
+<tr><td>200</td>
 <td>OK</td>
 <td>The request was successful, we updated the resource and the response body contains the representation.</td>
 </tr>
-<tr class="row-odd"><td>201</td>
+<tr><td>201</td>
 <td>CREATED</td>
 <td>The request was successful, we created a new resource and the response body contains the representation.</td>
 </tr>
-<tr class="row-even"><td>400</td>
+<tr><td>400</td>
 <td>BAD REQUEST</td>
 <td>The data given in the POST or PUT failed validation. Inspect the response body for details.</td>
 </tr>
-<tr class="row-odd"><td>401</td>
+<tr><td>401</td>
 <td>UNAUTHORIZED</td>
 <td>The supplied credentials, if any, are not sufficient to create or update the resource.</td>
 </tr>
-<tr class="row-even"><td>404</td>
+<tr><td>404</td>
 <td>NOT FOUND</td>
 <td>You know this one.</td>
 </tr>
-<tr class="row-odd"><td>405</td>
+<tr><td>405</td>
 <td>METHOD NOT ALLOWED</td>
 <td>You can&#8217;t POST or PUT to the resource.</td>
 </tr>
-<tr class="row-even"><td>409</td>
+<tr><td>409</td>
 <td>DUPLICATED</td>
 <td>The data provided would insert a record having the same primary key of an existing one.</td>
 </tr>
-<tr class="row-odd"><td>500</td>
+<tr><td>500</td>
 <td>SERVER ERROR</td>
 <td>We couldn&#8217;t create or update the resource. Please try again.</td>
 </tr>
@@ -173,33 +170,33 @@ The easiest way to do this is to copy and paste a URL into your web browser&#821
 <col width="81%" />
 </colgroup>
 <thead valign="bottom">
-<tr class="row-odd"><th class="head">code</th>
+<tr><th class="head">code</th>
 <th class="head">message</th>
 <th class="head">description</th>
 </tr>
 </thead>
 <tbody valign="top">
-<tr class="row-even"><td>204</td>
+<tr><td>204</td>
 <td>OK</td>
 <td>The request was successful; the resource was deleted.</td>
 </tr>
-<tr class="row-odd"><td>401</td>
+<tr><td>401</td>
 <td>UNAUTHORIZED</td>
 <td>The supplied credentials, if any, are not sufficient to delete the resource.</td>
 </tr>
-<tr class="row-even"><td>404</td>
+<tr><td>404</td>
 <td>NOT FOUND</td>
 <td>You know this one.</td>
 </tr>
-<tr class="row-odd"><td>405</td>
+<tr><td>405</td>
 <td>METHOD NOT ALLOWED</td>
 <td>You can&#8217;t DELETE the resource.</td>
 </tr>
-<tr class="row-even"><td>409</td>
+<tr><td>409</td>
 <td>DUPLICATED</td>
 <td>The data provided would insert a record having the same primary key of an existing one.</td>
 </tr>
-<tr class="row-odd"><td>500</td>
+<tr><td>500</td>
 <td>SERVER ERROR</td>
 <td>We couldn&#8217;t delete the resource. Please try again.</td>
 </tr>
@@ -260,7 +257,7 @@ The easiest way to do this is to copy and paste a URL into your web browser&#821
 <div id="searchbox" style="display: none">
   <h3>Quick search</h3>
     <form class="search" action="../search.html" method="get">
-      <input type="text" name="q" />
+      <input type="text" name="q" size="18" />
       <input type="submit" value="Go" />
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
@@ -293,7 +290,7 @@ The easiest way to do this is to copy and paste a URL into your web browser&#821
     </div>
     <div class="footer">
         &copy; Copyright 2011, Associazione Openpolis.
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.2.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
     </div>
   </body>
 </html>

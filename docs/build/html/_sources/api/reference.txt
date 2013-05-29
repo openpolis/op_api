@@ -12,6 +12,5 @@ The complete REST API reference.
    
    overview
    references/op/resources
-   references/opp/resources
    additional
    

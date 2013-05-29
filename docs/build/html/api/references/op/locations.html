@@ -3,16 +3,13 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
-
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
     <title>Locations &mdash; Openpolis REST API</title>
-    
     <link rel="stylesheet" href="../../../_static/default.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
-    
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../../',
@@ -74,48 +71,48 @@
 <col width="57%" />
 </colgroup>
 <thead valign="bottom">
-<tr class="row-odd"><th class="head">property</th>
+<tr><th class="head">property</th>
 <th class="head">explanation</th>
 </tr>
 </thead>
 <tbody valign="top">
-<tr class="row-even"><td><tt class="xref py py-const docutils literal"><span class="pre">id</span></tt></td>
+<tr><td><tt class="xref py py-const docutils literal"><span class="pre">id</span></tt></td>
 <td>openpolis identifier</td>
 </tr>
-<tr class="row-odd"><td><tt class="xref py py-const docutils literal"><span class="pre">name</span></tt></td>
+<tr><td><tt class="xref py py-const docutils literal"><span class="pre">name</span></tt></td>
 <td>location name</td>
 </tr>
-<tr class="row-even"><td><tt class="xref py py-const docutils literal"><span class="pre">macroregional_id</span></tt></td>
+<tr><td><tt class="xref py py-const docutils literal"><span class="pre">macroregional_id</span></tt></td>
 <td>macro-region identifier (istat)</td>
 </tr>
-<tr class="row-odd"><td><tt class="xref py py-const docutils literal"><span class="pre">regional_id</span></tt></td>
+<tr><td><tt class="xref py py-const docutils literal"><span class="pre">regional_id</span></tt></td>
 <td>region identifier (istat)</td>
 </tr>
-<tr class="row-even"><td><tt class="xref py py-const docutils literal"><span class="pre">provincial_id</span></tt></td>
+<tr><td><tt class="xref py py-const docutils literal"><span class="pre">provincial_id</span></tt></td>
 <td>province identifier (istat)</td>
 </tr>
-<tr class="row-odd"><td><tt class="xref py py-const docutils literal"><span class="pre">city_id</span></tt></td>
+<tr><td><tt class="xref py py-const docutils literal"><span class="pre">city_id</span></tt></td>
 <td>city identifier (istat)</td>
 </tr>
-<tr class="row-even"><td><tt class="xref py py-const docutils literal"><span class="pre">minint_regional_id</span></tt></td>
+<tr><td><tt class="xref py py-const docutils literal"><span class="pre">minint_regional_id</span></tt></td>
 <td>region identifier (min. int.)</td>
 </tr>
-<tr class="row-odd"><td><tt class="xref py py-const docutils literal"><span class="pre">minint_provincial_id</span></tt></td>
+<tr><td><tt class="xref py py-const docutils literal"><span class="pre">minint_provincial_id</span></tt></td>
 <td>province identifier (min. int.)</td>
 </tr>
-<tr class="row-even"><td><tt class="xref py py-const docutils literal"><span class="pre">minint_city_id</span></tt></td>
+<tr><td><tt class="xref py py-const docutils literal"><span class="pre">minint_city_id</span></tt></td>
 <td>province identifier (min. int.)</td>
 </tr>
-<tr class="row-odd"><td><tt class="xref py py-const docutils literal"><span class="pre">gps_lat</span></tt></td>
+<tr><td><tt class="xref py py-const docutils literal"><span class="pre">gps_lat</span></tt></td>
 <td>latitude (gps coords)</td>
 </tr>
-<tr class="row-even"><td><tt class="xref py py-const docutils literal"><span class="pre">gps_lon</span></tt></td>
+<tr><td><tt class="xref py py-const docutils literal"><span class="pre">gps_lon</span></tt></td>
 <td>longitude (gps coords)</td>
 </tr>
-<tr class="row-odd"><td><tt class="xref py py-const docutils literal"><span class="pre">inhabitants</span></tt></td>
+<tr><td><tt class="xref py py-const docutils literal"><span class="pre">inhabitants</span></tt></td>
 <td>inhabitants (as of 2001)</td>
 </tr>
-<tr class="row-even"><td><tt class="xref py py-const docutils literal"><span class="pre">location_type.name</span></tt></td>
+<tr><td><tt class="xref py py-const docutils literal"><span class="pre">location_type.name</span></tt></td>
 <td>location type</td>
 </tr>
 </tbody>
@@ -211,24 +208,24 @@
 <col width="84%" />
 </colgroup>
 <thead valign="bottom">
-<tr class="row-odd"><th class="head">Parameter</th>
+<tr><th class="head">Parameter</th>
 <th class="head">Description</th>
 </tr>
 </thead>
 <tbody valign="top">
-<tr class="row-even"><td>namestartswith</td>
+<tr><td>namestartswith</td>
 <td>Only return Locations starting with the given string (case insensitive)</td>
 </tr>
-<tr class="row-odd"><td>name</td>
+<tr><td>name</td>
 <td>Only return Locations whose name matches exactly the string given (case insensitive)</td>
 </tr>
-<tr class="row-even"><td>location_type</td>
+<tr><td>location_type</td>
 <td>Only return Locations of the given type. May be <cite>regione</cite>, <cite>provincia</cite>, <cite>comune</cite></td>
 </tr>
-<tr class="row-odd"><td>regional_id</td>
+<tr><td>regional_id</td>
 <td>Only return Locations of the given region. <tt class="docutils literal"><span class="pre">location_type</span></tt> must be <cite>provincia</cite> or <cite>comune</cite></td>
 </tr>
-<tr class="row-even"><td>provincial_id</td>
+<tr><td>provincial_id</td>
 <td>Only return Locations of the given province. <tt class="docutils literal"><span class="pre">location_type</span></tt> must be <cite>comune</cite></td>
 </tr>
 </tbody>
@@ -547,7 +544,7 @@ These filters can be used alone, working on the complete list, or together with 
 <div id="searchbox" style="display: none">
   <h3>Quick search</h3>
     <form class="search" action="../../../search.html" method="get">
-      <input type="text" name="q" />
+      <input type="text" name="q" size="18" />
       <input type="submit" value="Go" />
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
@@ -580,7 +577,7 @@ These filters can be used alone, working on the complete list, or together with 
     </div>
     <div class="footer">
         &copy; Copyright 2011, Associazione Openpolis.
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.2.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
     </div>
   </body>
 </html>

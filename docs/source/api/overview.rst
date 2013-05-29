@@ -21,12 +21,7 @@ The **openpolitici** project's API code is `op`
 
     https://username:password@api.openpolis.it/op/
 
-
-The **openparlamento** project's API code is `opp`
-::
-
-    https://username:password@api.openpolis.it/opp/
-
+Other codes will be used whenever we'll add more data.
 
 
 
