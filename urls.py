@@ -1,5 +1,5 @@
 from django.conf import settings
-from django.conf.urls.defaults import patterns, include, url
+from django.conf.urls import patterns, include, url
 
 # Uncomment the next two lines to enable the admin:
 from django.contrib import admin
@@ -17,7 +17,7 @@ policy.allow_headers(domain, headers)
 # api and admin urls
 urlpatterns = patterns('',
     (r'^op/1.0/', include('op_api.op.v1.urls')),
-    (r'^search/', include('haystack.urls')),
+    (r'^opp/', include('op_api.opp.urls')),
     (r'^admin/doc/', include('django.contrib.admindocs.urls')),
     (r'^admin/', include(admin.site.urls)),
     (r'^crossdomain.xml$',

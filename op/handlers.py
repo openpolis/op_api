@@ -832,7 +832,6 @@ class InstitutionChargeHandler(BaseHandler):
                         'institution': m.institution.name,
                         'location': m.location.name,
                         'location_type': m.location.location_type.name,
-                        'constituency': m.constituency.name,
                         'date_start': m.date_start,
                         'date_end': m.date_end,
                         'party': m.party.getNormalizedAcronymOrName(),
@@ -849,6 +848,8 @@ class InstitutionChargeHandler(BaseHandler):
                         'politician_uri': '%s%s' % (settings.SITE_URL, api_politician_url),
                         'textual_rep': m.getTextualRepresentation()
                     }
+                    if m.constituency:
+                        member['constituency'] = m.constituency.name
                     results['members'].append(member)
 
                 return results
