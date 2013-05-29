@@ -17,7 +17,7 @@ policy.allow_headers(domain, headers)
 # api and admin urls
 urlpatterns = patterns('',
     (r'^op/1.0/', include('op_api.op.v1.urls')),
-    (r'^opp/', include('op_api.opp.urls')),
+#    (r'^opp/', include('op_api.opp.urls')),
     (r'^admin/doc/', include('django.contrib.admindocs.urls')),
     (r'^admin/', include(admin.site.urls)),
     (r'^crossdomain.xml$',
