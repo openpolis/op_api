@@ -1,0 +1,792 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Politicians &mdash; Openpolis REST API</title>
+    
+    <link rel="stylesheet" href="../../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <link rel="top" title="Openpolis REST API" href="../../../index.html" />
+    <link rel="up" title="API: Openpolitici Resources" href="resources.html" />
+    <link rel="next" title="Decision Makers" href="decisionmakers.html" />
+    <link rel="prev" title="Locations" href="locations.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="decisionmakers.html" title="Decision Makers"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="locations.html" title="Locations"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../../../index.html">Openpolis REST API</a> &raquo;</li>
+          <li><a href="../../reference.html" >REST API reference</a> &raquo;</li>
+          <li><a href="resources.html" accesskey="U">API: Openpolitici Resources</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="politicians">
+<span id="api-res-op-politicians"></span><h1>Politicians<a class="headerlink" href="#politicians" title="Permalink to this headline">¶</a></h1>
+<p>Openpolis politicians are the main subject of the openpolis archive. A politician may have different charges, in the past and at present time.</p>
+<div class="section" id="politician-instance">
+<h2>Politician instance<a class="headerlink" href="#politician-instance" title="Permalink to this headline">¶</a></h2>
+<p>A Politician instance resource represents a <strong>single openpolis politician</strong>.</p>
+<div class="section" id="resource-uri">
+<h3>Resource URI<a class="headerlink" href="#resource-uri" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python"><pre>/1.0/politicians/{id}</pre>
+</div>
+</div>
+<div class="section" id="resource-properties">
+<h3>Resource Properties<a class="headerlink" href="#resource-properties" title="Permalink to this headline">¶</a></h3>
+<p>A Politician resource is identified by the following properties:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="43%" />
+<col width="57%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">property</th>
+<th class="head">explanation</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td><tt class="xref py py-const docutils literal"><span class="pre">content_id</span></tt></td>
+<td>openpolis content identifier</td>
+</tr>
+<tr class="row-odd"><td><tt class="xref py py-const docutils literal"><span class="pre">first_name</span></tt></td>
+<td>first name</td>
+</tr>
+<tr class="row-even"><td><tt class="xref py py-const docutils literal"><span class="pre">last_name</span></tt></td>
+<td>last name</td>
+</tr>
+<tr class="row-odd"><td><tt class="xref py py-const docutils literal"><span class="pre">birth_date</span></tt></td>
+<td>birth date</td>
+</tr>
+<tr class="row-even"><td><tt class="xref py py-const docutils literal"><span class="pre">birth_location</span></tt></td>
+<td>birth location</td>
+</tr>
+<tr class="row-odd"><td><tt class="xref py py-const docutils literal"><span class="pre">profession</span></tt></td>
+<td>profession</td>
+</tr>
+<tr class="row-even"><td><tt class="xref py py-const docutils literal"><span class="pre">education_levels</span></tt></td>
+<td>array of <a class="reference internal" href="#education-levels"><em>Education levels</em></a></td>
+</tr>
+<tr class="row-odd"><td><tt class="xref py py-const docutils literal"><span class="pre">institution_charges</span></tt></td>
+<td>array of <a class="reference internal" href="#institution-charges"><em>Institution charges</em></a></td>
+</tr>
+<tr class="row-even"><td><tt class="xref py py-const docutils literal"><span class="pre">political_charges</span></tt></td>
+<td>array of <a class="reference internal" href="#political-charges"><em>Political charges</em></a></td>
+</tr>
+<tr class="row-odd"><td><tt class="xref py py-const docutils literal"><span class="pre">organization_charges</span></tt></td>
+<td>array of <a class="reference internal" href="#organization-charges"><em>Organization charges</em></a></td>
+</tr>
+</tbody>
+</table>
+<div class="section" id="education-levels">
+<span id="id1"></span><h4>Education levels<a class="headerlink" href="#education-levels" title="Permalink to this headline">¶</a></h4>
+<p>Represents the education levels of the politician. It may be more than one (although very rarely). A single level has the following properties:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="35%" />
+<col width="65%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">property</th>
+<th class="head">explanation</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td><tt class="xref py py-const docutils literal"><span class="pre">name</span></tt></td>
+<td>the name (Laurea, Licenza media, ...)</td>
+</tr>
+<tr class="row-odd"><td><tt class="xref py py-const docutils literal"><span class="pre">description</span></tt></td>
+<td>some more detail about the level (Faculty, School, ...)</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="institution-charges">
+<span id="id2"></span><h4>Institution charges<a class="headerlink" href="#institution-charges" title="Permalink to this headline">¶</a></h4>
+<p>Represents the institutional charges of the politician.  Charges are grouped by <cite>current</cite> (open) and <cite>past</cite> (closed).
+Current charges are sorted by the start date (most recent on top), past charges are sorted by end date (most recently closed on top).</p>
+<p>A single charge has the following properties:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="43%" />
+<col width="57%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">property</th>
+<th class="head">explanation</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td><tt class="xref py py-const docutils literal"><span class="pre">date_start</span></tt></td>
+<td>charge start date (yyyy-mm-dd)</td>
+</tr>
+<tr class="row-odd"><td><tt class="xref py py-const docutils literal"><span class="pre">date_end</span></tt></td>
+<td>charge end date (yyyy-mm-dd)</td>
+</tr>
+<tr class="row-even"><td><tt class="xref py py-const docutils literal"><span class="pre">description</span></tt></td>
+<td>charge description</td>
+</tr>
+<tr class="row-odd"><td><tt class="xref py py-const docutils literal"><span class="pre">institution</span></tt></td>
+<td>institution (Senato, Camera, ...)</td>
+</tr>
+<tr class="row-even"><td><tt class="xref py py-const docutils literal"><span class="pre">charge_type</span></tt></td>
+<td>charge type (Presidente, Deputato, ...)</td>
+</tr>
+<tr class="row-odd"><td><tt class="xref py py-const docutils literal"><span class="pre">location</span></tt></td>
+<td>location name</td>
+</tr>
+<tr class="row-even"><td><tt class="xref py py-const docutils literal"><span class="pre">location_id</span></tt></td>
+<td>location id</td>
+</tr>
+<tr class="row-odd"><td><tt class="xref py py-const docutils literal"><span class="pre">group</span></tt></td>
+<td>group (if parliament, regional)</td>
+</tr>
+<tr class="row-even"><td><tt class="xref py py-const docutils literal"><span class="pre">party</span></tt></td>
+<td>party of election</td>
+</tr>
+<tr class="row-odd"><td><tt class="xref py py-const docutils literal"><span class="pre">textual_rep</span></tt></td>
+<td>a longer textual description</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="political-charges">
+<span id="id3"></span><h4>Political charges<a class="headerlink" href="#political-charges" title="Permalink to this headline">¶</a></h4>
+<p>Represents current or past political charges of the politician (in parties).
+Sorting criteria match those explained above for institutional charges.</p>
+<p>A single charge has the following properties:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="43%" />
+<col width="57%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">property</th>
+<th class="head">explanation</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td><tt class="xref py py-const docutils literal"><span class="pre">date_start</span></tt></td>
+<td>charge start date (yyyy-mm-dd)</td>
+</tr>
+<tr class="row-odd"><td><tt class="xref py py-const docutils literal"><span class="pre">date_end</span></tt></td>
+<td>charge end date (yyyy-mm-dd)</td>
+</tr>
+<tr class="row-even"><td><tt class="xref py py-const docutils literal"><span class="pre">description</span></tt></td>
+<td>charge description</td>
+</tr>
+<tr class="row-odd"><td><tt class="xref py py-const docutils literal"><span class="pre">charge_type</span></tt></td>
+<td>charge type (carica, iscritto)</td>
+</tr>
+<tr class="row-even"><td><tt class="xref py py-const docutils literal"><span class="pre">location</span></tt></td>
+<td>location name</td>
+</tr>
+<tr class="row-odd"><td><tt class="xref py py-const docutils literal"><span class="pre">location_id</span></tt></td>
+<td>location id</td>
+</tr>
+<tr class="row-even"><td><tt class="xref py py-const docutils literal"><span class="pre">party</span></tt></td>
+<td>party of election</td>
+</tr>
+<tr class="row-odd"><td><tt class="xref py py-const docutils literal"><span class="pre">textual_rep</span></tt></td>
+<td>a longer textual description</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="organization-charges">
+<span id="id4"></span><h4>Organization charges<a class="headerlink" href="#organization-charges" title="Permalink to this headline">¶</a></h4>
+<p>Represents the charges that the politician has or has had in organizations (non-institutional, non-political).
+Sorting criteria match those explained above for institutional charges.</p>
+<p>A single charge has the following properties:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="43%" />
+<col width="57%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">property</th>
+<th class="head">explanation</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td><tt class="xref py py-const docutils literal"><span class="pre">date_start</span></tt></td>
+<td>charge start date (yyyy-mm-dd)</td>
+</tr>
+<tr class="row-odd"><td><tt class="xref py py-const docutils literal"><span class="pre">date_end</span></tt></td>
+<td>charge end date (yyyy-mm-dd)</td>
+</tr>
+<tr class="row-even"><td><tt class="xref py py-const docutils literal"><span class="pre">charge_name</span></tt></td>
+<td>name of the charge</td>
+</tr>
+<tr class="row-odd"><td><tt class="xref py py-const docutils literal"><span class="pre">organization</span></tt></td>
+<td>name of the organization</td>
+</tr>
+<tr class="row-even"><td><tt class="xref py py-const docutils literal"><span class="pre">textual_rep</span></tt></td>
+<td>a longer textual description</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="section" id="http-get">
+<h3>HTTP GET<a class="headerlink" href="#http-get" title="Permalink to this headline">¶</a></h3>
+<p>Returns a representation of a single politician, including the properties above. Associated arrays are exploded.</p>
+<div class="section" id="json-example">
+<h4>JSON Example<a class="headerlink" href="#json-example" title="Permalink to this headline">¶</a></h4>
+<div class="highlight-python"><pre>GET op/1.0/politicians/204</pre>
+</div>
+<div class="highlight-python"><div class="highlight"><pre><span class="p">{</span>
+    <span class="s">&quot;first_name&quot;</span><span class="p">:</span> <span class="s">&quot;Silvio&quot;</span><span class="p">,</span>
+    <span class="s">&quot;last_name&quot;</span><span class="p">:</span> <span class="s">&quot;BERLUSCONI&quot;</span><span class="p">,</span>
+    <span class="s">&quot;organization_charges&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s">&quot;current&quot;</span><span class="p">:</span> <span class="p">[],</span>
+        <span class="s">&quot;past&quot;</span><span class="p">:</span> <span class="p">[</span>
+            <span class="p">{</span>
+                <span class="s">&quot;organization&quot;</span><span class="p">:</span> <span class="s">&quot;fininvest&quot;</span><span class="p">,</span>
+                <span class="s">&quot;date_end&quot;</span><span class="p">:</span> <span class="s">&quot;1995-01-01&quot;</span><span class="p">,</span>
+                <span class="s">&quot;date_start&quot;</span><span class="p">:</span> <span class="s">&quot;1989-01-01&quot;</span><span class="p">,</span>
+                <span class="s">&quot;charge_name&quot;</span><span class="p">:</span> <span class="s">&quot;presidente&quot;</span><span class="p">,</span>
+                <span class="s">&quot;textual_rep&quot;</span><span class="p">:</span> <span class="s">&quot;dal 1989 al 1995 è stato presidente fininvest (http://www.fininvest.it/)&quot;</span>
+            <span class="p">}</span>
+        <span class="p">]</span>
+    <span class="p">},</span>
+    <span class="s">&quot;birth_location&quot;</span><span class="p">:</span> <span class="s">&quot;Milano (MI)&quot;</span><span class="p">,</span>
+    <span class="s">&quot;education_levels&quot;</span><span class="p">:</span> <span class="p">[</span>
+        <span class="p">{</span>
+            <span class="s">&quot;name&quot;</span><span class="p">:</span> <span class="s">&quot;Laurea&quot;</span><span class="p">,</span>
+            <span class="s">&quot;descr&quot;</span><span class="p">:</span> <span class="s">&quot;Giurisprudenza&quot;</span>
+        <span class="p">}</span>
+    <span class="p">],</span>
+    <span class="s">&quot;profession&quot;</span><span class="p">:</span> <span class="s">&quot;Imprenditore&quot;</span><span class="p">,</span>
+    <span class="s">&quot;political_charges&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s">&quot;current&quot;</span><span class="p">:</span> <span class="p">[</span>
+            <span class="p">{</span>
+                <span class="s">&quot;charge_type&quot;</span><span class="p">:</span> <span class="s">&quot;carica&quot;</span><span class="p">,</span>
+                <span class="s">&quot;description&quot;</span><span class="p">:</span> <span class="s">&quot;Presidente&quot;</span><span class="p">,</span>
+                <span class="s">&quot;textual_rep&quot;</span><span class="p">:</span> <span class="s">&quot;dal 2009 è Presidente - Popolo della Libertà&quot;</span><span class="p">,</span>
+                <span class="s">&quot;date_end&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+                <span class="s">&quot;date_start&quot;</span><span class="p">:</span> <span class="s">&quot;2009-01-01&quot;</span><span class="p">,</span>
+                <span class="s">&quot;location&quot;</span><span class="p">:</span> <span class="s">&quot;Italia&quot;</span><span class="p">,</span>
+                <span class="s">&quot;party&quot;</span><span class="p">:</span> <span class="s">&quot;Popolo della Libertà&quot;</span><span class="p">,</span>
+                <span class="s">&quot;location_id&quot;</span><span class="p">:</span> <span class="mi">2</span>
+            <span class="p">}</span>
+        <span class="p">],</span>
+        <span class="s">&quot;past&quot;</span><span class="p">:</span> <span class="p">[</span>
+            <span class="p">{</span>
+                <span class="s">&quot;charge_type&quot;</span><span class="p">:</span> <span class="s">&quot;carica&quot;</span><span class="p">,</span>
+                <span class="s">&quot;description&quot;</span><span class="p">:</span> <span class="s">&quot;Presidente&quot;</span><span class="p">,</span>
+                <span class="s">&quot;textual_rep&quot;</span><span class="p">:</span> <span class="s">&quot;dal 1994 al 2009 è stato Presidente - Forza Italia&quot;</span><span class="p">,</span>
+                <span class="s">&quot;date_end&quot;</span><span class="p">:</span> <span class="s">&quot;2009-01-01&quot;</span><span class="p">,</span>
+                <span class="s">&quot;date_start&quot;</span><span class="p">:</span> <span class="s">&quot;1994-01-01&quot;</span><span class="p">,</span>
+                <span class="s">&quot;location&quot;</span><span class="p">:</span> <span class="s">&quot;Italia&quot;</span><span class="p">,</span>
+                <span class="s">&quot;party&quot;</span><span class="p">:</span> <span class="s">&quot;FORZA ITALIA&quot;</span><span class="p">,</span>
+                <span class="s">&quot;location_id&quot;</span><span class="p">:</span> <span class="mi">2</span>
+            <span class="p">}</span>
+        <span class="p">]</span>
+    <span class="p">},</span>
+    <span class="s">&quot;institution_charges&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s">&quot;current&quot;</span><span class="p">:</span> <span class="p">[</span>
+            <span class="p">{</span>
+                <span class="s">&quot;charge_type&quot;</span><span class="p">:</span> <span class="s">&quot;Deputato&quot;</span><span class="p">,</span>
+                <span class="s">&quot;group&quot;</span><span class="p">:</span> <span class="s">&quot;Popolo della Libertà&quot;</span><span class="p">,</span>
+                <span class="s">&quot;description&quot;</span><span class="p">:</span> <span class="s">&quot;&quot;</span><span class="p">,</span>
+                <span class="s">&quot;textual_rep&quot;</span><span class="p">:</span> <span class="s">&quot;dal 29/04/2008 Deputato(Gruppo: PdL) &quot;</span><span class="p">,</span>
+                <span class="s">&quot;date_end&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+                <span class="s">&quot;date_start&quot;</span><span class="p">:</span> <span class="s">&quot;2008-04-29&quot;</span><span class="p">,</span>
+                <span class="s">&quot;location&quot;</span><span class="p">:</span> <span class="s">&quot;Italia&quot;</span><span class="p">,</span>
+                <span class="s">&quot;party&quot;</span><span class="p">:</span> <span class="s">&quot;NON SPECIFICATO&quot;</span><span class="p">,</span>
+                <span class="s">&quot;location_id&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+                <span class="s">&quot;institution&quot;</span><span class="p">:</span> <span class="s">&quot;Camera dei Deputati&quot;</span>
+            <span class="p">},</span>
+            <span class="p">{</span>
+                <span class="s">&quot;charge_type&quot;</span><span class="p">:</span> <span class="s">&quot;Presidente del Consiglio&quot;</span><span class="p">,</span>
+                <span class="s">&quot;group&quot;</span><span class="p">:</span> <span class="s">&quot;Non specificato&quot;</span><span class="p">,</span>
+                <span class="s">&quot;description&quot;</span><span class="p">:</span> <span class="s">&quot;&quot;</span><span class="p">,</span>
+                <span class="s">&quot;textual_rep&quot;</span><span class="p">:</span> <span class="s">&quot;dal 08/05/2008 Pres. del Consiglio (Partito: PdL)&quot;</span><span class="p">,</span>
+                <span class="s">&quot;date_end&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+                <span class="s">&quot;date_start&quot;</span><span class="p">:</span> <span class="s">&quot;2008-05-08&quot;</span><span class="p">,</span>
+                <span class="s">&quot;location&quot;</span><span class="p">:</span> <span class="s">&quot;Italia&quot;</span><span class="p">,</span>
+                <span class="s">&quot;party&quot;</span><span class="p">:</span> <span class="s">&quot;Popolo della Libertà&quot;</span><span class="p">,</span>
+                <span class="s">&quot;location_id&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+                <span class="s">&quot;institution&quot;</span><span class="p">:</span> <span class="s">&quot;Governo Nazionale&quot;</span>
+            <span class="p">}</span>
+        <span class="p">],</span>
+        <span class="s">&quot;past&quot;</span><span class="p">:</span> <span class="p">[</span>
+            <span class="p">{</span>
+                <span class="s">&quot;charge_type&quot;</span><span class="p">:</span> <span class="s">&quot;Deputato&quot;</span><span class="p">,</span>
+                <span class="s">&quot;group&quot;</span><span class="p">:</span> <span class="s">&quot;Forza Italia&quot;</span><span class="p">,</span>
+                <span class="s">&quot;description&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+                <span class="s">&quot;textual_rep&quot;</span><span class="p">:</span> <span class="s">&quot;dal 28/04/2006 al 28/04/2008 Deputato(Gruppo: FI) &quot;</span><span class="p">,</span>
+                <span class="s">&quot;date_end&quot;</span><span class="p">:</span> <span class="s">&quot;2008-04-28&quot;</span><span class="p">,</span>
+                <span class="s">&quot;date_start&quot;</span><span class="p">:</span> <span class="s">&quot;2006-04-28&quot;</span><span class="p">,</span>
+                <span class="s">&quot;location&quot;</span><span class="p">:</span> <span class="s">&quot;Italia&quot;</span><span class="p">,</span>
+                <span class="s">&quot;party&quot;</span><span class="p">:</span> <span class="s">&quot;FORZA ITALIA&quot;</span><span class="p">,</span>
+                <span class="s">&quot;location_id&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+                <span class="s">&quot;institution&quot;</span><span class="p">:</span> <span class="s">&quot;Camera dei Deputati&quot;</span>
+            <span class="p">},</span>
+            <span class="p">{</span>
+                <span class="s">&quot;charge_type&quot;</span><span class="p">:</span> <span class="s">&quot;Presidente del Consiglio&quot;</span><span class="p">,</span>
+                <span class="s">&quot;group&quot;</span><span class="p">:</span> <span class="s">&quot;Non specificato&quot;</span><span class="p">,</span>
+                <span class="s">&quot;description&quot;</span><span class="p">:</span> <span class="s">&quot;&quot;</span><span class="p">,</span>
+                <span class="s">&quot;textual_rep&quot;</span><span class="p">:</span> <span class="s">&quot;dal 11/06/2001 al 11/02/2006 Pres. del Consiglio (Partito: FI)&quot;</span><span class="p">,</span>
+                <span class="s">&quot;date_end&quot;</span><span class="p">:</span> <span class="s">&quot;2006-02-11&quot;</span><span class="p">,</span>
+                <span class="s">&quot;date_start&quot;</span><span class="p">:</span> <span class="s">&quot;2001-06-11&quot;</span><span class="p">,</span>
+                <span class="s">&quot;location&quot;</span><span class="p">:</span> <span class="s">&quot;Italia&quot;</span><span class="p">,</span>
+                <span class="s">&quot;party&quot;</span><span class="p">:</span> <span class="s">&quot;FORZA ITALIA&quot;</span><span class="p">,</span>
+                <span class="s">&quot;location_id&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+                <span class="s">&quot;institution&quot;</span><span class="p">:</span> <span class="s">&quot;Governo Nazionale&quot;</span>
+            <span class="p">},</span>
+            <span class="p">{</span>
+                <span class="s">&quot;charge_type&quot;</span><span class="p">:</span> <span class="s">&quot;Ministro&quot;</span><span class="p">,</span>
+                <span class="s">&quot;group&quot;</span><span class="p">:</span> <span class="s">&quot;Non specificato&quot;</span><span class="p">,</span>
+                <span class="s">&quot;description&quot;</span><span class="p">:</span> <span class="s">&quot;Min. Affari esteri (ad interim)&quot;</span><span class="p">,</span>
+                <span class="s">&quot;textual_rep&quot;</span><span class="p">:</span> <span class="s">&quot;dal 07/01/2002 al 13/11/2002 Ministro Min. Affari esteri (ad interim)(Partito: FI)&quot;</span><span class="p">,</span>
+                <span class="s">&quot;date_end&quot;</span><span class="p">:</span> <span class="s">&quot;2002-11-13&quot;</span><span class="p">,</span>
+                <span class="s">&quot;date_start&quot;</span><span class="p">:</span> <span class="s">&quot;2002-01-07&quot;</span><span class="p">,</span>
+                <span class="s">&quot;location&quot;</span><span class="p">:</span> <span class="s">&quot;Italia&quot;</span><span class="p">,</span>
+                <span class="s">&quot;party&quot;</span><span class="p">:</span> <span class="s">&quot;FORZA ITALIA&quot;</span><span class="p">,</span>
+                <span class="s">&quot;location_id&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+                <span class="s">&quot;institution&quot;</span><span class="p">:</span> <span class="s">&quot;Governo Nazionale&quot;</span>
+            <span class="p">},</span>
+            <span class="p">{</span>
+                <span class="s">&quot;charge_type&quot;</span><span class="p">:</span> <span class="s">&quot;Ministro&quot;</span><span class="p">,</span>
+                <span class="s">&quot;group&quot;</span><span class="p">:</span> <span class="s">&quot;Non specificato&quot;</span><span class="p">,</span>
+                <span class="s">&quot;description&quot;</span><span class="p">:</span> <span class="s">&quot;Min. Economia e Finanze (ad interim)&quot;</span><span class="p">,</span>
+                <span class="s">&quot;textual_rep&quot;</span><span class="p">:</span> <span class="s">&quot;dal 04/07/2004 al 16/07/2004 Ministro Min. Economia e Finanze (ad interim)(Partito: FI)&quot;</span><span class="p">,</span>
+                <span class="s">&quot;date_end&quot;</span><span class="p">:</span> <span class="s">&quot;2004-07-16&quot;</span><span class="p">,</span>
+                <span class="s">&quot;date_start&quot;</span><span class="p">:</span> <span class="s">&quot;2004-07-04&quot;</span><span class="p">,</span>
+                <span class="s">&quot;location&quot;</span><span class="p">:</span> <span class="s">&quot;Italia&quot;</span><span class="p">,</span>
+                <span class="s">&quot;party&quot;</span><span class="p">:</span> <span class="s">&quot;FORZA ITALIA&quot;</span><span class="p">,</span>
+                <span class="s">&quot;location_id&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+                <span class="s">&quot;institution&quot;</span><span class="p">:</span> <span class="s">&quot;Governo Nazionale&quot;</span>
+            <span class="p">},</span>
+            <span class="p">{</span>
+                <span class="s">&quot;charge_type&quot;</span><span class="p">:</span> <span class="s">&quot;Presidente del Consiglio&quot;</span><span class="p">,</span>
+                <span class="s">&quot;group&quot;</span><span class="p">:</span> <span class="s">&quot;Non specificato&quot;</span><span class="p">,</span>
+                <span class="s">&quot;description&quot;</span><span class="p">:</span> <span class="s">&quot;&quot;</span><span class="p">,</span>
+                <span class="s">&quot;textual_rep&quot;</span><span class="p">:</span> <span class="s">&quot;dal 11/05/1994 al 17/01/1995 Pres. del Consiglio (Partito: FI)&quot;</span><span class="p">,</span>
+                <span class="s">&quot;date_end&quot;</span><span class="p">:</span> <span class="s">&quot;1995-01-17&quot;</span><span class="p">,</span>
+                <span class="s">&quot;date_start&quot;</span><span class="p">:</span> <span class="s">&quot;1994-05-11&quot;</span><span class="p">,</span>
+                <span class="s">&quot;location&quot;</span><span class="p">:</span> <span class="s">&quot;Italia&quot;</span><span class="p">,</span>
+                <span class="s">&quot;party&quot;</span><span class="p">:</span> <span class="s">&quot;FORZA ITALIA&quot;</span><span class="p">,</span>
+                <span class="s">&quot;location_id&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+                <span class="s">&quot;institution&quot;</span><span class="p">:</span> <span class="s">&quot;Governo Nazionale&quot;</span>
+            <span class="p">},</span>
+            <span class="p">{</span>
+                <span class="s">&quot;charge_type&quot;</span><span class="p">:</span> <span class="s">&quot;Consigliere&quot;</span><span class="p">,</span>
+                <span class="s">&quot;group&quot;</span><span class="p">:</span> <span class="s">&quot;Non specificato&quot;</span><span class="p">,</span>
+                <span class="s">&quot;description&quot;</span><span class="p">:</span> <span class="s">&quot;&quot;</span><span class="p">,</span>
+                <span class="s">&quot;textual_rep&quot;</span><span class="p">:</span> <span class="s">&quot;dal 09/06/2006 al 21/05/2008 Consigliere Consiglio Comunale Milano (Lista elettorale: FI) &quot;</span><span class="p">,</span>
+                <span class="s">&quot;date_end&quot;</span><span class="p">:</span> <span class="s">&quot;2008-05-21&quot;</span><span class="p">,</span>
+                <span class="s">&quot;date_start&quot;</span><span class="p">:</span> <span class="s">&quot;2006-06-09&quot;</span><span class="p">,</span>
+                <span class="s">&quot;location&quot;</span><span class="p">:</span> <span class="s">&quot;Milano&quot;</span><span class="p">,</span>
+                <span class="s">&quot;party&quot;</span><span class="p">:</span> <span class="s">&quot;FORZA ITALIA&quot;</span><span class="p">,</span>
+                <span class="s">&quot;location_id&quot;</span><span class="p">:</span> <span class="mi">1974</span><span class="p">,</span>
+                <span class="s">&quot;institution&quot;</span><span class="p">:</span> <span class="s">&quot;Consiglio Comunale&quot;</span>
+            <span class="p">},</span>
+            <span class="p">{</span>
+                <span class="s">&quot;charge_type&quot;</span><span class="p">:</span> <span class="s">&quot;Deputato&quot;</span><span class="p">,</span>
+                <span class="s">&quot;group&quot;</span><span class="p">:</span> <span class="s">&quot;Non specificato&quot;</span><span class="p">,</span>
+                <span class="s">&quot;description&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+                <span class="s">&quot;textual_rep&quot;</span><span class="p">:</span> <span class="s">&quot;dal 30/05/2001 al 27/04/2006 Deputato&quot;</span><span class="p">,</span>
+                <span class="s">&quot;date_end&quot;</span><span class="p">:</span> <span class="s">&quot;2006-04-27&quot;</span><span class="p">,</span>
+                <span class="s">&quot;date_start&quot;</span><span class="p">:</span> <span class="s">&quot;2001-05-30&quot;</span><span class="p">,</span>
+                <span class="s">&quot;location&quot;</span><span class="p">:</span> <span class="s">&quot;Italia&quot;</span><span class="p">,</span>
+                <span class="s">&quot;party&quot;</span><span class="p">:</span> <span class="s">&quot;NON SPECIFICATO&quot;</span><span class="p">,</span>
+                <span class="s">&quot;location_id&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+                <span class="s">&quot;institution&quot;</span><span class="p">:</span> <span class="s">&quot;Camera dei Deputati&quot;</span>
+            <span class="p">},</span>
+            <span class="p">{</span>
+                <span class="s">&quot;charge_type&quot;</span><span class="p">:</span> <span class="s">&quot;Deputato&quot;</span><span class="p">,</span>
+                <span class="s">&quot;group&quot;</span><span class="p">:</span> <span class="s">&quot;Non specificato&quot;</span><span class="p">,</span>
+                <span class="s">&quot;description&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+                <span class="s">&quot;textual_rep&quot;</span><span class="p">:</span> <span class="s">&quot;dal 09/05/1996 al 29/05/2001 Deputato&quot;</span><span class="p">,</span>
+                <span class="s">&quot;date_end&quot;</span><span class="p">:</span> <span class="s">&quot;2001-05-29&quot;</span><span class="p">,</span>
+                <span class="s">&quot;date_start&quot;</span><span class="p">:</span> <span class="s">&quot;1996-05-09&quot;</span><span class="p">,</span>
+                <span class="s">&quot;location&quot;</span><span class="p">:</span> <span class="s">&quot;Italia&quot;</span><span class="p">,</span>
+                <span class="s">&quot;party&quot;</span><span class="p">:</span> <span class="s">&quot;NON SPECIFICATO&quot;</span><span class="p">,</span>
+                <span class="s">&quot;location_id&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+                <span class="s">&quot;institution&quot;</span><span class="p">:</span> <span class="s">&quot;Camera dei Deputati&quot;</span>
+            <span class="p">},</span>
+            <span class="p">{</span>
+                <span class="s">&quot;charge_type&quot;</span><span class="p">:</span> <span class="s">&quot;Deputato&quot;</span><span class="p">,</span>
+                <span class="s">&quot;group&quot;</span><span class="p">:</span> <span class="s">&quot;Non specificato&quot;</span><span class="p">,</span>
+                <span class="s">&quot;description&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+                <span class="s">&quot;textual_rep&quot;</span><span class="p">:</span> <span class="s">&quot;dal 15/04/1994 al 08/05/1996 Deputato&quot;</span><span class="p">,</span>
+                <span class="s">&quot;date_end&quot;</span><span class="p">:</span> <span class="s">&quot;1996-05-08&quot;</span><span class="p">,</span>
+                <span class="s">&quot;date_start&quot;</span><span class="p">:</span> <span class="s">&quot;1994-04-15&quot;</span><span class="p">,</span>
+                <span class="s">&quot;location&quot;</span><span class="p">:</span> <span class="s">&quot;Italia&quot;</span><span class="p">,</span>
+                <span class="s">&quot;party&quot;</span><span class="p">:</span> <span class="s">&quot;NON SPECIFICATO&quot;</span><span class="p">,</span>
+                <span class="s">&quot;location_id&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+                <span class="s">&quot;institution&quot;</span><span class="p">:</span> <span class="s">&quot;Camera dei Deputati&quot;</span>
+            <span class="p">}</span>
+        <span class="p">]</span>
+    <span class="p">},</span>
+    <span class="s">&quot;birth_date&quot;</span><span class="p">:</span> <span class="s">&quot;1936-09-29 00:00:00&quot;</span><span class="p">,</span>
+    <span class="s">&quot;content_id&quot;</span><span class="p">:</span> <span class="s">&quot;204&quot;</span><span class="p">,</span>
+    <span class="s">&quot;resources&quot;</span><span class="p">:</span> <span class="p">[</span>
+        <span class="p">{</span>
+            <span class="s">&quot;type&quot;</span><span class="p">:</span> <span class="s">&quot;Email ufficiale&quot;</span><span class="p">,</span>
+            <span class="s">&quot;value&quot;</span><span class="p">:</span> <span class="s">&quot;BERLUSCONI_S@camera.it&quot;</span><span class="p">,</span>
+            <span class="s">&quot;descr&quot;</span><span class="p">:</span> <span class="s">&quot;mail personale Camera Dep.&quot;</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+            <span class="s">&quot;type&quot;</span><span class="p">:</span> <span class="s">&quot;Altra Email&quot;</span><span class="p">,</span>
+            <span class="s">&quot;value&quot;</span><span class="p">:</span> <span class="s">&quot;s.berlusconi@forzaitalia.it&quot;</span><span class="p">,</span>
+            <span class="s">&quot;descr&quot;</span><span class="p">:</span> <span class="s">&quot;&quot;</span>
+        <span class="p">}</span>
+    <span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="http-post">
+<h3>HTTP POST<a class="headerlink" href="#http-post" title="Permalink to this headline">¶</a></h3>
+<p>Not yet supported. To be done in the future.</p>
+</div>
+<div class="section" id="http-put">
+<h3>HTTP PUT<a class="headerlink" href="#http-put" title="Permalink to this headline">¶</a></h3>
+<p>Not supported.</p>
+</div>
+<div class="section" id="http-delete">
+<h3>HTTP DELETE<a class="headerlink" href="#http-delete" title="Permalink to this headline">¶</a></h3>
+<p>Not supported.</p>
+</div>
+</div>
+<div class="section" id="politicians-list">
+<h2>Politicians list<a class="headerlink" href="#politicians-list" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id5">
+<h3>Resource URI<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python"><pre>/1.0/politicians</pre>
+</div>
+</div>
+<div class="section" id="id6">
+<h3>HTTP GET<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h3>
+<p>Retrieves a list of the Locations resources.</p>
+<div class="section" id="list-filters">
+<h4>List filters<a class="headerlink" href="#list-filters" title="Permalink to this headline">¶</a></h4>
+<p>The following query string parameters allow you to limit the list returned:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="14%" />
+<col width="86%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Parameter</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>institution</td>
+<td>Only return Politicians of the given institution. If local institution, location must be specified, too</td>
+</tr>
+<tr class="row-odd"><td>institution_id</td>
+<td>Only return Politicians of the institution having the given institution_id (see table below)</td>
+</tr>
+<tr class="row-even"><td>location_id</td>
+<td>Specifies the location for a local institution</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="institutions">
+<h4>Institutions<a class="headerlink" href="#institutions" title="Permalink to this headline">¶</a></h4>
+<table border="1" class="docutils">
+<colgroup>
+<col width="15%" />
+<col width="85%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">id</th>
+<th class="head">name</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>1</td>
+<td>Commissione Europea</td>
+</tr>
+<tr class="row-odd"><td>2</td>
+<td>Parlamento Europeo</td>
+</tr>
+<tr class="row-even"><td>3</td>
+<td>Governo Nazionale</td>
+</tr>
+<tr class="row-odd"><td>4</td>
+<td>Camera dei Deputati</td>
+</tr>
+<tr class="row-even"><td>5</td>
+<td>Senato della Repubblica</td>
+</tr>
+<tr class="row-odd"><td>6</td>
+<td>Giunta Regionale</td>
+</tr>
+<tr class="row-even"><td>7</td>
+<td>Consiglio Regionale</td>
+</tr>
+<tr class="row-odd"><td>8</td>
+<td>Giunta Provinciale</td>
+</tr>
+<tr class="row-even"><td>9</td>
+<td>Consiglio Provinciale</td>
+</tr>
+<tr class="row-odd"><td>10</td>
+<td>Giunta Comunale</td>
+</tr>
+<tr class="row-even"><td>11</td>
+<td>Consiglio Comunale</td>
+</tr>
+<tr class="row-odd"><td>12</td>
+<td>Commissariamento</td>
+</tr>
+<tr class="row-even"><td>13</td>
+<td>Presidenza della Repubblica</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="example-1">
+<h4>Example 1<a class="headerlink" href="#example-1" title="Permalink to this headline">¶</a></h4>
+<p>National institution: the national government</p>
+<div class="highlight-python"><pre>GET /1.0/politicians/?institution=Governo%20Nazionale</pre>
+</div>
+<div class="highlight-python"><div class="highlight"><pre><span class="p">[</span>
+    <span class="p">{</span>
+        <span class="s">&quot;first_name&quot;</span><span class="p">:</span> <span class="s">&quot;Silvio&quot;</span><span class="p">,</span>
+        <span class="s">&quot;last_name&quot;</span><span class="p">:</span> <span class="s">&quot;BERLUSCONI&quot;</span><span class="p">,</span>
+        <span class="s">&quot;birt_location&quot;</span><span class="p">:</span> <span class="s">&quot;Milano (MI)&quot;</span><span class="p">,</span>
+        <span class="s">&quot;textual_rep&quot;</span><span class="p">:</span> <span class="s">&quot;dal 08/05/2008 Pres. del Consiglio (Partito: PdL)&quot;</span><span class="p">,</span>
+        <span class="s">&quot;date_end&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+        <span class="s">&quot;date_start&quot;</span><span class="p">:</span> <span class="s">&quot;2008-05-08&quot;</span><span class="p">,</span>
+        <span class="s">&quot;charge&quot;</span><span class="p">:</span> <span class="s">&quot;Presidente del Consiglio&quot;</span><span class="p">,</span>
+        <span class="s">&quot;op_id&quot;</span><span class="p">:</span> <span class="mi">204</span><span class="p">,</span>
+        <span class="s">&quot;birth_date&quot;</span><span class="p">:</span> <span class="s">&quot;1936-09-29 00:00:00&quot;</span><span class="p">,</span>
+        <span class="s">&quot;party&quot;</span><span class="p">:</span> <span class="s">&quot;PdL&quot;</span><span class="p">,</span>
+        <span class="s">&quot;op_link&quot;</span><span class="p">:</span> <span class="s">&quot;http://www.openpolis.it/politico/204&quot;</span>
+    <span class="p">},</span>
+    <span class="p">{</span>
+        <span class="s">&quot;first_name&quot;</span><span class="p">:</span> <span class="s">&quot;Raffaele&quot;</span><span class="p">,</span>
+        <span class="s">&quot;last_name&quot;</span><span class="p">:</span> <span class="s">&quot;FITTO&quot;</span><span class="p">,</span>
+        <span class="s">&quot;birt_location&quot;</span><span class="p">:</span> <span class="s">&quot;Maglie (LE)&quot;</span><span class="p">,</span>
+        <span class="s">&quot;textual_rep&quot;</span><span class="p">:</span> <span class="s">&quot;dal 08/05/2008 Ministro Rapporti con le regioni(Partito: PdL)&quot;</span><span class="p">,</span>
+        <span class="s">&quot;date_end&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+        <span class="s">&quot;date_start&quot;</span><span class="p">:</span> <span class="s">&quot;2008-05-08&quot;</span><span class="p">,</span>
+        <span class="s">&quot;charge&quot;</span><span class="p">:</span> <span class="s">&quot;Ministro&quot;</span><span class="p">,</span>
+        <span class="s">&quot;op_id&quot;</span><span class="p">:</span> <span class="mi">411</span><span class="p">,</span>
+        <span class="s">&quot;birth_date&quot;</span><span class="p">:</span> <span class="s">&quot;1969-08-28 00:00:00&quot;</span><span class="p">,</span>
+        <span class="s">&quot;party&quot;</span><span class="p">:</span> <span class="s">&quot;PdL&quot;</span><span class="p">,</span>
+        <span class="s">&quot;op_link&quot;</span><span class="p">:</span> <span class="s">&quot;http://www.openpolis.it/politico/411&quot;</span>
+    <span class="p">},</span>
+    <span class="p">{</span>
+        <span class="s">&quot;first_name&quot;</span><span class="p">:</span> <span class="s">&quot;Angelino&quot;</span><span class="p">,</span>
+        <span class="s">&quot;last_name&quot;</span><span class="p">:</span> <span class="s">&quot;ALFANO&quot;</span><span class="p">,</span>
+        <span class="s">&quot;birt_location&quot;</span><span class="p">:</span> <span class="s">&quot;Agrigento (AG)&quot;</span><span class="p">,</span>
+        <span class="s">&quot;textual_rep&quot;</span><span class="p">:</span> <span class="s">&quot;dal 08/05/2008 Ministro Giustizia(Partito: PdL)&quot;</span><span class="p">,</span>
+        <span class="s">&quot;date_end&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+        <span class="s">&quot;date_start&quot;</span><span class="p">:</span> <span class="s">&quot;2008-05-08&quot;</span><span class="p">,</span>
+        <span class="s">&quot;charge&quot;</span><span class="p">:</span> <span class="s">&quot;Ministro&quot;</span><span class="p">,</span>
+        <span class="s">&quot;op_id&quot;</span><span class="p">:</span> <span class="mi">167</span><span class="p">,</span>
+        <span class="s">&quot;birth_date&quot;</span><span class="p">:</span> <span class="s">&quot;1970-10-31 00:00:00&quot;</span><span class="p">,</span>
+        <span class="s">&quot;party&quot;</span><span class="p">:</span> <span class="s">&quot;PdL&quot;</span><span class="p">,</span>
+        <span class="s">&quot;op_link&quot;</span><span class="p">:</span> <span class="s">&quot;http://www.openpolis.it/politico/167&quot;</span>
+    <span class="p">},</span>
+    <span class="o">...</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="example-2">
+<h4>Example 2<a class="headerlink" href="#example-2" title="Permalink to this headline">¶</a></h4>
+<p>Local institution: the Rome city government</p>
+<div class="highlight-python"><pre>GET /1.0/politicians/?institution=Giunta%20Comunale&amp;location_id=5132</pre>
+</div>
+<div class="highlight-python"><div class="highlight"><pre><span class="p">[</span>
+    <span class="p">{</span>
+        <span class="s">&quot;first_name&quot;</span><span class="p">:</span> <span class="s">&quot;Giovanni&quot;</span><span class="p">,</span>
+        <span class="s">&quot;last_name&quot;</span><span class="p">:</span> <span class="s">&quot;ALEMANNO&quot;</span><span class="p">,</span>
+        <span class="s">&quot;birt_location&quot;</span><span class="p">:</span> <span class="s">&quot;Bari (BA)&quot;</span><span class="p">,</span>
+        <span class="s">&quot;textual_rep&quot;</span><span class="p">:</span> <span class="s">&quot;dal 29/04/2008 Sindaco Giunta Comunale Roma (Partito: PdL)&quot;</span><span class="p">,</span>
+        <span class="s">&quot;date_end&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+        <span class="s">&quot;date_start&quot;</span><span class="p">:</span> <span class="s">&quot;2008-04-29&quot;</span><span class="p">,</span>
+        <span class="s">&quot;charge&quot;</span><span class="p">:</span> <span class="s">&quot;Sindaco&quot;</span><span class="p">,</span>
+        <span class="s">&quot;op_id&quot;</span><span class="p">:</span> <span class="mi">165</span><span class="p">,</span>
+        <span class="s">&quot;birth_date&quot;</span><span class="p">:</span> <span class="s">&quot;1958-03-03 00:00:00&quot;</span><span class="p">,</span>
+        <span class="s">&quot;party&quot;</span><span class="p">:</span> <span class="s">&quot;PdL&quot;</span><span class="p">,</span>
+        <span class="s">&quot;op_link&quot;</span><span class="p">:</span> <span class="s">&quot;http://www.openpolis.it/politico/165&quot;</span>
+    <span class="p">},</span>
+    <span class="p">{</span>
+        <span class="s">&quot;first_name&quot;</span><span class="p">:</span> <span class="s">&quot;Mauro&quot;</span><span class="p">,</span>
+        <span class="s">&quot;last_name&quot;</span><span class="p">:</span> <span class="s">&quot;CUTRUFO&quot;</span><span class="p">,</span>
+        <span class="s">&quot;birt_location&quot;</span><span class="p">:</span> <span class="s">&quot;Roma (RM)&quot;</span><span class="p">,</span>
+        <span class="s">&quot;textual_rep&quot;</span><span class="p">:</span> <span class="s">&quot;dal 14/01/2011 Vicesindaco Giunta Comunale Roma (Partito: PdL)&quot;</span><span class="p">,</span>
+        <span class="s">&quot;date_end&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+        <span class="s">&quot;date_start&quot;</span><span class="p">:</span> <span class="s">&quot;2011-01-14&quot;</span><span class="p">,</span>
+        <span class="s">&quot;charge&quot;</span><span class="p">:</span> <span class="s">&quot;Vicesindaco&quot;</span><span class="p">,</span>
+        <span class="s">&quot;op_id&quot;</span><span class="p">:</span> <span class="mi">1536</span><span class="p">,</span>
+        <span class="s">&quot;birth_date&quot;</span><span class="p">:</span> <span class="s">&quot;1956-09-09 00:00:00&quot;</span><span class="p">,</span>
+        <span class="s">&quot;party&quot;</span><span class="p">:</span> <span class="s">&quot;PdL&quot;</span><span class="p">,</span>
+        <span class="s">&quot;op_link&quot;</span><span class="p">:</span> <span class="s">&quot;http://www.openpolis.it/politico/1536&quot;</span>
+    <span class="p">},</span>
+    <span class="p">{</span>
+        <span class="s">&quot;first_name&quot;</span><span class="p">:</span> <span class="s">&quot;FABRIZIO&quot;</span><span class="p">,</span>
+        <span class="s">&quot;last_name&quot;</span><span class="p">:</span> <span class="s">&quot;GHERA&quot;</span><span class="p">,</span>
+        <span class="s">&quot;birt_location&quot;</span><span class="p">:</span> <span class="s">&quot;Roma (RM)&quot;</span><span class="p">,</span>
+        <span class="s">&quot;textual_rep&quot;</span><span class="p">:</span> <span class="s">&quot;dal 14/01/2011 Assessore Giunta Comunale Roma (Partito: PdL)&quot;</span><span class="p">,</span>
+        <span class="s">&quot;date_end&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+        <span class="s">&quot;date_start&quot;</span><span class="p">:</span> <span class="s">&quot;2011-01-14&quot;</span><span class="p">,</span>
+        <span class="s">&quot;charge&quot;</span><span class="p">:</span> <span class="s">&quot;Assessore&quot;</span><span class="p">,</span>
+        <span class="s">&quot;op_id&quot;</span><span class="p">:</span> <span class="mi">125702</span><span class="p">,</span>
+        <span class="s">&quot;birth_date&quot;</span><span class="p">:</span> <span class="s">&quot;1971-12-06 00:00:00&quot;</span><span class="p">,</span>
+        <span class="s">&quot;party&quot;</span><span class="p">:</span> <span class="s">&quot;PdL&quot;</span><span class="p">,</span>
+        <span class="s">&quot;op_link&quot;</span><span class="p">:</span> <span class="s">&quot;http://www.openpolis.it/politico/125702&quot;</span>
+    <span class="p">},</span>
+    <span class="o">...</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="id7">
+<h3>HTTP POST<a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h3>
+<p>Not supported.</p>
+</div>
+<div class="section" id="id8">
+<h3>HTTP PUT<a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h3>
+<p>Not supported.</p>
+</div>
+<div class="section" id="id9">
+<h3>HTTP DELETE<a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h3>
+<p>Not supported.</p>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../../../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Politicians</a><ul>
+<li><a class="reference internal" href="#politician-instance">Politician instance</a><ul>
+<li><a class="reference internal" href="#resource-uri">Resource URI</a></li>
+<li><a class="reference internal" href="#resource-properties">Resource Properties</a><ul>
+<li><a class="reference internal" href="#education-levels">Education levels</a></li>
+<li><a class="reference internal" href="#institution-charges">Institution charges</a></li>
+<li><a class="reference internal" href="#political-charges">Political charges</a></li>
+<li><a class="reference internal" href="#organization-charges">Organization charges</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#http-get">HTTP GET</a><ul>
+<li><a class="reference internal" href="#json-example">JSON Example</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#http-post">HTTP POST</a></li>
+<li><a class="reference internal" href="#http-put">HTTP PUT</a></li>
+<li><a class="reference internal" href="#http-delete">HTTP DELETE</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#politicians-list">Politicians list</a><ul>
+<li><a class="reference internal" href="#id5">Resource URI</a></li>
+<li><a class="reference internal" href="#id6">HTTP GET</a><ul>
+<li><a class="reference internal" href="#list-filters">List filters</a></li>
+<li><a class="reference internal" href="#institutions">Institutions</a></li>
+<li><a class="reference internal" href="#example-1">Example 1</a></li>
+<li><a class="reference internal" href="#example-2">Example 2</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#id7">HTTP POST</a></li>
+<li><a class="reference internal" href="#id8">HTTP PUT</a></li>
+<li><a class="reference internal" href="#id9">HTTP DELETE</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="locations.html"
+                        title="previous chapter">Locations</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="decisionmakers.html"
+                        title="next chapter">Decision Makers</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../../../_sources/api/references/op/politicians.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="decisionmakers.html" title="Decision Makers"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="locations.html" title="Locations"
+             >previous</a> |</li>
+        <li><a href="../../../index.html">Openpolis REST API</a> &raquo;</li>
+          <li><a href="../../reference.html" >REST API reference</a> &raquo;</li>
+          <li><a href="resources.html" >API: Openpolitici Resources</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2011, Associazione Openpolis.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.2.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,391 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Decision Makers &mdash; Openpolis REST API</title>
+    
+    <link rel="stylesheet" href="../../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <link rel="top" title="Openpolis REST API" href="../../../index.html" />
+    <link rel="up" title="API: Openpolitici Resources" href="resources.html" />
+    <link rel="next" title="Similarity" href="similarity.html" />
+    <link rel="prev" title="Politicians" href="politicians.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="similarity.html" title="Similarity"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="politicians.html" title="Politicians"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../../../index.html">Openpolis REST API</a> &raquo;</li>
+          <li><a href="../../reference.html" >REST API reference</a> &raquo;</li>
+          <li><a href="resources.html" accesskey="U">API: Openpolitici Resources</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="decision-makers">
+<span id="api-res-op-decisionmakers"></span><h1>Decision Makers<a class="headerlink" href="#decision-makers" title="Permalink to this headline">¶</a></h1>
+<p>Openpolis decisionmakers returns a list of charges, along with their personal identities and contacts.
+The list may be filtered through <tt class="docutils literal"><span class="pre">context</span></tt> and <tt class="docutils literal"><span class="pre">location</span></tt> and is sorted by charge relevancies.
+It is used in the Openpolis Campaign Application.</p>
+<p>The resource only returns a read-only list of decisionmakers, there is no single instance API.</p>
+<div class="section" id="decision-makers-list">
+<h2>Decision makers list<a class="headerlink" href="#decision-makers-list" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="resource-uri">
+<h3>Resource URI<a class="headerlink" href="#resource-uri" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python"><pre>/1.0/decisionmakers</pre>
+</div>
+</div>
+<div class="section" id="http-get">
+<h3>HTTP GET<a class="headerlink" href="#http-get" title="Permalink to this headline">¶</a></h3>
+<p>Retrieves a list of the decisionmakers resources.</p>
+<div class="section" id="list-filters">
+<h4>List filters<a class="headerlink" href="#list-filters" title="Permalink to this headline">¶</a></h4>
+<p>The following query string parameters allow you to limit the list returned:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="16%" />
+<col width="84%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Parameter</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>context</td>
+<td>Filter by a given context (or charge type). See specifications below for possible values</td>
+</tr>
+<tr class="row-odd"><td>location_id</td>
+<td>Filter by location. <tt class="docutils literal"><span class="pre">location_id</span></tt> matches the <tt class="docutils literal"><span class="pre">location</span></tt> API.</td>
+</tr>
+<tr class="row-even"><td>offset</td>
+<td>Starts the results slice from <tt class="docutils literal"><span class="pre">offset</span></tt>.</td>
+</tr>
+<tr class="row-odd"><td>limit</td>
+<td>Only return <tt class="docutils literal"><span class="pre">limit</span></tt> results (starting from <tt class="docutils literal"><span class="pre">offset</span></tt>).</td>
+</tr>
+</tbody>
+</table>
+<p>In all examples below, resources are sorted by charge priorities.
+Default <tt class="docutils literal"><span class="pre">limit</span></tt> is set to 20. Default <tt class="docutils literal"><span class="pre">offset</span></tt> to 0.
+Default output is json, add <tt class="docutils literal"><span class="pre">?format=xml</span></tt> to get xml.</p>
+<p>Results have a meta section, with the total number of results, the current offset and limit,
+and links to the next page or the previous, when needed.
+The paginator links are built by <tt class="docutils literal"><span class="pre">offset</span></tt> manipulation.</p>
+</div>
+<div class="section" id="contexts">
+<h4>Contexts<a class="headerlink" href="#contexts" title="Permalink to this headline">¶</a></h4>
+<p>These are the possible values for the contexts. Each of the values in a single line identifies a context.
+This to allow flexibility in the API usage.</p>
+<ul class="simple">
+<li>pres-della-repubblica</li>
+<li>pres-del-consiglio</li>
+<li>ministro, ministri</li>
+<li>euro-commissario</li>
+<li>euro-deputato, euro-deputati</li>
+<li>deputato, deputati</li>
+<li>senatore, senatori</li>
+<li>governatore, governatori</li>
+<li>assessore-reg, assessore-regionale, assessori-regionali</li>
+<li>consigliere-reg, consigliere-regionale, consiglieri-regionali</li>
+<li>pres-prov, presidente-della-provincia, presidenti-della-provincia</li>
+<li>assessore-prov, assessore-provinciale, assessori-provinciali</li>
+<li>consigliere-prov, consigliere-provinciale, consiglieri-provinciali</li>
+<li>sindaco, sindaci</li>
+<li>assessore-com, assessore-comunale, assessori-comunali</li>
+<li>consigliere-com, consigliere-comunale, consiglieri-comunali</li>
+<li>commissario, commissari</li>
+</ul>
+</div>
+<div class="section" id="example-1-trivial">
+<h4>Example 1 - Trivial<a class="headerlink" href="#example-1-trivial" title="Permalink to this headline">¶</a></h4>
+<p>The list of all the decision makers. It is actually limited to the top 20 brasses.</p>
+<div class="highlight-python"><pre>GET /1.0/decisionmakers/</pre>
+</div>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="p">{</span>
+    <span class="s2">&quot;n_results&quot;</span><span class="o">:</span> <span class="mi">159915</span><span class="p">,</span>
+    <span class="s2">&quot;offset&quot;</span><span class="o">:</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="s2">&quot;limit&quot;</span><span class="o">:</span> <span class="mi">20</span><span class="p">,</span>
+    <span class="s2">&quot;members&quot;</span><span class="o">:</span> <span class="p">[</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;op_charge_id&quot;</span><span class="o">:</span> <span class="mi">688897</span><span class="p">,</span>
+            <span class="s2">&quot;politician_uri&quot;</span><span class="o">:</span> <span class="s2">&quot;http://localhost:8001/op/1.0/politicians/1657&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;politician&quot;</span><span class="o">:</span> <span class="p">{</span>
+                <span class="s2">&quot;first_name&quot;</span><span class="o">:</span> <span class="s2">&quot;Giorgio&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;last_name&quot;</span><span class="o">:</span> <span class="s2">&quot;NAPOLITANO&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;birth_location&quot;</span><span class="o">:</span> <span class="s2">&quot;Napoli (NA)&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;op_politician_id&quot;</span><span class="o">:</span> <span class="mi">1657</span><span class="p">,</span>
+                <span class="s2">&quot;sex&quot;</span><span class="o">:</span> <span class="s2">&quot;M&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;birth_date&quot;</span><span class="o">:</span> <span class="s2">&quot;1925-06-29T00:00:00&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;resources&quot;</span><span class="o">:</span> <span class="p">[</span>
+                    <span class="p">{</span>
+                        <span class="s2">&quot;type&quot;</span><span class="o">:</span> <span class="s2">&quot;URL ufficiale&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;value&quot;</span><span class="o">:</span> <span class="s2">&quot;http://www.senato.it/leg/15/BGT/Schede/Attsen/00001672.htm&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;descr&quot;</span><span class="o">:</span> <span class="s2">&quot;pagina personale sito Senato&quot;</span>
+                    <span class="p">},</span>
+                    <span class="p">{</span>
+                        <span class="s2">&quot;type&quot;</span><span class="o">:</span> <span class="s2">&quot;Email ufficiale&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;value&quot;</span><span class="o">:</span> <span class="s2">&quot;napolitano_g@posta.senato.it&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;descr&quot;</span><span class="o">:</span> <span class="s2">&quot;mail personale Senato&quot;</span>
+                    <span class="p">},</span>
+                    <span class="p">{</span>
+                        <span class="s2">&quot;type&quot;</span><span class="o">:</span> <span class="s2">&quot;Twitter&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;value&quot;</span><span class="o">:</span> <span class="s2">&quot;ITALYPRESIDENT&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;descr&quot;</span><span class="o">:</span> <span class="s2">&quot;&quot;</span>
+                    <span class="p">}</span>
+                <span class="p">]</span>
+            <span class="p">},</span>
+            <span class="s2">&quot;description&quot;</span><span class="o">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;textual_rep&quot;</span><span class="o">:</span> <span class="s2">&quot;dal 22/04/2013 Pres. della Repubblica&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;date_end&quot;</span><span class="o">:</span> <span class="kc">null</span><span class="p">,</span>
+            <span class="s2">&quot;date_start&quot;</span><span class="o">:</span> <span class="s2">&quot;2013-04-22&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;institution&quot;</span><span class="o">:</span> <span class="s2">&quot;Presidenza della Repubblica&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;charge&quot;</span><span class="o">:</span> <span class="s2">&quot;Presidente della Repubblica&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;location&quot;</span><span class="o">:</span> <span class="s2">&quot;Italia&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;party&quot;</span><span class="o">:</span> <span class="s2">&quot;Non specificato&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;location_type&quot;</span><span class="o">:</span> <span class="s2">&quot;Italia&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;op_link&quot;</span><span class="o">:</span> <span class="s2">&quot;http://politici.openpolis.it/politico/1657&quot;</span>
+        <span class="p">},</span>
+        <span class="p">{</span> <span class="p">...</span> <span class="p">},</span>
+        <span class="p">...</span>
+    <span class="p">],</span>
+    <span class="s2">&quot;next&quot;</span><span class="o">:</span> <span class="s2">&quot;http://localhost:8001/op/1.0/decisionmakers/?offset=20&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="example-2-simple">
+<h4>Example 2 - Simple<a class="headerlink" href="#example-2-simple" title="Permalink to this headline">¶</a></h4>
+<p>The list of all the ministers in the government.</p>
+<div class="highlight-python"><pre>GET /1.0/decisionmakers/?context=ministri</pre>
+</div>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="p">{</span>
+    <span class="s2">&quot;n_results&quot;</span><span class="o">:</span> <span class="mi">21</span><span class="p">,</span>
+    <span class="s2">&quot;offset&quot;</span><span class="o">:</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="s2">&quot;limit&quot;</span><span class="o">:</span> <span class="mi">20</span><span class="p">,</span>
+    <span class="s2">&quot;members&quot;</span><span class="o">:</span> <span class="p">[</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;op_charge_id&quot;</span><span class="o">:</span> <span class="mi">689048</span><span class="p">,</span>
+            <span class="s2">&quot;politician_uri&quot;</span><span class="o">:</span> <span class="s2">&quot;http://localhost:8001/op/1.0/politicians/167&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;politician&quot;</span><span class="o">:</span> <span class="p">{</span>
+                <span class="s2">&quot;first_name&quot;</span><span class="o">:</span> <span class="s2">&quot;Angelino&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;last_name&quot;</span><span class="o">:</span> <span class="s2">&quot;ALFANO&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;birth_location&quot;</span><span class="o">:</span> <span class="s2">&quot;Agrigento (AG)&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;op_politician_id&quot;</span><span class="o">:</span> <span class="mi">167</span><span class="p">,</span>
+                <span class="s2">&quot;sex&quot;</span><span class="o">:</span> <span class="s2">&quot;M&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;birth_date&quot;</span><span class="o">:</span> <span class="s2">&quot;1970-10-31T00:00:00&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;resources&quot;</span><span class="o">:</span> <span class="p">[</span>
+                    <span class="p">{</span>
+                        <span class="s2">&quot;type&quot;</span><span class="o">:</span> <span class="s2">&quot;URL ufficiale&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;value&quot;</span><span class="o">:</span> <span class="s2">&quot;http://www.camera.it/cartellecomuni/leg15/include/contenitore_dati.asp?tipopagina=&amp;deputato=d300431&amp;source=%2Fdeputatism%2F240%2Fdocumentoxml%2Easp&amp;position=DeputatiLa%20Scheda%20Personale&amp;Pagina=Deputati/Composizione/SchedeDeputati/SchedeDeputati.asp%3Fd&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;descr&quot;</span><span class="o">:</span> <span class="s2">&quot;pagina personale sito Camera&quot;</span>
+                    <span class="p">},</span>
+                    <span class="p">{</span>
+                        <span class="s2">&quot;type&quot;</span><span class="o">:</span> <span class="s2">&quot;Email ufficiale&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;value&quot;</span><span class="o">:</span> <span class="s2">&quot;ALFANO_A@CAMERA.IT&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;descr&quot;</span><span class="o">:</span> <span class="s2">&quot;mail personale Camera Dep.&quot;</span>
+                    <span class="p">},</span>
+                    <span class="p">{</span>
+                        <span class="s2">&quot;type&quot;</span><span class="o">:</span> <span class="s2">&quot;URL ufficiale&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;value&quot;</span><span class="o">:</span> <span class="s2">&quot;http://www.angelinoalfano.it/&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;descr&quot;</span><span class="o">:</span> <span class="s2">&quot;Sito personale&quot;</span>
+                    <span class="p">},</span>
+                    <span class="p">{</span>
+                        <span class="s2">&quot;type&quot;</span><span class="o">:</span> <span class="s2">&quot;Twitter&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;value&quot;</span><span class="o">:</span> <span class="s2">&quot;angealfa&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;descr&quot;</span><span class="o">:</span> <span class="s2">&quot;&quot;</span>
+                    <span class="p">},</span>
+                    <span class="p">{</span>
+                        <span class="s2">&quot;type&quot;</span><span class="o">:</span> <span class="s2">&quot;Facebook&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;value&quot;</span><span class="o">:</span> <span class="s2">&quot;http://www.facebook.com/angelinoalfano.it&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;descr&quot;</span><span class="o">:</span> <span class="s2">&quot;&quot;</span>
+                    <span class="p">}</span>
+                <span class="p">]</span>
+            <span class="p">},</span>
+            <span class="s2">&quot;description&quot;</span><span class="o">:</span> <span class="s2">&quot;Interno&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;textual_rep&quot;</span><span class="o">:</span> <span class="s2">&quot;dal 28/04/2013 Ministro Interno(Partito: PdL)&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;date_end&quot;</span><span class="o">:</span> <span class="kc">null</span><span class="p">,</span>
+            <span class="s2">&quot;date_start&quot;</span><span class="o">:</span> <span class="s2">&quot;2013-04-28&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;institution&quot;</span><span class="o">:</span> <span class="s2">&quot;Governo Nazionale&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;charge&quot;</span><span class="o">:</span> <span class="s2">&quot;Ministro&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;location&quot;</span><span class="o">:</span> <span class="s2">&quot;Italia&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;party&quot;</span><span class="o">:</span> <span class="s2">&quot;PdL&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;location_type&quot;</span><span class="o">:</span> <span class="s2">&quot;Italia&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;op_link&quot;</span><span class="o">:</span> <span class="s2">&quot;http://politici.openpolis.it/politico/167&quot;</span>
+        <span class="p">},</span>
+        <span class="p">{</span> <span class="p">...</span> <span class="p">},</span>
+        <span class="p">...</span>
+    <span class="p">],</span>
+    <span class="s2">&quot;next&quot;</span><span class="o">:</span> <span class="s2">&quot;http://localhost:8001/op/1.0/decisionmakers/?context=ministri&amp;offset=20&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="example-3-advanced">
+<h4>Example 3 - Advanced<a class="headerlink" href="#example-3-advanced" title="Permalink to this headline">¶</a></h4>
+<p>The list of all the sindaci in the region of Sicily.</p>
+<div class="highlight-python"><pre>GET /1.0/decisionmakers/?context=sindaci&amp;</pre>
+</div>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="p">{</span>
+    <span class="s2">&quot;n_results&quot;</span><span class="o">:</span> <span class="mi">339</span><span class="p">,</span>
+    <span class="s2">&quot;offset&quot;</span><span class="o">:</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="s2">&quot;limit&quot;</span><span class="o">:</span> <span class="mi">20</span><span class="p">,</span>
+    <span class="s2">&quot;members&quot;</span><span class="o">:</span> <span class="p">[</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;op_charge_id&quot;</span><span class="o">:</span> <span class="mi">646728</span><span class="p">,</span>
+            <span class="s2">&quot;politician_uri&quot;</span><span class="o">:</span> <span class="s2">&quot;http://localhost:8001/op/1.0/politicians/646727&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;politician&quot;</span><span class="o">:</span> <span class="p">{</span>
+                <span class="s2">&quot;first_name&quot;</span><span class="o">:</span> <span class="s2">&quot;Maria Teresa&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;last_name&quot;</span><span class="o">:</span> <span class="s2">&quot;Collica&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;birth_location&quot;</span><span class="o">:</span> <span class="s2">&quot;Barcellona Pozzo di Gotto(ME)&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;op_politician_id&quot;</span><span class="o">:</span> <span class="mi">646727</span><span class="p">,</span>
+                <span class="s2">&quot;sex&quot;</span><span class="o">:</span> <span class="s2">&quot;F&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;birth_date&quot;</span><span class="o">:</span> <span class="s2">&quot;1970-04-30T00:00:00&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;resources&quot;</span><span class="o">:</span> <span class="p">[]</span>
+            <span class="p">},</span>
+            <span class="s2">&quot;description&quot;</span><span class="o">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;textual_rep&quot;</span><span class="o">:</span> <span class="s2">&quot;dal 24/05/2012 Sindaco Giunta Comunale Barcellona Pozzo di Gotto (Partito: Lista Civica - Cen-Sin)&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;date_end&quot;</span><span class="o">:</span> <span class="kc">null</span><span class="p">,</span>
+            <span class="s2">&quot;date_start&quot;</span><span class="o">:</span> <span class="s2">&quot;2012-05-24&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;institution&quot;</span><span class="o">:</span> <span class="s2">&quot;Giunta Comunale&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;charge&quot;</span><span class="o">:</span> <span class="s2">&quot;Sindaco&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;location&quot;</span><span class="o">:</span> <span class="s2">&quot;Barcellona Pozzo di Gotto&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;party&quot;</span><span class="o">:</span> <span class="s2">&quot;Lista Civica - Cen-Sin&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;location_type&quot;</span><span class="o">:</span> <span class="s2">&quot;Comune&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;op_link&quot;</span><span class="o">:</span> <span class="s2">&quot;http://politici.openpolis.it/politico/646727&quot;</span>
+        <span class="p">},</span>
+        <span class="p">{</span> <span class="p">...</span> <span class="p">},</span>
+        <span class="p">...</span>
+    <span class="p">],</span>
+    <span class="s2">&quot;next&quot;</span><span class="o">:</span> <span class="s2">&quot;http://localhost:8001/op/1.0/decisionmakers/?location_id=21&amp;context=sindaci&amp;offset=20&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="http-post">
+<h3>HTTP POST<a class="headerlink" href="#http-post" title="Permalink to this headline">¶</a></h3>
+<p>Not supported.</p>
+</div>
+<div class="section" id="http-put">
+<h3>HTTP PUT<a class="headerlink" href="#http-put" title="Permalink to this headline">¶</a></h3>
+<p>Not supported.</p>
+</div>
+<div class="section" id="http-delete">
+<h3>HTTP DELETE<a class="headerlink" href="#http-delete" title="Permalink to this headline">¶</a></h3>
+<p>Not supported.</p>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../../../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Decision Makers</a><ul>
+<li><a class="reference internal" href="#decision-makers-list">Decision makers list</a><ul>
+<li><a class="reference internal" href="#resource-uri">Resource URI</a></li>
+<li><a class="reference internal" href="#http-get">HTTP GET</a><ul>
+<li><a class="reference internal" href="#list-filters">List filters</a></li>
+<li><a class="reference internal" href="#contexts">Contexts</a></li>
+<li><a class="reference internal" href="#example-1-trivial">Example 1 - Trivial</a></li>
+<li><a class="reference internal" href="#example-2-simple">Example 2 - Simple</a></li>
+<li><a class="reference internal" href="#example-3-advanced">Example 3 - Advanced</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#http-post">HTTP POST</a></li>
+<li><a class="reference internal" href="#http-put">HTTP PUT</a></li>
+<li><a class="reference internal" href="#http-delete">HTTP DELETE</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="politicians.html"
+                        title="previous chapter">Politicians</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="similarity.html"
+                        title="next chapter">Similarity</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../../../_sources/api/references/op/decisionmakers.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="similarity.html" title="Similarity"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="politicians.html" title="Politicians"
+             >previous</a> |</li>
+        <li><a href="../../../index.html">Openpolis REST API</a> &raquo;</li>
+          <li><a href="../../reference.html" >REST API reference</a> &raquo;</li>
+          <li><a href="resources.html" >API: Openpolitici Resources</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2011, Associazione Openpolis.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.2.
+    </div>
+  </body>
+</html>

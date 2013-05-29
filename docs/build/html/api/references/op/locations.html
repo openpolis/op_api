@@ -1,0 +1,586 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Locations &mdash; Openpolis REST API</title>
+    
+    <link rel="stylesheet" href="../../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <link rel="top" title="Openpolis REST API" href="../../../index.html" />
+    <link rel="up" title="API: Openpolitici Resources" href="resources.html" />
+    <link rel="next" title="Politicians" href="politicians.html" />
+    <link rel="prev" title="API: Openpolitici Resources" href="resources.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="politicians.html" title="Politicians"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="resources.html" title="API: Openpolitici Resources"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../../../index.html">Openpolis REST API</a> &raquo;</li>
+          <li><a href="../../reference.html" >REST API reference</a> &raquo;</li>
+          <li><a href="resources.html" accesskey="U">API: Openpolitici Resources</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="locations">
+<span id="api-res-op-locations"></span><h1>Locations<a class="headerlink" href="#locations" title="Permalink to this headline">¶</a></h1>
+<p>Openpolis locations are used throughout the projects in order to identify the geo-context. It may be the constituency where a politician was elected in, or a geo-tag in an openparlamento&#8217;s act, identifying the place the act is talking about, it can be many other things.</p>
+<div class="section" id="location-instance">
+<h2>Location instance<a class="headerlink" href="#location-instance" title="Permalink to this headline">¶</a></h2>
+<p>A Location instance resource represents a <strong>single openpolis location</strong>.</p>
+<div class="section" id="resource-uri">
+<h3>Resource URI<a class="headerlink" href="#resource-uri" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python"><pre>/1.0/locations/{id}</pre>
+</div>
+</div>
+<div class="section" id="resource-properties">
+<h3>Resource Properties<a class="headerlink" href="#resource-properties" title="Permalink to this headline">¶</a></h3>
+<p>A Location resource is identified by the following properties:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="43%" />
+<col width="57%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">property</th>
+<th class="head">explanation</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td><tt class="xref py py-const docutils literal"><span class="pre">id</span></tt></td>
+<td>openpolis identifier</td>
+</tr>
+<tr class="row-odd"><td><tt class="xref py py-const docutils literal"><span class="pre">name</span></tt></td>
+<td>location name</td>
+</tr>
+<tr class="row-even"><td><tt class="xref py py-const docutils literal"><span class="pre">macroregional_id</span></tt></td>
+<td>macro-region identifier (istat)</td>
+</tr>
+<tr class="row-odd"><td><tt class="xref py py-const docutils literal"><span class="pre">regional_id</span></tt></td>
+<td>region identifier (istat)</td>
+</tr>
+<tr class="row-even"><td><tt class="xref py py-const docutils literal"><span class="pre">provincial_id</span></tt></td>
+<td>province identifier (istat)</td>
+</tr>
+<tr class="row-odd"><td><tt class="xref py py-const docutils literal"><span class="pre">city_id</span></tt></td>
+<td>city identifier (istat)</td>
+</tr>
+<tr class="row-even"><td><tt class="xref py py-const docutils literal"><span class="pre">minint_regional_id</span></tt></td>
+<td>region identifier (min. int.)</td>
+</tr>
+<tr class="row-odd"><td><tt class="xref py py-const docutils literal"><span class="pre">minint_provincial_id</span></tt></td>
+<td>province identifier (min. int.)</td>
+</tr>
+<tr class="row-even"><td><tt class="xref py py-const docutils literal"><span class="pre">minint_city_id</span></tt></td>
+<td>province identifier (min. int.)</td>
+</tr>
+<tr class="row-odd"><td><tt class="xref py py-const docutils literal"><span class="pre">gps_lat</span></tt></td>
+<td>latitude (gps coords)</td>
+</tr>
+<tr class="row-even"><td><tt class="xref py py-const docutils literal"><span class="pre">gps_lon</span></tt></td>
+<td>longitude (gps coords)</td>
+</tr>
+<tr class="row-odd"><td><tt class="xref py py-const docutils literal"><span class="pre">inhabitants</span></tt></td>
+<td>inhabitants (as of 2001)</td>
+</tr>
+<tr class="row-even"><td><tt class="xref py py-const docutils literal"><span class="pre">location_type.name</span></tt></td>
+<td>location type</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last"><tt class="xref py py-const docutils literal"><span class="pre">location_type.name</span></tt> indicates the <tt class="xref py py-const docutils literal"><span class="pre">name</span></tt> field of the location_type class, which has a one-to-many relation to the main location resource.</p>
+</div>
+</div>
+<div class="section" id="http-get">
+<h3>HTTP GET<a class="headerlink" href="#http-get" title="Permalink to this headline">¶</a></h3>
+<p>Returns a representation of a single location, including the properties above.</p>
+<div class="section" id="json-example">
+<h4>JSON Example<a class="headerlink" href="#json-example" title="Permalink to this headline">¶</a></h4>
+<div class="highlight-python"><pre>GET /1.0/locations/1745/</pre>
+</div>
+<div class="highlight-ruby"><div class="highlight"><pre><span class="p">{</span>
+    <span class="s2">&quot;macroregional_id&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;Pellio Intelvi&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;gps_lat&quot;</span><span class="p">:</span> <span class="mi">45</span><span class="o">.</span><span class="mi">980800000000002</span><span class="p">,</span>
+    <span class="s2">&quot;city_id&quot;</span><span class="p">:</span> <span class="mi">13179</span><span class="p">,</span>
+    <span class="s2">&quot;minint_regional_code&quot;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span>
+    <span class="s2">&quot;regional_id&quot;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span>
+    <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="mi">1745</span><span class="p">,</span>
+    <span class="s2">&quot;provincial_id&quot;</span><span class="p">:</span> <span class="mi">13</span><span class="p">,</span>
+    <span class="s2">&quot;inhabitants&quot;</span><span class="p">:</span> <span class="mi">940</span><span class="p">,</span>
+    <span class="s2">&quot;minint_city_code&quot;</span><span class="p">:</span> <span class="mi">1710</span><span class="p">,</span>
+    <span class="s2">&quot;gps_lon&quot;</span><span class="p">:</span> <span class="mi">9</span><span class="o">.</span><span class="mo">05</span><span class="mi">96999999999994</span><span class="p">,</span>
+    <span class="s2">&quot;resource_uri&quot;</span><span class="p">:</span> <span class="s2">&quot;/op/1.0/locations/1745/&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;location_type&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;Comune&quot;</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;minint_provincial_code&quot;</span><span class="p">:</span> <span class="mi">24</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="xml-example">
+<h4>XML Example<a class="headerlink" href="#xml-example" title="Permalink to this headline">¶</a></h4>
+<div class="highlight-python"><pre>GET /1.0/locations/1745/?format=xml</pre>
+</div>
+<div class="highlight-xml"><div class="highlight"><pre><span class="nt">&lt;op_content&gt;</span>
+  <span class="nt">&lt;macroregional_id&gt;</span>1<span class="nt">&lt;/macroregional_id&gt;</span>
+  <span class="nt">&lt;name&gt;</span>Pellio Intelvi<span class="nt">&lt;/name&gt;</span>
+  <span class="nt">&lt;gps_lat&gt;</span>45.9808<span class="nt">&lt;/gps_lat&gt;</span>
+  <span class="nt">&lt;city_id&gt;</span>13179<span class="nt">&lt;/city_id&gt;</span>
+  <span class="nt">&lt;minint_regional_code&gt;</span>3<span class="nt">&lt;/minint_regional_code&gt;</span>
+  <span class="nt">&lt;regional_id&gt;</span>3<span class="nt">&lt;/regional_id&gt;</span>
+  <span class="nt">&lt;id&gt;</span>1745<span class="nt">&lt;/id&gt;</span>
+  <span class="nt">&lt;provincial_id&gt;</span>13<span class="nt">&lt;/provincial_id&gt;</span>
+  <span class="nt">&lt;inhabitants&gt;</span>940<span class="nt">&lt;/inhabitants&gt;</span>
+  <span class="nt">&lt;minint_city_code&gt;</span>1710<span class="nt">&lt;/minint_city_code&gt;</span>
+  <span class="nt">&lt;gps_lon&gt;</span>9.0597<span class="nt">&lt;/gps_lon&gt;</span>
+  <span class="nt">&lt;resource_uri&gt;</span>/op/1.0/locations/1745/<span class="nt">&lt;/resource_uri&gt;</span>
+  <span class="nt">&lt;location_type&gt;</span>
+    <span class="nt">&lt;name&gt;</span>Comune<span class="nt">&lt;/name&gt;</span>
+  <span class="nt">&lt;/location_type&gt;</span>
+  <span class="nt">&lt;minint_provincial_code&gt;</span>24<span class="nt">&lt;/minint_provincial_code&gt;</span>
+<span class="nt">&lt;/op_content&gt;</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="http-post">
+<h3>HTTP POST<a class="headerlink" href="#http-post" title="Permalink to this headline">¶</a></h3>
+<p>Not yet supported. To be done in the future.</p>
+</div>
+<div class="section" id="http-put">
+<h3>HTTP PUT<a class="headerlink" href="#http-put" title="Permalink to this headline">¶</a></h3>
+<p>Not supported.</p>
+</div>
+<div class="section" id="http-delete">
+<h3>HTTP DELETE<a class="headerlink" href="#http-delete" title="Permalink to this headline">¶</a></h3>
+<p>Not supported.</p>
+</div>
+</div>
+<div class="section" id="locations-list">
+<h2>Locations list<a class="headerlink" href="#locations-list" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id1">
+<h3>Resource URI<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python"><pre>/1.0/locations</pre>
+</div>
+</div>
+<div class="section" id="id2">
+<h3>HTTP GET<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
+<p>Retrieves a list of the Locations resources.</p>
+<div class="section" id="list-filters">
+<h4>List filters<a class="headerlink" href="#list-filters" title="Permalink to this headline">¶</a></h4>
+<p>The following query string parameters allow you to limit the list returned:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="16%" />
+<col width="84%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Parameter</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>namestartswith</td>
+<td>Only return Locations starting with the given string (case insensitive)</td>
+</tr>
+<tr class="row-odd"><td>name</td>
+<td>Only return Locations whose name matches exactly the string given (case insensitive)</td>
+</tr>
+<tr class="row-even"><td>location_type</td>
+<td>Only return Locations of the given type. May be <cite>regione</cite>, <cite>provincia</cite>, <cite>comune</cite></td>
+</tr>
+<tr class="row-odd"><td>regional_id</td>
+<td>Only return Locations of the given region. <tt class="docutils literal"><span class="pre">location_type</span></tt> must be <cite>provincia</cite> or <cite>comune</cite></td>
+</tr>
+<tr class="row-even"><td>provincial_id</td>
+<td>Only return Locations of the given province. <tt class="docutils literal"><span class="pre">location_type</span></tt> must be <cite>comune</cite></td>
+</tr>
+</tbody>
+</table>
+<p>In all examples below, locations are sorted by inhabitants, first the more populous.
+Default output is json, add <tt class="docutils literal"><span class="pre">?format=xml</span></tt> to get xml.</p>
+</div>
+<div class="section" id="example-1">
+<h4>Example 1<a class="headerlink" href="#example-1" title="Permalink to this headline">¶</a></h4>
+<p>The list of all the locations. It is very long and it takes very long to send, even if cached.</p>
+<div class="highlight-python"><pre>GET /1.0/locations/</pre>
+</div>
+<div class="highlight-python"><div class="highlight"><pre><span class="p">[</span>
+    <span class="p">{</span>
+        <span class="s">&quot;macroregional_id&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+        <span class="s">&quot;name&quot;</span><span class="p">:</span> <span class="s">&quot;Europa&quot;</span><span class="p">,</span>
+        <span class="s">&quot;gps_lat&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+        <span class="s">&quot;city_id&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+        <span class="s">&quot;minint_regional_code&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+        <span class="s">&quot;regional_id&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+        <span class="s">&quot;id&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="s">&quot;provincial_id&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+        <span class="s">&quot;inhabitants&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+        <span class="s">&quot;minint_city_code&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+        <span class="s">&quot;gps_lon&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+        <span class="s">&quot;resource_uri&quot;</span><span class="p">:</span> <span class="s">&quot;/op/1.0/locations/1/&quot;</span><span class="p">,</span>
+        <span class="s">&quot;location_type&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s">&quot;name&quot;</span><span class="p">:</span> <span class="s">&quot;Europa&quot;</span>
+        <span class="p">},</span>
+        <span class="s">&quot;minint_provincial_code&quot;</span><span class="p">:</span> <span class="n">null</span>
+    <span class="p">},</span>
+    <span class="p">{</span>
+        <span class="s">&quot;macroregional_id&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+        <span class="s">&quot;name&quot;</span><span class="p">:</span> <span class="s">&quot;Italia&quot;</span><span class="p">,</span>
+        <span class="s">&quot;gps_lat&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+        <span class="s">&quot;city_id&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+        <span class="s">&quot;minint_regional_code&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+        <span class="s">&quot;regional_id&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+        <span class="s">&quot;id&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+        <span class="s">&quot;provincial_id&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+        <span class="s">&quot;inhabitants&quot;</span><span class="p">:</span> <span class="mi">58751711</span><span class="p">,</span>
+        <span class="s">&quot;minint_city_code&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+        <span class="s">&quot;gps_lon&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+        <span class="s">&quot;resource_uri&quot;</span><span class="p">:</span> <span class="s">&quot;/op/1.0/locations/2/&quot;</span><span class="p">,</span>
+        <span class="s">&quot;location_type&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s">&quot;name&quot;</span><span class="p">:</span> <span class="s">&quot;Italia&quot;</span>
+        <span class="p">},</span>
+        <span class="s">&quot;minint_provincial_code&quot;</span><span class="p">:</span> <span class="n">null</span>
+    <span class="p">},</span>
+    <span class="o">...</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="example-2">
+<h4>Example 2<a class="headerlink" href="#example-2" title="Permalink to this headline">¶</a></h4>
+<p>Locations can be filtered by type, using the <tt class="docutils literal"><span class="pre">location_type</span></tt> filter. The example below extracts the list of all the regions.
+Provinces and cities can be extracted the same way (the list of all cities is practically as long as the complete list in example 1)</p>
+<div class="highlight-python"><pre>GET /1.0/locations/?location_type=regione</pre>
+</div>
+<div class="highlight-python"><pre>[
+    {
+        "macroregional_id": 1,
+        "name": "Piemonte",
+        "gps_lat": null,
+        "city_id": null,
+        "minint_regional_code": 1,
+        "regional_id": 1,
+        "id": 3,
+        "provincial_id": null,
+        "inhabitants": 4341733,
+        "minint_city_code": null,
+        "gps_lon": null,
+        "resource_uri": "/op/1.0/locations/3/",
+        "location_type": {
+            "name": "Regione"
+        },
+        "minint_provincial_code": null
+    },
+    {
+        "macroregional_id": 1,
+        "name": "Valle D'Aosta",
+        "gps_lat": null,
+        "city_id": null,
+        "minint_regional_code": 2,
+        "regional_id": 2,
+        "id": 4,
+        "provincial_id": null,
+        "inhabitants": 123978,
+        "minint_city_code": null,
+        "gps_lon": null,
+        "resource_uri": "/op/1.0/locations/4/",
+        "location_type": {
+            "name": "Regione"
+        },
+        "minint_provincial_code": 4
+    },</pre>
+</div>
+</div>
+<div class="section" id="example-3">
+<h4>Example 3<a class="headerlink" href="#example-3" title="Permalink to this headline">¶</a></h4>
+<p>Filters can be mixed. See  filters table above to check which filter can be used, when. Example below lists the five provinces in the Lazio region.</p>
+<div class="highlight-python"><pre>GET /1.0/locations/?location_type=provincia&amp;regional_id=12</pre>
+</div>
+<div class="highlight-python"><div class="highlight"><pre><span class="p">[</span>
+    <span class="p">{</span>
+        <span class="s">&quot;macroregional_id&quot;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span>
+        <span class="s">&quot;name&quot;</span><span class="p">:</span> <span class="s">&quot;Viterbo&quot;</span><span class="p">,</span>
+        <span class="s">&quot;gps_lat&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+        <span class="s">&quot;city_id&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+        <span class="s">&quot;minint_regional_code&quot;</span><span class="p">:</span> <span class="mi">12</span><span class="p">,</span>
+        <span class="s">&quot;regional_id&quot;</span><span class="p">:</span> <span class="mi">12</span><span class="p">,</span>
+        <span class="s">&quot;id&quot;</span><span class="p">:</span> <span class="mi">78</span><span class="p">,</span>
+        <span class="s">&quot;provincial_id&quot;</span><span class="p">:</span> <span class="mi">56</span><span class="p">,</span>
+        <span class="s">&quot;inhabitants&quot;</span><span class="p">:</span> <span class="mi">302547</span><span class="p">,</span>
+        <span class="s">&quot;minint_city_code&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+        <span class="s">&quot;gps_lon&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+        <span class="s">&quot;resource_uri&quot;</span><span class="p">:</span> <span class="s">&quot;/op/1.0/locations/78/&quot;</span><span class="p">,</span>
+        <span class="s">&quot;location_type&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s">&quot;name&quot;</span><span class="p">:</span> <span class="s">&quot;Provincia&quot;</span>
+        <span class="p">},</span>
+        <span class="s">&quot;minint_provincial_code&quot;</span><span class="p">:</span> <span class="mi">91</span>
+    <span class="p">},</span>
+    <span class="p">{</span>
+        <span class="s">&quot;macroregional_id&quot;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span>
+        <span class="s">&quot;name&quot;</span><span class="p">:</span> <span class="s">&quot;Rieti&quot;</span><span class="p">,</span>
+        <span class="s">&quot;gps_lat&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+        <span class="s">&quot;city_id&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+        <span class="s">&quot;minint_regional_code&quot;</span><span class="p">:</span> <span class="mi">12</span><span class="p">,</span>
+        <span class="s">&quot;regional_id&quot;</span><span class="p">:</span> <span class="mi">12</span><span class="p">,</span>
+        <span class="s">&quot;id&quot;</span><span class="p">:</span> <span class="mi">79</span><span class="p">,</span>
+        <span class="s">&quot;provincial_id&quot;</span><span class="p">:</span> <span class="mi">57</span><span class="p">,</span>
+        <span class="s">&quot;inhabitants&quot;</span><span class="p">:</span> <span class="mi">154406</span><span class="p">,</span>
+        <span class="s">&quot;minint_city_code&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+        <span class="s">&quot;gps_lon&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+        <span class="s">&quot;resource_uri&quot;</span><span class="p">:</span> <span class="s">&quot;/op/1.0/locations/79/&quot;</span><span class="p">,</span>
+        <span class="s">&quot;location_type&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s">&quot;name&quot;</span><span class="p">:</span> <span class="s">&quot;Provincia&quot;</span>
+        <span class="p">},</span>
+        <span class="s">&quot;minint_provincial_code&quot;</span><span class="p">:</span> <span class="mi">69</span>
+    <span class="p">},</span>
+    <span class="p">{</span>
+        <span class="s">&quot;macroregional_id&quot;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span>
+        <span class="s">&quot;name&quot;</span><span class="p">:</span> <span class="s">&quot;Roma&quot;</span><span class="p">,</span>
+        <span class="s">&quot;gps_lat&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+        <span class="s">&quot;city_id&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+        <span class="s">&quot;minint_regional_code&quot;</span><span class="p">:</span> <span class="mi">12</span><span class="p">,</span>
+        <span class="s">&quot;regional_id&quot;</span><span class="p">:</span> <span class="mi">12</span><span class="p">,</span>
+        <span class="s">&quot;id&quot;</span><span class="p">:</span> <span class="mi">80</span><span class="p">,</span>
+        <span class="s">&quot;provincial_id&quot;</span><span class="p">:</span> <span class="mi">58</span><span class="p">,</span>
+        <span class="s">&quot;inhabitants&quot;</span><span class="p">:</span> <span class="mi">3831959</span><span class="p">,</span>
+        <span class="s">&quot;minint_city_code&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+        <span class="s">&quot;gps_lon&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+        <span class="s">&quot;resource_uri&quot;</span><span class="p">:</span> <span class="s">&quot;/op/1.0/locations/80/&quot;</span><span class="p">,</span>
+        <span class="s">&quot;location_type&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s">&quot;name&quot;</span><span class="p">:</span> <span class="s">&quot;Provincia&quot;</span>
+        <span class="p">},</span>
+        <span class="s">&quot;minint_provincial_code&quot;</span><span class="p">:</span> <span class="mi">70</span>
+    <span class="p">},</span>
+    <span class="p">{</span>
+        <span class="s">&quot;macroregional_id&quot;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span>
+        <span class="s">&quot;name&quot;</span><span class="p">:</span> <span class="s">&quot;Latina&quot;</span><span class="p">,</span>
+        <span class="s">&quot;gps_lat&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+        <span class="s">&quot;city_id&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+        <span class="s">&quot;minint_regional_code&quot;</span><span class="p">:</span> <span class="mi">12</span><span class="p">,</span>
+        <span class="s">&quot;regional_id&quot;</span><span class="p">:</span> <span class="mi">12</span><span class="p">,</span>
+        <span class="s">&quot;id&quot;</span><span class="p">:</span> <span class="mi">81</span><span class="p">,</span>
+        <span class="s">&quot;provincial_id&quot;</span><span class="p">:</span> <span class="mi">59</span><span class="p">,</span>
+        <span class="s">&quot;inhabitants&quot;</span><span class="p">:</span> <span class="mi">524533</span><span class="p">,</span>
+        <span class="s">&quot;minint_city_code&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+        <span class="s">&quot;gps_lon&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+        <span class="s">&quot;resource_uri&quot;</span><span class="p">:</span> <span class="s">&quot;/op/1.0/locations/81/&quot;</span><span class="p">,</span>
+        <span class="s">&quot;location_type&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s">&quot;name&quot;</span><span class="p">:</span> <span class="s">&quot;Provincia&quot;</span>
+        <span class="p">},</span>
+        <span class="s">&quot;minint_provincial_code&quot;</span><span class="p">:</span> <span class="mi">40</span>
+    <span class="p">},</span>
+    <span class="p">{</span>
+        <span class="s">&quot;macroregional_id&quot;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span>
+        <span class="s">&quot;name&quot;</span><span class="p">:</span> <span class="s">&quot;Frosinone&quot;</span><span class="p">,</span>
+        <span class="s">&quot;gps_lat&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+        <span class="s">&quot;city_id&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+        <span class="s">&quot;minint_regional_code&quot;</span><span class="p">:</span> <span class="mi">12</span><span class="p">,</span>
+        <span class="s">&quot;regional_id&quot;</span><span class="p">:</span> <span class="mi">12</span><span class="p">,</span>
+        <span class="s">&quot;id&quot;</span><span class="p">:</span> <span class="mi">82</span><span class="p">,</span>
+        <span class="s">&quot;provincial_id&quot;</span><span class="p">:</span> <span class="mi">60</span><span class="p">,</span>
+        <span class="s">&quot;inhabitants&quot;</span><span class="p">:</span> <span class="mi">491333</span><span class="p">,</span>
+        <span class="s">&quot;minint_city_code&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+        <span class="s">&quot;gps_lon&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+        <span class="s">&quot;resource_uri&quot;</span><span class="p">:</span> <span class="s">&quot;/op/1.0/locations/82/&quot;</span><span class="p">,</span>
+        <span class="s">&quot;location_type&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s">&quot;name&quot;</span><span class="p">:</span> <span class="s">&quot;Provincia&quot;</span>
+        <span class="p">},</span>
+        <span class="s">&quot;minint_provincial_code&quot;</span><span class="p">:</span> <span class="mi">33</span>
+    <span class="p">}</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="example-4">
+<h4>Example 4<a class="headerlink" href="#example-4" title="Permalink to this headline">¶</a></h4>
+<p><tt class="docutils literal"><span class="pre">namestartswith</span></tt> and <tt class="docutils literal"><span class="pre">name</span></tt> can be used to look for locations starting with or exactly matching a sequence of letters (case insensitive).
+These filters can be used alone, working on the complete list, or together with other filters.</p>
+<div class="highlight-python"><pre>GET /1.0/locations/?location_type=comune&amp;regional_id=12namestartswith=san</pre>
+</div>
+<div class="highlight-python"><div class="highlight"><pre><span class="p">[</span>
+    <span class="p">{</span>
+        <span class="s">&quot;macroregional_id&quot;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span>
+        <span class="s">&quot;name&quot;</span><span class="p">:</span> <span class="s">&quot;Sant&#39;Oreste&quot;</span><span class="p">,</span>
+        <span class="s">&quot;gps_lat&quot;</span><span class="p">:</span> <span class="mf">42.235700000000001</span><span class="p">,</span>
+        <span class="s">&quot;city_id&quot;</span><span class="p">:</span> <span class="mi">58099</span><span class="p">,</span>
+        <span class="s">&quot;minint_regional_code&quot;</span><span class="p">:</span> <span class="mi">12</span><span class="p">,</span>
+        <span class="s">&quot;regional_id&quot;</span><span class="p">:</span> <span class="mi">12</span><span class="p">,</span>
+        <span class="s">&quot;id&quot;</span><span class="p">:</span> <span class="mi">5142</span><span class="p">,</span>
+        <span class="s">&quot;provincial_id&quot;</span><span class="p">:</span> <span class="mi">58</span><span class="p">,</span>
+        <span class="s">&quot;inhabitants&quot;</span><span class="p">:</span> <span class="mi">16727</span><span class="p">,</span>
+        <span class="s">&quot;minint_city_code&quot;</span><span class="p">:</span> <span class="mi">980</span><span class="p">,</span>
+        <span class="s">&quot;gps_lon&quot;</span><span class="p">:</span> <span class="mf">12.520300000000001</span><span class="p">,</span>
+        <span class="s">&quot;resource_uri&quot;</span><span class="p">:</span> <span class="s">&quot;/op/1.0/locations/5142/&quot;</span><span class="p">,</span>
+        <span class="s">&quot;location_type&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s">&quot;name&quot;</span><span class="p">:</span> <span class="s">&quot;Comune&quot;</span>
+        <span class="p">},</span>
+        <span class="s">&quot;minint_provincial_code&quot;</span><span class="p">:</span> <span class="mi">70</span>
+    <span class="p">},</span>
+    <span class="p">{</span>
+        <span class="s">&quot;macroregional_id&quot;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span>
+        <span class="s">&quot;name&quot;</span><span class="p">:</span> <span class="s">&quot;San Cesareo&quot;</span><span class="p">,</span>
+        <span class="s">&quot;gps_lat&quot;</span><span class="p">:</span> <span class="mf">41.821899999999999</span><span class="p">,</span>
+        <span class="s">&quot;city_id&quot;</span><span class="p">:</span> <span class="mi">58119</span><span class="p">,</span>
+        <span class="s">&quot;minint_regional_code&quot;</span><span class="p">:</span> <span class="mi">12</span><span class="p">,</span>
+        <span class="s">&quot;regional_id&quot;</span><span class="p">:</span> <span class="mi">12</span><span class="p">,</span>
+        <span class="s">&quot;id&quot;</span><span class="p">:</span> <span class="mi">5136</span><span class="p">,</span>
+        <span class="s">&quot;provincial_id&quot;</span><span class="p">:</span> <span class="mi">58</span><span class="p">,</span>
+        <span class="s">&quot;inhabitants&quot;</span><span class="p">:</span> <span class="mi">11707</span><span class="p">,</span>
+        <span class="s">&quot;minint_city_code&quot;</span><span class="p">:</span> <span class="mi">931</span><span class="p">,</span>
+        <span class="s">&quot;gps_lon&quot;</span><span class="p">:</span> <span class="mf">12.8165</span><span class="p">,</span>
+        <span class="s">&quot;resource_uri&quot;</span><span class="p">:</span> <span class="s">&quot;/op/1.0/locations/5136/&quot;</span><span class="p">,</span>
+        <span class="s">&quot;location_type&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s">&quot;name&quot;</span><span class="p">:</span> <span class="s">&quot;Comune&quot;</span>
+        <span class="p">},</span>
+        <span class="s">&quot;minint_provincial_code&quot;</span><span class="p">:</span> <span class="mi">70</span>
+    <span class="p">},</span>
+    <span class="o">...</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="id3">
+<h3>HTTP POST<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
+<p>Not supported.</p>
+</div>
+<div class="section" id="id4">
+<h3>HTTP PUT<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h3>
+<p>Not supported.</p>
+</div>
+<div class="section" id="id5">
+<h3>HTTP DELETE<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h3>
+<p>Not supported.</p>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../../../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Locations</a><ul>
+<li><a class="reference internal" href="#location-instance">Location instance</a><ul>
+<li><a class="reference internal" href="#resource-uri">Resource URI</a></li>
+<li><a class="reference internal" href="#resource-properties">Resource Properties</a></li>
+<li><a class="reference internal" href="#http-get">HTTP GET</a><ul>
+<li><a class="reference internal" href="#json-example">JSON Example</a></li>
+<li><a class="reference internal" href="#xml-example">XML Example</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#http-post">HTTP POST</a></li>
+<li><a class="reference internal" href="#http-put">HTTP PUT</a></li>
+<li><a class="reference internal" href="#http-delete">HTTP DELETE</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#locations-list">Locations list</a><ul>
+<li><a class="reference internal" href="#id1">Resource URI</a></li>
+<li><a class="reference internal" href="#id2">HTTP GET</a><ul>
+<li><a class="reference internal" href="#list-filters">List filters</a></li>
+<li><a class="reference internal" href="#example-1">Example 1</a></li>
+<li><a class="reference internal" href="#example-2">Example 2</a></li>
+<li><a class="reference internal" href="#example-3">Example 3</a></li>
+<li><a class="reference internal" href="#example-4">Example 4</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#id3">HTTP POST</a></li>
+<li><a class="reference internal" href="#id4">HTTP PUT</a></li>
+<li><a class="reference internal" href="#id5">HTTP DELETE</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="resources.html"
+                        title="previous chapter">API: Openpolitici Resources</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="politicians.html"
+                        title="next chapter">Politicians</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../../../_sources/api/references/op/locations.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="politicians.html" title="Politicians"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="resources.html" title="API: Openpolitici Resources"
+             >previous</a> |</li>
+        <li><a href="../../../index.html">Openpolis REST API</a> &raquo;</li>
+          <li><a href="../../reference.html" >REST API reference</a> &raquo;</li>
+          <li><a href="resources.html" >API: Openpolitici Resources</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2011, Associazione Openpolis.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.2.
+    </div>
+  </body>
+</html>
