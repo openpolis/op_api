@@ -787,6 +787,8 @@ class InstitutionChargeHandler(BaseHandler):
                     else:
                         members = members.filter(location__city_id=location.city_id)
 
+                else:
+                    return {'error': 'Unknown context'}
 
 
                 # add sorting criteria
