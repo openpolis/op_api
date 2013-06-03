@@ -761,7 +761,7 @@ class InstitutionChargeHandler(BaseHandler):
                     if not location or not location.is_city():
                         return {'error': 'Location ID of a city must be specified for this context.'}
                     else:
-                        members = members.filter(location__provincial_id=location.provincial_id)
+                        members = members.filter(location__city_id=location.city_id)
 
                 # consiglieri comunali
                 elif context == 'consigliere-com' or context == 'consigliere-comunale' or context == 'consiglieri-comunali':
@@ -769,7 +769,7 @@ class InstitutionChargeHandler(BaseHandler):
                     if not location or not location.is_city():
                         return {'error': 'Location ID of a city must be specified for this context.'}
                     else:
-                        members = members.filter(location__provincial_id=location.provincial_id)
+                        members = members.filter(location__city_id=location.city_id)
 
 
                 # commissariamenti
