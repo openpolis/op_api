@@ -676,7 +676,7 @@ class InstitutionChargeHandler(BaseHandler):
                         members = self.filterByConstituencies(members, election_type='EU', location=location)
 
                 elif context == 'deputato' or context == 'deputati':
-                    members = members.filter(charge_type__id=5)
+                    members = members.filter(institution__id=4, charge_type__id=5)
 
                     # constituency filtering, from location, in case of camera
                     if location:
@@ -684,8 +684,8 @@ class InstitutionChargeHandler(BaseHandler):
 
 
                 elif context == 'senatore' or context == 'senatori':
-                    from django.db import Q
-                    members = members.filter(Q(charge_type__id=6) | Q(charge_type__id=20))
+                    from django.db.models import Q
+                    members = members.filter(Q(institution__id=5) & (Q(charge_type__id=6) | Q(charge_type__id=20)))
                     # constituency filtering, from location, in case of senato
                     if location:
                         members = self.filterByConstituencies(members, election_type='Senato', location=location)
@@ -787,7 +787,7 @@ class InstitutionChargeHandler(BaseHandler):
 
 
                 # add sorting criteria
-                members = members.order_by('charge_type__priority', '-date_start')
+                members = members.order_by('institution__priority', 'charge_type__priority', '-date_start')
 
 
                 if 'limit' in request.GET:
