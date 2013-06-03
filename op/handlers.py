@@ -585,7 +585,10 @@ class InstitutionChargeHandler(BaseHandler):
     """
     model = OpInstitutionCharge
     allowed_methods = ('GET')
-    base = model.objects.using('op').filter(date_end__isnull=True)
+
+    # base filtering: fetch only current and non-deleted charge
+    base = model.objects.using('op').filter(date_end__isnull=True, content__deleted_at__isnull=True)
+
     fields = ('content_id', 'politician')
 
     @classmethod
