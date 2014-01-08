@@ -429,8 +429,10 @@ class HistoricHandler(BaseHandler):
     
     def read(self, request, id_type, location_id, year=None):
         Emitter.register('xml', OpLocationXMLEmitter, 'text/xml; charset=utf-8')
-        try:    
-            if 'city_mayor' in request.path:
+        try:
+            if 'city_mayors' in request.path:
+                return self.get_city_mayors_data(id_type, location_id)
+            elif 'city_mayor' in request.path:
                 return self.get_city_mayor_data(id_type, location_id, year)
             else:
                 return self.get_location_government_data(id_type, location_id, year)
@@ -438,22 +440,27 @@ class HistoricHandler(BaseHandler):
         except Exception, e:
             return { 'error': e }
     
-    
+    def get_location(self, id_type, city_id):
+        """
+        Return the Location object, given the type_id and the city_id
+        """
+        location = OpLocation.objects.db_manager('op').retrieveFromId(id_type, city_id)
+        if location.location_type.name != 'Comune':
+            raise  Exception('location is not a city. only cities are accepted')
+        return location
+
     def get_city_mayor_data(self, id_type, city_id, year=None):
         """docstring for get_city_mayor_data"""
         from django.db import connection
         cursor = connections['op'].cursor()
         data = { 'year': year }
+
         try:
-            location = OpLocation.objects.db_manager('op').retrieveFromId(id_type, city_id)
-            if location.location_type.name != 'Comune':
-                return { 'exception': 'location is not a city. only cities are accepted' }
-            location_prov = location.getProvince()
-            location_reg = location.getRegion()
+            location = self.get_location(id_type, city_id)
             data['location'] = "%s (%s)" % (location.name, location.prov)
         except Exception, detail:
-            return { 'exception': 'location %s, id_type %s could not be found. %s' % (city_id, id_type, detail) }
-        
+            return { 'exception': 'Error retrieving location with location_id:%s, id_type:%s. %s' % (city_id, id_type, detail) }
+
         if year is None:
             ic_mayors = OpInstitutionCharge.objects.db_manager('op').filter(
                 location__id=location.id, 
@@ -485,7 +492,52 @@ class HistoricHandler(BaseHandler):
         
         return data
     
-    
+    def get_city_mayors_data(self, id_type, city_id):
+        """get all top charges for a given city during the years"""
+        data = {}
+        try:
+            location = self.get_location(id_type, city_id)
+            data['location'] = "%s (%s)" % (location.name, location.prov)
+        except Exception, detail:
+            return { 'exception': 'Error retrieving location with location_id:%s, id_type:%s. %s' % (city_id, id_type, detail) }
+
+        ics = OpInstitutionCharge.objects.db_manager('op').filter(
+            Q(location__id=location.id),
+            Q(charge_type__name='Sindaco') | Q(charge_type__name='Commissario straordinario'),
+        ).order_by('-date_start')
+
+        data['sindaci'] = []
+        for ic in ics:
+            charge_id = ic.content_id
+            if ic.charge_type.name == 'Sindaco':
+                c = {
+                    'charge_type': 'Sindaco',
+                    'date_start': ic.date_start,
+                    'date_end': ic.date_end,
+                    'party': ic.party.getNormalizedAcronymOrName(),
+                    'first_name': ic.politician.first_name,
+                    'last_name': ic.politician.last_name,
+                    'birth_date': ic.politician.birth_date,
+                    'picture_url': 'http://politici.openpolis.it/politician/picture?content_id=%s' % ic.politician.content_id,
+                    'op_link': 'http://politici.openpolis.it/politico/%s' % ic.politician.content_id
+                }
+            else:
+                c = {
+                    'charge_type': 'Commissario',
+                    'date_start': ic.date_start,
+                    'date_end': ic.date_end,
+                    'first_name': ic.politician.first_name,
+                    'last_name': ic.politician.last_name,
+                    'birth_date': ic.politician.birth_date,
+                    'motivazione': ic.description,
+                    'op_link': 'http://politici.openpolis.it/politico/%s' % ic.politician.content_id
+                }
+
+            data['sindaci'].append(c)
+
+        return data
+
+
     def get_location_government_data(self, id_type, location_id, year=None):
         """docstring for get_location_government_data"""
         from django.db import connection

@@ -53,7 +53,9 @@ urlpatterns = patterns('',
 
     # api calls used in open_bilanci, to extracts city representatives, mayor or city government, in a given period of time
     url(r'^cityreps/(?P<id_type>[^/]+)/(?P<city_id>[^/]+)/$', Resource(handler=CityrepsHandler, **ad)),
-    url(r'^historical_city_mayor/(?P<id_type>[^/]+)/(?P<location_id>[^/]+)/(?P<year>[^/]+)/$', historical_resource),    
+
+    url(r'^historical_city_mayors/(?P<id_type>[^/]+)/(?P<location_id>[^/]+)/$', historical_resource),
+    url(r'^historical_city_mayor/(?P<id_type>[^/]+)/(?P<location_id>[^/]+)/(?P<year>[^/]+)/$', historical_resource),
     url(r'^historical_location_government/(?P<id_type>[^/]+)/(?P<location_id>[^/]+)/(?P<year>[^/]+)/$', historical_resource),    
     url(r'^current_city_mayor/(?P<id_type>[^/]+)/(?P<location_id>[^/]+)/$', historical_resource),    
     url(r'^current_location_government/(?P<id_type>[^/]+)/(?P<location_id>[^/]+)/$', historical_resource),
